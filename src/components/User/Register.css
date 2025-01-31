@@ -79,3 +79,14 @@
     border-radius: 36px;
   }
   
+.form-FechaNac{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 36px;
+}
+.calendar{
+    border: #0f2a1d;
+}
