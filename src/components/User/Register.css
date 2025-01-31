@@ -1,0 +1,81 @@
+  
+  :root {
+    --ion-color-customDark: #375534; /* Color personalizado */
+    --ion-color-customHardDark: #0f2a1d;
+    --ion-color-customMedium: #6b9071;
+    --ion-color-customLight: #AEC3B0;
+    --ion-color-customUltraLight: #E3EED4;
+  }
+
+.topBar{
+   display : flex;
+   justify-content: center;
+   align-items: center;
+   gap: 10px;
+   width: 100%;
+   margin: 5px;
+}
+.title {
+    
+    font-size: 1rem; /* Reduce el tamaño del título */
+    white-space: nowrap; /* Evita que el texto se parta en varias líneas */
+    overflow: hidden; /* Oculta el exceso de texto si es necesario */
+    text-overflow: ellipsis; /* Muestra "..." si el texto se corta */
+  }
+
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .form-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .form-card{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    height: 100%;
+    background: var(--ion-color-customUltraLight);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+  .form-item{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 100px;
+    border-radius: 36px;
+}
+.form-label{
+    display:flex;
+    width: 100%;
+    text-align: center;
+}
+
+  .title {
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 15px;
+  }
+
+  
+  .custom-button {
+    --background: var(--ion-color-customDark);
+    --color: white;
+    border-radius: 36px;
+  }
+  
