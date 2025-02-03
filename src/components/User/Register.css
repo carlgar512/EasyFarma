@@ -116,19 +116,13 @@
     padding: 10px;
   }
 
-  .form-labelNac {
-    display: flex;
-    max-width: 30%;
-    flex-grow: 1;
-    text-align: center;
-  }
-
   /* Contenedor del calendario */
   .calendar-wrapper {
     max-height: 80%;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 10px;
    
   }
   ion-datetime {

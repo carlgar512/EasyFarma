@@ -166,7 +166,7 @@ const Register: React.FC = () => {
             </IonItem>
 
             <div className="form-FechaNac">
-              <label className="form-labelNac">Fecha de Nacimiento:</label>
+           
 
 
               <div className="calendar-wrapper">
@@ -180,6 +180,7 @@ const Register: React.FC = () => {
 
 
                 >
+                   <span slot="title">Fecha de Nacimiento</span>
                 </IonDatetime>
               </div>
 
