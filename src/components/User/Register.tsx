@@ -1,21 +1,18 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   IonButton,
   IonContent,
   IonHeader,
   IonInput,
   IonItem,
-  IonLabel,
   IonPage,
-  IonTitle,
   IonToolbar,
   IonToast,
   IonIcon,
-  IonItemDivider,
   IonDatetime,
 } from "@ionic/react";
 import "./Register.css"; // Importa el archivo CSS
-import { alertCircleOutline, personAddOutline } from 'ionicons/icons';
+import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline, settingsSharp } from 'ionicons/icons';
 
 const Register: React.FC = () => {
   const [form, setForm] = useState({
@@ -25,41 +22,67 @@ const Register: React.FC = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    dateNac: ""
   });
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [isSuccessToast, setIsSuccessToast] = useState(false); // Nuevo estado
 
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+
+  // Manejar el cambio de fecha
+  const handleChangeDate = (e: any) => {
+    const selectedDate = e.detail.value; // Obtiene la fecha seleccionada
+    if (selectedDate) {
+      const formattedDate = selectedDate.split("T")[0]; // Convierte en formato 'YYYY-MM-DD'
+      setForm({ ...form, dateNac: formattedDate }); // Actualiza el estado con la fecha seleccionada
+    }
+  };
+
+
+
   const handleSubmit = () => {
-    if (!form.name || !form.lastName || !form.dni || !form.email || !form.password || !form.confirmPassword) {
+    if (!form.name || !form.lastName || !form.dni || !form.email || !form.password || !form.confirmPassword || !form.dateNac) {
+      console.log(form);
       setToastMessage("Todos los campos son obligatorios");
+      setIsSuccessToast(false);
       setShowToast(true);
       return;
     }
 
     if (form.password !== form.confirmPassword) {
       setToastMessage("Las contraseñas no coinciden");
+      setIsSuccessToast(false);
       setShowToast(true);
       return;
     }
 
     console.log("Registrando usuario:", form);
     setToastMessage("Registro exitoso");
+    setIsSuccessToast(true);
     setShowToast(true);
   };
+
+
 
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar className="top-BarBackground">
           <div className="topBar">
-            <IonIcon icon={personAddOutline} size="large" color="#0f2a1d"></IonIcon>
-            <span className="title">Bienvenido, crea tu cuenta y protege tu bienestar</span>
+            <div className="left-content">
+              <IonIcon icon={personAddOutline} size="large" color="#0f2a1d"></IonIcon>
+              <span className="title">Bienvenido, crea tu cuenta y protege tu bienestar</span>
+            </div>
+            <IonButton color="danger" className="leaveButton">
+              <IonIcon slot="icon-only" ios={exitOutline}></IonIcon>
+            </IonButton>
+
           </div>
         </IonToolbar>
       </IonHeader>
@@ -144,9 +167,23 @@ const Register: React.FC = () => {
 
             <div className="form-FechaNac">
               <label className="form-labelNac">Fecha de Nacimiento:</label>
-              <IonDatetime size="fixed" presentation="date" color={"success"}>    </IonDatetime>
+
+
+              <div className="calendar-wrapper">
+                <IonDatetime
+                  size="fixed"
+                  name="dateNac"
+                  presentation="date"
+                  color={"success"}
+                  value={form.dateNac}
+                  onIonChange={handleChangeDate}
+
+
+                >
+                </IonDatetime>
+              </div>
+
             </div>
-           
 
             <IonButton
               expand="block"
@@ -159,9 +196,20 @@ const Register: React.FC = () => {
               Crear nueva cuenta
             </IonButton>
 
+            <IonButton
+              expand="block"
+              shape="round"
+              size="default"
+              className="ion-margin-top custom-button2"
+            >
+              <IonIcon icon={personOutline} slot="start"></IonIcon>
+              ¿Ya registrado?, Iniciar sesion
+            </IonButton>
+
+
             <IonToast
-              icon={alertCircleOutline}
-              color="danger"
+              icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
+              color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
               isOpen={showToast}
               onDidDismiss={() => setShowToast(false)}
               message={toastMessage}

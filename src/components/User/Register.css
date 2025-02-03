@@ -1,37 +1,55 @@
-  
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
   :root {
-    --ion-color-customDark: #375534; /* Color personalizado */
+    --ion-color-customDark: #375534;
+    /* Color personalizado */
     --ion-color-customHardDark: #0f2a1d;
     --ion-color-customMedium: #6b9071;
     --ion-color-customLight: #AEC3B0;
     --ion-color-customUltraLight: #E3EED4;
+    --font-primary: 'Roboto', sans-serif;
   }
 
-.topBar{
-   display : flex;
-   justify-content: center;
-   align-items: center;
-   gap: 10px;
-   width: 100%;
-   margin: 5px;
-}
-.title {
-    
-    font-size: 1rem; /* Reduce el tamaño del título */
-    white-space: nowrap; /* Evita que el texto se parta en varias líneas */
-    overflow: hidden; /* Oculta el exceso de texto si es necesario */
-    text-overflow: ellipsis; /* Muestra "..." si el texto se corta */
+  .top-BarBackground {
+    --background: radial-gradient(circle, var(--ion-color-customMedium) 0%, var(--ion-color-customLight) 73%, var(--ion-color-customUltraLight) 100%);
+    --width: 100%;
   }
 
+  .topBar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    color: white;
+    font-family: var(--font-primary);
+  }
+  .left-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1; /* Esto hace que ocupe el espacio central */
+    margin-left: 10px;
+  }
+  .leaveButton{
+    width: 7%;
+    margin-right: 10px;
+  }
 
-.content {
+  .title {
+    font-size: 1rem;
+   
+  }
+
+  .content {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
     width: 100%;
   }
-  
+
   .form-container {
     margin-top: 20px;
     display: flex;
@@ -39,32 +57,35 @@
     align-items: center;
   }
 
-  .form-card{
+  .form-card {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 90%;
+    width: 99%;
     height: 100%;
     background: var(--ion-color-customUltraLight);
     padding: 20px;
+    margin: 10px;
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-}
+  }
 
-  .form-item{
+  .form-item {
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     gap: 100px;
     border-radius: 36px;
-}
-.form-label{
-    display:flex;
+  }
+
+  .form-label {
+    display: flex;
     width: 100%;
     text-align: center;
-}
+    font-family: var(--font-primary);
+  }
 
   .title {
     text-align: center;
@@ -72,21 +93,49 @@
     padding: 15px;
   }
 
-  
+
   .custom-button {
     --background: var(--ion-color-customDark);
     --color: white;
     border-radius: 36px;
   }
-  
-.form-FechaNac{
+  .custom-button2 {
+    --background: var(--ion-color-customMedium);
+    --color: white;
+    border-radius: 36px;
+  }
+
+  .form-FechaNac {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     background-color: white;
     border-radius: 36px;
-}
-.calendar{
-    border: #0f2a1d;
+    padding: 10px;
+  }
+
+  .form-labelNac {
+    display: flex;
+    max-width: 30%;
+    flex-grow: 1;
+    text-align: center;
+  }
+
+  /* Contenedor del calendario */
+  .calendar-wrapper {
+    max-height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+  }
+  ion-datetime {
+  --background:var(--ion-color-customUltraLight);
+  --background-rgb: var(--ion-color-customUltraLight);
+  border-radius: 12px;
+    background: linear-gradient(145deg, #f3ffe3, #ccd6bf);
+    box-shadow: 10px 10px 20px #b3bca7,
+      -10px -10px 20px #ffffff;
 }
