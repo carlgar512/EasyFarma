@@ -166,9 +166,7 @@ const Register: React.FC = () => {
             </IonItem>
 
             <div className="form-FechaNac">
-           
-
-
+          
               <div className="calendar-wrapper">
                 <IonDatetime
                   size="fixed"
@@ -177,8 +175,6 @@ const Register: React.FC = () => {
                   color={"success"}
                   value={form.dateNac}
                   onIonChange={handleChangeDate}
-
-
                 >
                    <span slot="title">Fecha de Nacimiento</span>
                 </IonDatetime>
