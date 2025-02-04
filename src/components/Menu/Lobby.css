@@ -1,14 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-:root {
-    --ion-color-customDark: #375534;
-    /* Color personalizado */
-    --ion-color-customHardDark: #0f2a1d;
-    --ion-color-customMedium: #6b9071;
-    --ion-color-customLight: #AEC3B0;
-    --ion-color-customUltraLight: #E3EED4;
-    --font-primary: 'Roboto', sans-serif;
-}
 
 .lobby-container {
     display: flex;
@@ -73,10 +62,11 @@
 }
 
 .emergency-btn {
-    --background: red;
+    --background: var(--ion-color-customRed);
     color: white;
     font-weight: bold;
 }
+
 .login-btn:hover, 
 .register-btn:hover, 
 .emergency-btn:hover {

@@ -44,6 +44,7 @@ import '@ionic/react/css/palettes/dark.system.css';
 import './theme/variables.css';
 import Register from './components/User/Register';
 import Lobby from './components/Menu/Lobby';
+import SignIn from './components/User/SignIn';
 
 
 setupIonicReact();
@@ -59,10 +60,11 @@ const App: React.FC = () => (
           <Route exact path="/lobby">
             <Lobby />
           </Route>
-          <Route path="/tab3">
+          <Route exact path="/signIn">
+            <SignIn />
           </Route>
           <Route exact path="/">
-            <Redirect to="/register" />
+            <Redirect to="/lobby" />
           </Route>
         </IonRouterOutlet>
       </IonTabs>

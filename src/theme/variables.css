@@ -1,2 +1,14 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+:root {
+    --ion-color-customDark: #375534;
+    /* Color personalizado */
+    --ion-color-customHardDark: #0f2a1d;
+    --ion-color-customMedium: #6b9071;
+    --ion-color-customLight: #AEC3B0;
+    --ion-color-customUltraLight: #E3EED4;
+    --ion-color-customRed:rgba(210, 11, 11, 0.894);
+    --font-primary: 'Roboto', sans-serif;
+}

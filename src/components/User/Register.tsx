@@ -12,7 +12,8 @@ import {
   IonDatetime,
 } from "@ionic/react";
 import "./Register.css"; // Importa el archivo CSS
-import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline, settingsSharp } from 'ionicons/icons';
+import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline} from 'ionicons/icons';
+import { useHistory } from "react-router-dom";
 
 const Register: React.FC = () => {
   const [form, setForm] = useState({
@@ -28,6 +29,18 @@ const Register: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [isSuccessToast, setIsSuccessToast] = useState(false); // Nuevo estado
+
+  const history = useHistory();
+
+  const handleGoBackClick = () => {
+
+    if (document.referrer.includes('/lobby')) {
+      history.go(-1); // Si la página anterior era /lobby, vuelve atrás
+    } else {
+      history.replace('/lobby'); // Si no, reemplaza la ruta actual
+    }
+
+  };
 
 
   const handleChange = (e: any) => {
@@ -79,7 +92,7 @@ const Register: React.FC = () => {
               <IonIcon icon={personAddOutline} size="large" color="#0f2a1d"></IonIcon>
               <span className="title">Bienvenido, crea tu cuenta y protege tu bienestar</span>
             </div>
-            <IonButton color="danger" className="leaveButton">
+            <IonButton color="danger" className="leaveButton" onClick={handleGoBackClick}>
               <IonIcon slot="icon-only" ios={exitOutline}></IonIcon>
             </IonButton>
 
@@ -166,7 +179,7 @@ const Register: React.FC = () => {
             </IonItem>
 
             <div className="form-FechaNac">
-          
+
               <div className="calendar-wrapper">
                 <IonDatetime
                   size="fixed"
@@ -176,7 +189,7 @@ const Register: React.FC = () => {
                   value={form.dateNac}
                   onIonChange={handleChangeDate}
                 >
-                   <span slot="title">Fecha de Nacimiento</span>
+                  <span slot="title">Fecha de Nacimiento</span>
                 </IonDatetime>
               </div>
 
