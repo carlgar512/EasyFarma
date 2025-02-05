@@ -12,7 +12,7 @@ import {
   IonDatetime,
 } from "@ionic/react";
 import "./Register.css"; // Importa el archivo CSS
-import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline} from 'ionicons/icons';
+import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
 
 const Register: React.FC = () => {
@@ -41,6 +41,9 @@ const Register: React.FC = () => {
     }
 
   };
+  const handleLoginClick = () => {
+    history.replace('/signIn')
+  };
 
 
   const handleChange = (e: any) => {
@@ -68,7 +71,7 @@ const Register: React.FC = () => {
       return;
     }
 
-    if (form.password !== form.confirmPassword) {
+    else if (form.password !== form.confirmPassword) {
       setToastMessage("Las contraseñas no coinciden");
       setIsSuccessToast(false);
       setShowToast(true);
@@ -207,12 +210,13 @@ const Register: React.FC = () => {
             </IonButton>
 
             <IonButton
+              onClick={handleLoginClick}
               expand="block"
               shape="round"
               size="default"
               className="ion-margin-top custom-button2"
             >
-              <IonIcon icon={personOutline} slot="start"></IonIcon>
+              <IonIcon icon={personOutline} slot="start" ></IonIcon>
               ¿Ya registrado?, Iniciar sesion
             </IonButton>
 

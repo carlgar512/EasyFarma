@@ -1,0 +1,97 @@
+.top-BarBackgroundSes {
+    --background: radial-gradient(circle, var(--ion-color-customMedium) 0%, var(--ion-color-customLight) 84%);
+    --width: 100%;
+  }
+
+  .topBarSes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    color: white;
+    font-family: var(--font-primary);
+  }
+  .left-contentSes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1; /* Esto hace que ocupe el espacio central */
+    margin-left: 10px;
+  }
+  .leaveButtonSes{
+    width: 7%;
+    margin-right: 10px;
+  }
+
+  .titleSes {
+    font-size: 1rem;
+   
+  }
+
+  .contentSes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 64%, var(--ion-color-customMedium) 100%);
+  }
+
+  .form-containerSes {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+
+  .form-cardSes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 99%;
+    height: auto;
+    background: var(--ion-color-customUltraLight);
+    padding: 20px;
+    margin: 10px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .form-itemSes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 100px;
+    border-radius: 36px;
+  }
+
+  .form-labelSes {
+    display: flex;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-primary);
+  }
+
+  .titleSes {
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 15px;
+  }
+
+
+  .custom-buttonSes {
+    --background: var(--ion-color-customDark);
+    --color: white;
+    border-radius: 36px;
+  }
+  .custom-button2Ses {
+    --background: var(--ion-color-customMedium);
+    --color: white;
+    border-radius: 36px;
+  }
+
