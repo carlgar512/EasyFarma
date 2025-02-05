@@ -17,6 +17,8 @@ const Lobby: React.FC = () => {
         history.replace("/lobby"); // Reemplaza la historia actual con /lobby
     }, [history]);
   
+
+    //TODO probar en telf y cambiar numero
     const handleEmergencyCall = () => {
         if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
           window.location.href = 'tel:+34679761132';
