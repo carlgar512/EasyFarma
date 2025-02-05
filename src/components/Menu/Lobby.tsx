@@ -17,7 +17,14 @@ const Lobby: React.FC = () => {
         history.replace("/lobby"); // Reemplaza la historia actual con /lobby
     }, [history]);
   
-
+    const handleEmergencyCall = () => {
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          window.location.href = 'tel:+34679761132';
+        } else {
+          alert("Esta función solo está disponible en dispositivos móviles. Llame al +1234567890 si necesita asistencia.");
+        }
+      };
+      
     return (
         <IonPage>
 
@@ -37,7 +44,7 @@ const Lobby: React.FC = () => {
                             <IonIcon slot="start" icon={personAddOutline}></IonIcon>
                             Registrarse
                         </IonButton>
-                        <IonButton size="large" expand="full" shape="round" className="emergency-btn">
+                        <IonButton size="large" expand="full" shape="round" className="emergency-btn" onClick={handleEmergencyCall}>
                             <IonIcon slot="start" icon={callOutline}></IonIcon>
                             Emergencia
                         </IonButton>

@@ -112,7 +112,7 @@ const SignIn: React.FC = () => {
                             className="ion-margin-top custom-button2Ses"
                         >
                             <IonIcon icon={personAddOutline} slot="start"></IonIcon>
-                            ¿No esta registrado?, Crear nueva cuenta
+                            ¿No esta registrado?, Nueva cuenta
                         </IonButton>
 
                         <IonToast
