@@ -3,6 +3,7 @@ import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, pe
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./SignIn.css";
+import { loginUserWithDNI } from "../../services/authService";
 
 
 const SignIn: React.FC = () => {
@@ -14,13 +15,13 @@ const SignIn: React.FC = () => {
     });
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
-    const [isSuccessToast, setIsSuccessToast] = useState(false); 
+    const [isSuccessToast, setIsSuccessToast] = useState(false);
 
     const history = useHistory();
     const handleRegisterClick = () => {
         history.replace('/register')
-      };
-    
+    };
+
     const handleGoBackClick = () => {
 
         if (document.referrer.includes('/lobby')) {
@@ -34,7 +35,7 @@ const SignIn: React.FC = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!form.dni || !form.password) {
             console.log(form);
             setToastMessage("Todos los campos son obligatorios");
@@ -44,9 +45,22 @@ const SignIn: React.FC = () => {
         }
 
         console.log("Iniciando sesion...", form);
-        setToastMessage("Sesión iniciada correctamente");
-        setIsSuccessToast(true);
-        setShowToast(true);
+
+        const response = await loginUserWithDNI(form.dni, form.password);
+
+        if (response.success) {
+            alert("Inicio de sesión exitoso");
+            console.log("Usuario:", response.user);
+            setToastMessage("Sesión iniciada correctamente");
+            setIsSuccessToast(true);
+            setShowToast(true);
+        } else {
+            alert("Error: " + response.error);
+            setToastMessage("Error al iniciar sesion");
+            setIsSuccessToast(false);
+            setShowToast(true);
+        }
+       
     };
 
 
@@ -101,7 +115,7 @@ const SignIn: React.FC = () => {
                             onClick={handleSubmit}
                         >
                             <IonIcon icon={personOutline} slot="start"></IonIcon>
-                           Iniciar sesion
+                            Iniciar sesion
                         </IonButton>
 
                         <IonButton

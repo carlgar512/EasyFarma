@@ -1,6 +1,6 @@
 
   .top-BarBackground {
-    --background: radial-gradient(circle, var(--ion-color-customMedium) 0%, var(--ion-color-customLight) 84%);
+    --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 80%, var(--ion-color-customLight)100%);
     --width: 100%;
   }
 
@@ -37,7 +37,7 @@
     align-items: center;
     height: 100%;
     width: 100%;
-    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 64%, var(--ion-color-customMedium) 100%);
+    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
   }
 
   .form-container {
