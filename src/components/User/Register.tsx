@@ -14,6 +14,7 @@ import {
 import "./Register.css"; // Importa el archivo CSS
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
+import { registerUser } from "../../services/authService";
 
 const Register: React.FC = () => {
   const [form, setForm] = useState({
@@ -62,7 +63,7 @@ const Register: React.FC = () => {
 
 
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.name || !form.lastName || !form.dni || !form.email || !form.password || !form.confirmPassword || !form.dateNac) {
       console.log(form);
       setToastMessage("Todos los campos son obligatorios");
@@ -79,9 +80,26 @@ const Register: React.FC = () => {
     }
 
     console.log("Registrando usuario:", form);
+    const response = await registerUser(
+      {
+        name: form.name,
+        lastName: form.lastName,
+        dni: form.dni,
+        email: form.email,
+        dateNac: form.dateNac,
+      },
+      form.password
+    );
+
+    if (response.success) {
+      alert("Usuario registrado con éxito");
+    } else {
+      alert("Error al registrar: " + response.error);
+    }
     setToastMessage("Registro exitoso");
     setIsSuccessToast(true);
     setShowToast(true);
+
   };
 
 
