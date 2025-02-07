@@ -1,5 +1,5 @@
 .top-BarBackgroundSes {
-    --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 80%, var(--ion-color-customLight)100%);
+    --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
     --width: 100%;
   }
 

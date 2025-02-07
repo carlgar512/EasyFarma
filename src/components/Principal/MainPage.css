@@ -1,0 +1,34 @@
+.principalBar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    color: white;
+    font-family: var(--font-primary);
+    width: 100%;
+}
+
+.toolBar {
+    --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+
+}
+
+.userButton {
+    --background: var(--ion-color-customUltraLight);
+    color: white;
+
+}
+
+.menuButton{
+    color: white;
+    padding-left: 10px;
+}
+
+.searchBar {
+    width: 80%;
+}
