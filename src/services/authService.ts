@@ -37,27 +37,36 @@ export const registerUser = async (userData: UserData, password: string) => {
   }
 };
 
+
 /**
  * Busca el correo electrónico de un usuario usando su DNI en Firestore.
  */
 export const getEmailByDNI = async (dni: string) => {
-    try {
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("dni", "==", dni));
-      const querySnapshot = await getDocs(q);
-  
-      if (!querySnapshot.empty) {
-        const userData = querySnapshot.docs[0].data();
-        return { success: true, email: userData.email }; // Devolvemos el correo encontrado
-      } else {
-        return { success: false, error: "No se encontró un usuario con este DNI" };
-      }
-    } catch (error: any) {
-      console.error("Error al obtener correo por DNI:", error);
-      return { success: false, error: error.message };
-    }
-  };
+  try {
+    const cleanDni = String(dni).trim(); // Aseguramos que sea string y eliminamos espacios
+    console.log("📌 Buscando DNI en Firestore:", cleanDni);
+    console.log(dni);
 
+    const usersRef = collection(db, "/users");
+    const q = query(usersRef, where("dni", "==", cleanDni));
+    const querySnapshot = await getDocs(q);
+
+
+    if (!querySnapshot.empty) {
+      const userData = querySnapshot.docs[0].data();
+      console.log("✅ Usuario encontrado en Firestore:", userData);
+      return { success: true, email: userData.email };
+    } else {
+      console.log("⚠ No se encontró un usuario con este DNI.");
+      return { success: false, error: "No se encontró un usuario con este DNI" };
+    }
+  } catch (error: any) {
+    console.error("❌ Error al obtener correo por DNI:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+  
 /**
  * Inicia sesión con DNI y contraseña en Firebase Authentication.
  */

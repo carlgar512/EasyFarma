@@ -49,14 +49,12 @@ const SignIn: React.FC = () => {
         const response = await loginUserWithDNI(form.dni, form.password);
 
         if (response.success) {
-            alert("Inicio de sesión exitoso");
-            console.log("Usuario:", response.user);
             setToastMessage("Sesión iniciada correctamente");
             setIsSuccessToast(true);
             setShowToast(true);
+            history.replace('/principal');
         } else {
-            alert("Error: " + response.error);
-            setToastMessage("Error al iniciar sesion");
+            setToastMessage("Error al iniciar sesion:"+ response.error);
             setIsSuccessToast(false);
             setShowToast(true);
         }

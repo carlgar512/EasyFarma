@@ -92,13 +92,16 @@ const Register: React.FC = () => {
     );
 
     if (response.success) {
-      alert("Usuario registrado con éxito");
+      setToastMessage("Registro exitoso");
+      setIsSuccessToast(true);
+      setShowToast(true);
+      history.replace('/principal')
     } else {
-      alert("Error al registrar: " + response.error);
+      setToastMessage("Error al registrar: " + response.error);
+      setIsSuccessToast(false);
+      setShowToast(true);
     }
-    setToastMessage("Registro exitoso");
-    setIsSuccessToast(true);
-    setShowToast(true);
+   
 
   };
 
