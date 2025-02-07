@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonPage, IonToast, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -16,6 +16,7 @@ const SignIn: React.FC = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState("");
     const [isSuccessToast, setIsSuccessToast] = useState(false);
+    const [loadSpinner, setLoadSpinner] = useState(false);
 
     const history = useHistory();
     const handleRegisterClick = () => {
@@ -43,16 +44,18 @@ const SignIn: React.FC = () => {
             setShowToast(true);
             return;
         }
-
+        setLoadSpinner(true);
         console.log("Iniciando sesion...", form);
 
         const response = await loginUserWithDNI(form.dni, form.password);
-
+        setLoadSpinner(false);
         if (response.success) {
             setToastMessage("Sesión iniciada correctamente");
             setIsSuccessToast(true);
             setShowToast(true);
-            history.replace('/principal');
+            setTimeout(() => {
+                history.replace('/principal');
+              }, 1000);
         } else {
             setToastMessage("Error al iniciar sesion:"+ response.error);
             setIsSuccessToast(false);
@@ -78,7 +81,14 @@ const SignIn: React.FC = () => {
                     </div>
                 </IonToolbar>
             </IonHeader>
-
+    {loadSpinner ? 
+      <div className="content">
+        <div className="spinnerBackground">
+          <IonSpinner name="circular" className="spinner"></IonSpinner> 
+          <span className="mensajeSpinner">Estamos preparando todo para ti... ¡Casi listo!</span>
+        </div>
+          
+      </div> :
             <IonContent fullscreen className="contentSes">
                 <div className="form-containerSes">
                     <div className="form-cardSes">
@@ -146,6 +156,7 @@ const SignIn: React.FC = () => {
                     </div>
                 </div>
             </IonContent>
+}
         </IonPage>
     );
 };

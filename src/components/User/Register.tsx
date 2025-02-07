@@ -10,6 +10,7 @@ import {
   IonToast,
   IonIcon,
   IonDatetime,
+  IonSpinner,
 } from "@ionic/react";
 import "./Register.css"; // Importa el archivo CSS
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
@@ -26,6 +27,7 @@ const Register: React.FC = () => {
     confirmPassword: "",
     dateNac: ""
   });
+  const [loadSpinner, setLoadSpinner] = useState(false);
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -42,6 +44,8 @@ const Register: React.FC = () => {
     }
 
   };
+
+ 
   const handleLoginClick = () => {
     history.replace('/signIn')
   };
@@ -78,8 +82,9 @@ const Register: React.FC = () => {
       setShowToast(true);
       return;
     }
-
+    setLoadSpinner(true);
     console.log("Registrando usuario:", form);
+
     const response = await registerUser(
       {
         name: form.name,
@@ -90,18 +95,20 @@ const Register: React.FC = () => {
       },
       form.password
     );
-
+    setLoadSpinner(false);
     if (response.success) {
       setToastMessage("Registro exitoso");
       setIsSuccessToast(true);
       setShowToast(true);
-      history.replace('/principal')
+      setTimeout(() => {
+        history.replace('/principal');
+      }, 1000);
     } else {
       setToastMessage("Error al registrar: " + response.error);
       setIsSuccessToast(false);
       setShowToast(true);
     }
-   
+
 
   };
 
@@ -124,143 +131,156 @@ const Register: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen className="content">
-        <div className="form-container">
-          <div className="form-card">
-            <IonItem className="form-item">
-              <label className="form-label">Nombre:</label>
-              <IonInput
-                color={"success"}
-                placeholder="Escribe tu nombre"
-                name="name"
-                value={form.name}
-                onIonChange={handleChange}
-                clearInput={true}
-              />
-            </IonItem>
-
-            <IonItem className="form-item">
-              <label className="form-label">Apellidos:</label>
-              <IonInput
-                color={"success"}
-                name="lastName"
-                placeholder="Escribe tu(s) apellidos"
-                value={form.lastName}
-                onIonChange={handleChange}
-                clearInput={true}
-              />
-            </IonItem>
-
-            <IonItem className="form-item">
-              <label className="form-label">DNI:</label>
-              <IonInput
-                color={"success"}
-                placeholder="Escribe tu DNI"
-                name="dni"
-                value={form.dni}
-                onIonChange={handleChange}
-                clearInput={true}
-              />
-            </IonItem>
-
-            <IonItem className="form-item">
-              <label className="form-label">Correo Electrónico:</label>
-              <IonInput
-                color={"success"}
-                name="email"
-                placeholder="Ejemplo: correo@dominio.com"
-                type="email"
-                value={form.email}
-                onIonChange={handleChange}
-                clearInput={true}
-              />
-            </IonItem>
-
-            <IonItem className="form-item">
-              <label className="form-label">Contraseña:</label>
-              <IonInput
-                color={"success"}
-                placeholder="Nueva contraseña"
-                name="password"
-                type="password"
-                value={form.password}
-                onIonChange={handleChange}
-                clearInput={true}
-              />
-            </IonItem>
-
-            <IonItem className="form-item">
-              <label className="form-label">Confirmar Contraseña:</label>
-              <IonInput
-                color={"success"}
-                name="confirmPassword"
-                placeholder="Repite contraseña"
-                type="password"
-                value={form.confirmPassword}
-                onIonChange={handleChange}
-                clearInput={true}
-              />
-            </IonItem>
-
-            <div className="form-FechaNac">
-
-              <div className="calendar-wrapper">
-                <IonDatetime
-                  size="fixed"
-                  name="dateNac"
-                  presentation="date"
+      {loadSpinner ? 
+      <div className="content">
+        <div className="spinnerBackground">
+          <IonSpinner name="circular" className="spinner"></IonSpinner> 
+          <span className="mensajeSpinner">Estamos preparando todo para ti... ¡Casi listo!</span>
+        </div>
+          
+      </div> :
+   
+        <IonContent fullscreen className="content">
+          <div className="form-container">
+            <div className="form-card">
+              <IonItem className="form-item">
+                <label className="form-label">Nombre:</label>
+                <IonInput
                   color={"success"}
-                  value={form.dateNac}
-                  onIonChange={handleChangeDate}
-                >
-                  <span slot="title">Fecha de Nacimiento</span>
-                </IonDatetime>
+                  placeholder="Escribe tu nombre"
+                  name="name"
+                  value={form.name}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <IonItem className="form-item">
+                <label className="form-label">Apellidos:</label>
+                <IonInput
+                  color={"success"}
+                  name="lastName"
+                  placeholder="Escribe tu(s) apellidos"
+                  value={form.lastName}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <IonItem className="form-item">
+                <label className="form-label">DNI:</label>
+                <IonInput
+                  color={"success"}
+                  placeholder="Escribe tu DNI"
+                  name="dni"
+                  value={form.dni}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <IonItem className="form-item">
+                <label className="form-label">Correo Electrónico:</label>
+                <IonInput
+                  color={"success"}
+                  name="email"
+                  placeholder="Ejemplo: correo@dominio.com"
+                  type="email"
+                  value={form.email}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <IonItem className="form-item">
+                <label className="form-label">Contraseña:</label>
+                <IonInput
+                  color={"success"}
+                  placeholder="Nueva contraseña"
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <IonItem className="form-item">
+                <label className="form-label">Confirmar Contraseña:</label>
+                <IonInput
+                  color={"success"}
+                  name="confirmPassword"
+                  placeholder="Repite contraseña"
+                  type="password"
+                  value={form.confirmPassword}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <div className="form-FechaNac">
+
+                <div className="calendar-wrapper">
+                  <IonDatetime
+                    size="fixed"
+                    name="dateNac"
+                    presentation="date"
+                    color={"success"}
+                    value={form.dateNac}
+                    onIonChange={handleChangeDate}
+                  >
+                    <span slot="title">Fecha de Nacimiento</span>
+                  </IonDatetime>
+                </div>
+
               </div>
 
+              <IonButton
+                expand="block"
+                shape="round"
+                size="default"
+                className="ion-margin-top custom-button"
+                onClick={handleSubmit}
+              >
+                <IonIcon icon={personAddOutline} slot="start"></IonIcon>
+                Crear nueva cuenta
+              </IonButton>
+
+              <IonButton
+                onClick={handleLoginClick}
+                expand="block"
+                shape="round"
+                size="default"
+                className="ion-margin-top custom-button2"
+              >
+                <IonIcon icon={personOutline} slot="start" ></IonIcon>
+                ¿Ya registrado?, Iniciar sesion
+              </IonButton>
+
+
+              <IonToast
+                icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
+                color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message={toastMessage}
+                duration={2000}
+                swipeGesture="vertical"
+                buttons={[
+                  {
+                    text: 'Descartar',
+                    role: 'cancel',
+                  },
+                ]}
+
+              />
             </div>
-
-            <IonButton
-              expand="block"
-              shape="round"
-              size="default"
-              className="ion-margin-top custom-button"
-              onClick={handleSubmit}
-            >
-              <IonIcon icon={personAddOutline} slot="start"></IonIcon>
-              Crear nueva cuenta
-            </IonButton>
-
-            <IonButton
-              onClick={handleLoginClick}
-              expand="block"
-              shape="round"
-              size="default"
-              className="ion-margin-top custom-button2"
-            >
-              <IonIcon icon={personOutline} slot="start" ></IonIcon>
-              ¿Ya registrado?, Iniciar sesion
-            </IonButton>
-
-
-            <IonToast
-              icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
-              color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
-              isOpen={showToast}
-              onDidDismiss={() => setShowToast(false)}
-              message={toastMessage}
-              duration={2000}
-              swipeGesture="vertical"
-              buttons={[
-                {
-                  text: 'Descartar',
-                  role: 'cancel',
-                },
-              ]}
-
-            />
           </div>
-        </div>
-      </IonContent>
+        </IonContent>
+
+      }
+
+
     </IonPage>
   );
 };

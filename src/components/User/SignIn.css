@@ -29,7 +29,35 @@
     font-size: 1rem;
    
   }
+  .spinnerBackground{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 60%;
+    height: 40%;
+    gap: 20px;
+    align-items: center;
+    background: var(--ion-color-customUltraLight);
+    padding: 10px;
+    border-radius: 36px;;
+  }
 
+  .mensajeSpinner{
+    font-family: var(--font-primary);
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .spinner{
+    height:25%;
+    width:25%;
+    --color:var(--ion-color-customMedium);
+  }
+  
   .contentSes {
     display: flex;
     justify-content: center;
