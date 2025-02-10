@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonMenu, IonMenuButton, IonMenuToggle, IonPage, IonSearchbar, IonTitle, IonToolbar } from "@ionic/react";
-import { personCircleOutline, trashBin } from "ionicons/icons";
+import { arrowBackOutline, fitnessOutline, homeOutline, menuOutline, personCircleOutline, schoolOutline, settingsSharp, starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
 
 
@@ -9,37 +9,61 @@ const MainPage: React.FC = () => {
         <>
             <IonMenu type="overlay" contentId="main-content">
                 <IonHeader>
-                    <IonToolbar>
-                        <IonTitle>Menu Content</IonTitle>
-                    </IonToolbar>
+                    <IonMenuToggle>
+                        <IonButton fill="clear" color="success">
+                            <IonIcon slot="icon-only" ios={arrowBackOutline}></IonIcon>
+                        </IonButton>
+                    </IonMenuToggle>
                 </IonHeader>
                 <IonContent className="ion-padding">This is the menu content.</IonContent>
             </IonMenu>
             <IonPage id="main-content">
                 <IonHeader className="headerBar">
-                    <IonToolbar className="toolBar">
-                        <IonButtons slot="start">
-                            <IonMenuButton className="menuButton"></IonMenuButton>
-                        </IonButtons>
-                        <div className="principalBar">
-                            <IonTitle>Inicio</IonTitle>
-                            <IonSearchbar className="searchBar" animated={true} placeholder="¿Qué estás buscando hoy?" showClearButton="always" clearIcon={trashBin} value=""></IonSearchbar>
-                        </div>
+                    <IonMenuToggle>
+                        <IonButton shape="round" className="upperButton" size="large" fill="outline">
+                            <IonIcon slot="icon-only" icon={menuOutline}></IonIcon>
+                        </IonButton>
+                    </IonMenuToggle>
+                    <div className="principalBar">
+                        <IonTitle>Inicio</IonTitle>
+                        <IonSearchbar className="searchBar" animated={true} clearIcon={trashBin} value=""></IonSearchbar>
+                    </div>
+                    <IonButton shape="round" className="upperButton" size="large" fill="outline">
+                        <IonIcon slot="icon-only" icon={personCircleOutline}></IonIcon>
+                    </IonButton>
 
-                        <IonButtons slot="end">
-                            <IonButton shape="round" className="userButton" size="large">
-                                <IonIcon slot="icon-only" icon={personCircleOutline}></IonIcon>
-                            </IonButton>
-                        </IonButtons>
-                    </IonToolbar>
+
                 </IonHeader>
                 <IonContent fullscreen className="content">
                     Hola
                 </IonContent>
-                <IonFooter>
-                    <IonToolbar>
-                        <IonTitle>Botones de abajo</IonTitle>
-                    </IonToolbar>
+                <IonFooter className="iconBar">
+
+                    <div className="downItemContainer">
+                        <IonButton shape="round" size="large" fill="outline" className="downButton">
+                            <IonIcon slot="icon-only" ios={homeOutline}></IonIcon>
+                        </IonButton>
+                        <span>Inicio</span>
+                    </div>
+                    <div className="downItemContainer">
+                        <IonButton shape="round" size="large" fill="outline" className="downButton">
+                            <IonIcon slot="icon-only" ios={starOutline}></IonIcon>
+                        </IonButton>
+                        <span>Favoritos</span>
+                    </div>
+                    <div className="downItemContainer">
+                        <IonButton shape="round" size="large" fill="outline" className="downButton">
+                            <IonIcon slot="icon-only" ios={schoolOutline}> </IonIcon>
+                        </IonButton>
+                        <span>Médicos</span>
+                    </div>
+                    <div className="downItemContainer">
+                        <IonButton shape="round" size="large" fill="outline" className="downButton">
+                            <IonIcon slot="icon-only" ios={fitnessOutline}></IonIcon>
+                        </IonButton>
+                        <span>Tratamiento</span>
+                    </div>
+
                 </IonFooter>
             </IonPage>
         </>
