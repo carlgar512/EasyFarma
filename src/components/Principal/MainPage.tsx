@@ -1,9 +1,17 @@
-import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonMenu, IonMenuButton, IonMenuToggle, IonPage, IonSearchbar, IonTitle, IonToolbar } from "@ionic/react";
-import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, menuOutline, personCircleOutline, schoolOutline, settingsSharp, starOutline, trashBin } from "ionicons/icons";
+import { IonButton, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonMenu,  IonMenuToggle, IonPage, IonSearchbar, IonTitle } from "@ionic/react";
+import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, menuOutline, personCircleOutline, schoolOutline,  starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
 
 
 const MainPage: React.FC = () => {
+     //TODO probar en telf y cambiar numero
+     const handleEmergencyCall = () => {
+        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+          window.location.href = 'tel:+34679761132';
+        } else {
+          alert("Esta función solo está disponible en dispositivos móviles. Llame al +1234567890 si necesita asistencia.");
+        }
+      };
 
     return (
         <>
@@ -40,10 +48,10 @@ const MainPage: React.FC = () => {
                             <IonIcon icon={callOutline}></IonIcon>
                         </IonFabButton>
                         <IonFabList  className="fabList" side="end">
-                            <IonButton color={"success"} shape="round">
+                            <IonButton color={"success"} shape="round" onClick={handleEmergencyCall}>
                                 <IonIcon icon={callOutline} slot="icon-only"></IonIcon>
                             </IonButton>
-                            <span className="emergencyMessage">Llamada de emergencia</span>
+                            <span className="emergencyMessage">¡¡Llamada de emergencia!!</span>
                         </IonFabList>
                     </IonFab>
                 </IonContent>

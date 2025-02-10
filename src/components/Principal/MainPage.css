@@ -69,6 +69,7 @@ ion-menu::part(backdrop) {
 .emergencyMessage{
     font-family: var(--font-primary);
     font-size: small;
+    width: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
