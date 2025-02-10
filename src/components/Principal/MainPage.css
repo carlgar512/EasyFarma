@@ -31,7 +31,6 @@ ion-menu::part(backdrop) {
   }
 
 
-
 .searchBar {
     width: 90%;
 }
@@ -66,3 +65,29 @@ ion-menu::part(backdrop) {
     gap: 5px;
     
 }
+
+.emergencyMessage{
+    font-family: var(--font-primary);
+    font-size: small;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: var(--ion-color-customDark);
+    color: var(--ion-color-customUltraLight);
+    padding: 10px;
+    border-radius: 36px;
+    border: 1px solid var(--ion-color-customUltraLight) ;
+}
+
+.emergencyButton{
+    --background: var(--ion-color-customRed);
+}
+ion-fab-button {
+    --box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+   
+  }
+
+  .fabList{
+    gap: 10px;
+  }

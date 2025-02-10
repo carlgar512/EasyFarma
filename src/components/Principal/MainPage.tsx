@@ -1,5 +1,5 @@
-import { IonButton, IonButtons, IonContent, IonFooter, IonHeader, IonIcon, IonMenu, IonMenuButton, IonMenuToggle, IonPage, IonSearchbar, IonTitle, IonToolbar } from "@ionic/react";
-import { arrowBackOutline, fitnessOutline, homeOutline, menuOutline, personCircleOutline, schoolOutline, settingsSharp, starOutline, trashBin } from "ionicons/icons";
+import { IonButton, IonButtons, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonMenu, IonMenuButton, IonMenuToggle, IonPage, IonSearchbar, IonTitle, IonToolbar } from "@ionic/react";
+import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, menuOutline, personCircleOutline, schoolOutline, settingsSharp, starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
 
 
@@ -35,7 +35,17 @@ const MainPage: React.FC = () => {
 
                 </IonHeader>
                 <IonContent fullscreen className="content">
-                    Hola
+                    <IonFab horizontal="center" vertical="bottom" slot="fixed">
+                        <IonFabButton className="emergencyButton" >
+                            <IonIcon icon={callOutline}></IonIcon>
+                        </IonFabButton>
+                        <IonFabList  className="fabList" side="end">
+                            <IonButton color={"success"} shape="round">
+                                <IonIcon icon={callOutline} slot="icon-only"></IonIcon>
+                            </IonButton>
+                            <span className="emergencyMessage">Llamada de emergencia</span>
+                        </IonFabList>
+                    </IonFab>
                 </IonContent>
                 <IonFooter className="iconBar">
 
