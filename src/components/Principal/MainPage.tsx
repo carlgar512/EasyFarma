@@ -1,6 +1,7 @@
-import { IonButton, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonMenu, IonMenuToggle, IonPage, IonSearchbar, IonTitle } from "@ionic/react";
-import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
+import { IonButton, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
+import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
+
 
 
 const MainPage: React.FC = () => {
@@ -34,13 +35,12 @@ const MainPage: React.FC = () => {
                     </IonMenuToggle>
                     <div className="principalBar">
                         <IonTitle>Inicio</IonTitle>
-                        <IonSearchbar className="searchBar" animated={true} clearIcon={trashBin} value=""></IonSearchbar>
+                        <IonSearchbar className="searchBar" clearIcon={trashBin} value=""></IonSearchbar>
                     </div>
-                    <IonButton shape="round" className="upperButton" size="large" fill="outline">
+                    <IonButton shape="round" className="upperButton" size="large" fill="outline" id="Userpopover-button">
                         <IonIcon slot="icon-only" icon={personCircleOutline}></IonIcon>
                     </IonButton>
-
-
+                    <UserMenu />
                 </IonHeader>
                 <IonContent fullscreen className="content">
                     <IonFab horizontal="center" vertical="bottom" slot="fixed">
@@ -85,6 +85,36 @@ const MainPage: React.FC = () => {
                 </IonFooter>
             </IonPage>
         </>
+
+    );
+};
+
+
+const UserMenu: React.FC = () => {
+   
+    const logOut = () => {
+        window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
+    };
+    
+    //TODO meter las posibles opciones.
+    return (
+
+        <IonPopover trigger="Userpopover-button" dismissOnSelect={true}>
+            <IonContent>
+                <IonList>
+                    <IonItem button={true} detail={false}>
+                        <IonLabel>Op1</IonLabel>
+                    </IonItem>
+                    <IonItem button={true} detail={false} >
+                        <IonLabel>Op2</IonLabel>
+                    </IonItem>
+                    <IonItem color="danger" button={true} detail={false} onClick={logOut} >
+                        <IonLabel>Cerrar sesión</IonLabel>
+                        <IonIcon aria-hidden={true} slot="end" ios={logOutOutline}></IonIcon>
+                    </IonItem>
+                </IonList>
+            </IonContent>
+        </IonPopover>
 
     );
 };
