@@ -6,6 +6,10 @@
     justify-content: center;
 }
 
+.menuHeader{
+    margin-top: 30px;
+    font-size: large;
+}
 
 .principalBar {
     display: flex;

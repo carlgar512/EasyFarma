@@ -1,10 +1,18 @@
 import { IonButton, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
 import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
+import * as icons from 'ionicons/icons';
+import { operations } from "../../features/operations";
+import { useState } from "react";
+import { sortOperations } from "../../features/Operation";
 
-
+const logOut = () => {
+    window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
+};
 
 const MainPage: React.FC = () => {
+
+    const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
     //TODO probar en telf y cambiar numero
     const handleEmergencyCall = () => {
         if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
@@ -24,7 +32,42 @@ const MainPage: React.FC = () => {
                         </IonButton>
                     </IonMenuToggle>
                 </IonHeader>
-                <IonContent className="ion-padding">This is the menu content.</IonContent>
+                <IonContent className="ion-padding">
+                    {orderOperationType.map((operation, index) => {
+                        // Verificar si es el primer elemento o si el tipo ha cambiado
+                        const isFirstOfType = index === 0 || operation.type !== orderOperationType[index - 1].type;
+
+                        return (
+                            <div key={index}>
+                                {/* Encabezado solo cuando cambia el tipo */}
+                                {isFirstOfType &&
+                                    <IonItem button={false}>
+                                        <IonLabel
+                                            className="menuHeader">
+                                            <h1>{operation.type}</h1>
+                                        </IonLabel>
+                                    </IonItem>
+
+                                }
+
+                                {/* Renderización de la operación */}
+                                <IonItem button>
+                                    <IonIcon
+                                        color="success"
+                                        slot="start"
+                                        icon={(icons as Record<string, string>)[operation.icon]}
+                                        size="large"
+                                    />
+                                    <IonLabel >{operation.title}</IonLabel>
+                                </IonItem>
+                            </div>
+                        );
+                    })}
+                    <IonItem button={true} onClick={logOut} >
+                        <IonIcon color="danger" slot="start" ios={logOutOutline} size="large"></IonIcon>
+                        <IonLabel>Cerrar sesión</IonLabel>
+                    </IonItem>
+                </IonContent>
             </IonMenu>
             <IonPage id="main-content">
                 <IonHeader className="headerBar">
@@ -91,11 +134,9 @@ const MainPage: React.FC = () => {
 
 
 const UserMenu: React.FC = () => {
-   
-    const logOut = () => {
-        window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
-    };
-    
+
+
+
     //TODO meter las posibles opciones.
     return (
 
