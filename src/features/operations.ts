@@ -44,7 +44,7 @@ export const operations: Operation[] = [
     {
         id: 6,
         title: "Mi Tratamiento en Curso",
-        description: "",
+        description: "Sigue tu tratamiento en tiempo real y accede a toda la información relevante sobre tu progreso y próximos pasos.",
         type: "Tratamientos",
         icon: "fitnessOutline",
         url: "/current-treatment"

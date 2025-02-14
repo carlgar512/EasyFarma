@@ -1,26 +1,51 @@
-import { IonButton, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
 import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
 import * as icons from 'ionicons/icons';
 import { operations } from "../../features/operations";
-import { useState } from "react";
-import { sortOperations } from "../../features/Operation";
+import { useRef, useState } from "react";
+import { Operation, sortOperations } from "../../features/Operation";
 
 const logOut = () => {
     window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
 };
 
+const handleEmergencyCall = () => {
+    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        window.location.href = 'tel:+34679761132';
+    } else {
+        alert("Esta función solo está disponible en dispositivos móviles. Llame al +1234567890 si necesita asistencia.");
+    }
+};
+
 const MainPage: React.FC = () => {
+
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    const handleMouseDown = (e: React.MouseEvent) => {
+        if (!scrollRef.current) return;
+        setIsDragging(true);
+        setStartX(e.pageX - scrollRef.current.offsetLeft);
+        setScrollLeft(scrollRef.current.scrollLeft);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent) => {
+        if (!isDragging || !scrollRef.current) return;
+        e.preventDefault();
+        const x = e.pageX - scrollRef.current.offsetLeft;
+        scrollRef.current.scrollLeft = scrollLeft - (x - startX);
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
 
     const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
     //TODO probar en telf y cambiar numero
-    const handleEmergencyCall = () => {
-        if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            window.location.href = 'tel:+34679761132';
-        } else {
-            alert("Esta función solo está disponible en dispositivos móviles. Llame al +1234567890 si necesita asistencia.");
-        }
-    };
+
 
     return (
         <>
@@ -43,6 +68,7 @@ const MainPage: React.FC = () => {
                                 {isFirstOfType &&
                                     <IonItem button={false}>
                                         <IonLabel
+                                            color={"medium"}
                                             className="menuHeader">
                                             <h1>{operation.type}</h1>
                                         </IonLabel>
@@ -86,17 +112,29 @@ const MainPage: React.FC = () => {
                     <UserMenu />
                 </IonHeader>
                 <IonContent fullscreen className="content">
-                    <IonFab horizontal="center" vertical="bottom" slot="fixed">
-                        <IonFabButton className="emergencyButton" >
-                            <IonIcon icon={callOutline}></IonIcon>
-                        </IonFabButton>
-                        <IonFabList className="fabList" side="end">
-                            <IonButton color={"success"} shape="round" onClick={handleEmergencyCall}>
-                                <IonIcon icon={callOutline} slot="icon-only"></IonIcon>
-                            </IonButton>
-                            <span className="emergencyMessage">¡¡Llamada de emergencia!!</span>
-                        </IonFabList>
-                    </IonFab>
+                    <div className="contentContainer">
+                        <div
+                            ref={scrollRef}
+                            className="cardOperationContainer"
+                            onMouseDown={handleMouseDown}
+                            onMouseMove={handleMouseMove}
+                            onMouseUp={handleMouseUp}
+                            onMouseLeave={handleMouseUp}
+                        >
+                            {orderOperationType.map((operation, index) => {
+                                return (
+                                    <OperationCard operation={operation} ></OperationCard>
+                                );
+                            })}
+
+
+
+                        </div>
+                        <div>Container de favoritos</div>
+                        <div>Otras Cosas</div>
+                    </div>
+
+                    <EmergecyCall />
                 </IonContent>
                 <IonFooter className="iconBar">
 
@@ -136,19 +174,19 @@ const MainPage: React.FC = () => {
 const UserMenu: React.FC = () => {
 
 
-
+    const perfilOperations = operations.filter(op => op.type === "Perfil");
     //TODO meter las posibles opciones.
     return (
 
         <IonPopover trigger="Userpopover-button" dismissOnSelect={true}>
             <IonContent>
                 <IonList>
-                    <IonItem button={true} detail={false}>
-                        <IonLabel>Op1</IonLabel>
-                    </IonItem>
-                    <IonItem button={true} detail={false} >
-                        <IonLabel>Op2</IonLabel>
-                    </IonItem>
+                    {perfilOperations.map((operation, index) => (
+                        <IonItem button={true} detail={false}>
+                            <IonLabel>{operation.title}</IonLabel>
+                            <IonIcon aria-hidden={true} slot="end" icon={(icons as Record<string, string>)[operation.icon]}></IonIcon>
+                        </IonItem>
+                    ))}
                     <IonItem color="danger" button={true} detail={false} onClick={logOut} >
                         <IonLabel>Cerrar sesión</IonLabel>
                         <IonIcon aria-hidden={true} slot="end" ios={logOutOutline}></IonIcon>
@@ -159,4 +197,59 @@ const UserMenu: React.FC = () => {
 
     );
 };
+
+
+
+interface OperationCardProps {
+    operation: Operation;
+}
+const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
+
+    return (
+
+        <IonCard className="operationCard">
+            <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+            <IonCardHeader>
+
+                <IonCardTitle color={"success"} className="cardTittle">
+                    <IonIcon icon={(icons as Record<string, string>)[operation.icon]} size="large"></IonIcon>
+                    <span className="cardTittleText">{operation.title}</span>
+                    </IonCardTitle>
+            </IonCardHeader>
+
+            <IonCardContent>
+                <span className="cardDescription">
+                    {operation.description}
+                </span>
+            </IonCardContent>
+        </IonCard>
+
+    );
+};
+
+
+
+
+const EmergecyCall: React.FC = () => {
+
+    return (
+
+        <IonFab horizontal="center" vertical="bottom" slot="fixed">
+            <IonFabButton className="emergencyButton" >
+                <IonIcon icon={callOutline}></IonIcon>
+            </IonFabButton>
+            <IonFabList className="fabList" side="end">
+                <IonButton color={"success"} shape="round" onClick={handleEmergencyCall}>
+                    <IonIcon icon={callOutline} slot="icon-only"></IonIcon>
+                </IonButton>
+                <span className="emergencyMessage">¡¡Llamada de emergencia!!</span>
+            </IonFabList>
+        </IonFab>
+
+    );
+};
+
+
+
+
 export default MainPage;
