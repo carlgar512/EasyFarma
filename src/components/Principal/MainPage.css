@@ -126,41 +126,64 @@ ion-fab-button {
     min-width: 250px;
     height: 380px;
     display: flex;
-    flex-direction:column ;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    user-select: none; /* Evita la selección de texto */
-    -webkit-user-select: none; /* Para navegadores basados en WebKit */
-    -moz-user-select: none; /* Para Firefox */
-    -ms-user-select: none; /* Para Internet Explorer/Edge */
-    text-decoration: none; /* Evita subrayados en enlaces */
-    
+    user-select: none;
+    /* Evita la selección de texto */
+    -webkit-user-select: none;
+    /* Para navegadores basados en WebKit */
+    -moz-user-select: none;
+    /* Para Firefox */
+    -ms-user-select: none;
+    /* Para Internet Explorer/Edge */
+    text-decoration: none;
+    /* Evita subrayados en enlaces */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+        scale: 1.02;
+
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+    }
+
+
 }
 
-.cardTittle{
+.cardHeader {
+    width: 100%;
+}
+
+.cardTittle {
     display: flex;
     text-align: center;
     flex-direction: column;
     justify-content: center;
-    align-items: center; 
-    gap: 10px; 
-   
+    width: 100%;
+    gap: 10px;
+
 }
-.cardTittleText{
+
+.cardTittleText {
     font-size: large;
 }
-.cardDescription{
+
+.cardDescription {
     display: flex;
-    text-align: initial;
+    text-align: justify;
+    hyphens: auto;
     justify-content: center;
     align-items: center;
     color: var(--ion-color-customMedium);
     font-size: small;
 }
-.cardImage{
+
+.cardImage {
     max-height: 100px;
-    pointer-events: none; 
-    
+    pointer-events: none;
+
 }
 
 ::-webkit-scrollbar {

@@ -22,7 +22,7 @@ export const operations: Operation[] = [
     {
         id: 3,
         title: "Historial de Citas",
-        description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado",
+        description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado.",
         type: "Citas",
         icon: "calendarOutline",
         url: "/appointment-history",

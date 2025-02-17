@@ -208,15 +208,20 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
     return (
 
         <IonCard className="operationCard">
-               <IonCardHeader>
+            <IonFab vertical="top" horizontal="end" >
+                <IonButton shape="round" color="success" fill="clear" size="default" type="button">
+                    <IonIcon  slot="icon-only"color="success" icon={icons.heartOutline}></IonIcon>
+                </IonButton>
+            </IonFab>
+            <IonCardHeader className="cardHeader">
 
-<IonCardTitle color={"success"} className="cardTittle">
-    <IonIcon icon={(icons as Record<string, string>)[operation.icon]} size="large"></IonIcon>
-    <span className="cardTittleText">{operation.title}</span>
-    </IonCardTitle>
-</IonCardHeader>
-            <img  className= "cardImage" alt={`/${operation.img}`}  src= {`/${operation.img}`} />
-         
+                <IonCardTitle color={"success"} className="cardTittle">
+                    <IonIcon icon={(icons as Record<string, string>)[operation.icon]} size="large"></IonIcon>
+                    <span className="cardTittleText">{operation.title}</span>
+                </IonCardTitle>
+            </IonCardHeader>
+            <img className="cardImage" alt={`/${operation.img}`} src={`/${operation.img}`} />
+
 
             <IonCardContent>
                 <span className="cardDescription">
