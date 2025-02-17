@@ -7,6 +7,7 @@ export interface Operation {
     type: "Perfil" | "Citas" | "Medicos" | "Familia" | "Tratamientos";  // Categoría
     icon:  string;  // Icono representado con IonIcon
     url: string;  // Ruta en inglés basada en el título
+    img: string;
 }
 
 /**
