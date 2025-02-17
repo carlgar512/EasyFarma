@@ -113,26 +113,75 @@ const MainPage: React.FC = () => {
                 </IonHeader>
                 <IonContent fullscreen className="content">
                     <div className="contentContainer">
-                        <div
-                            ref={scrollRef}
-                            className="cardOperationContainer"
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                            onMouseLeave={handleMouseUp}
-                        >
-                            {orderOperationType.map((operation, index) => {
-                                return (
-                                    <OperationCard operation={operation} ></OperationCard>
-                                );
-                            })}
+                        <div className="sectionContainer">
+                            <div className="sectionTitle">
+                                <IonIcon
+                                    color="success"
+                                    slot="start"
+                                    icon={icons.rocketOutline}
+                                    size="large"
+                                />
+                                <span className="sectionTitleText">Gestiona tus Operaciones de Manera Eficiente</span>
+                            </div>
+
+                            <div
+                                ref={scrollRef}
+                                className="cardOperationContainer"
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                            >
+                                {orderOperationType.map((operation, index) => {
+                                    return (
+                                        <OperationCard operation={operation} ></OperationCard>
+                                    );
+                                })}
 
 
 
+                            </div>
                         </div>
-                        <div>Container de favoritos</div>
-                        <div>Otras Cosas</div>
+                        <div className="sectionContainer">
+                            <div className="sectionTitle">
+                                <IonIcon
+                                    color="success"
+                                    slot="start"
+                                    icon={icons.heartCircleOutline}
+                                    size="large"
+                                />
+                                <span className="sectionTitleText">Operaciones Favoritas</span>
+                            </div>
+                        </div>
+                        <div className="sectionContainer">
+
+                            <div className="sectionTitle">
+                                <IonIcon
+                                    color="success"
+                                    slot="start"
+                                    icon={starOutline}
+                                    size="large"
+                                />
+                                <span className="sectionTitleText">Tus esenciales</span>
+                            </div>
+                        </div>
+
+                        <div className="sectionContainer">
+
+                            <div className="sectionTitle">
+                                <IonIcon
+                                    color="success"
+                                    slot="start"
+                                    icon={callOutline}
+                                    size="large"
+                                />
+                                <span className="sectionTitleText">Asistencia Directa</span>
+                            </div>
+                        </div>
                     </div>
+
+
+
 
                     <EmergecyCall />
                 </IonContent>
@@ -210,7 +259,7 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
         <IonCard className="operationCard">
             <IonFab vertical="top" horizontal="end" >
                 <IonButton shape="round" color="success" fill="clear" size="default" type="button">
-                    <IonIcon  slot="icon-only"color="success" icon={icons.heartOutline}></IonIcon>
+                    <IonIcon slot="icon-only" color="success" icon={icons.heartOutline}></IonIcon>
                 </IonButton>
             </IonFab>
             <IonCardHeader className="cardHeader">
