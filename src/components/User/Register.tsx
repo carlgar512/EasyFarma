@@ -11,6 +11,7 @@ import {
   IonIcon,
   IonDatetime,
   IonSpinner,
+  IonImg,
 } from "@ionic/react";
 import "./Register.css"; // Importa el archivo CSS
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
@@ -142,6 +143,7 @@ const Register: React.FC = () => {
    
         <IonContent fullscreen className="content">
           <div className="form-container">
+            <IonImg src="/register.svg"></IonImg>
             <div className="form-card">
               <IonItem className="form-item">
                 <label className="form-label">Nombre:</label>

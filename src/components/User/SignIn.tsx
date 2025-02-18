@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -91,6 +91,7 @@ const SignIn: React.FC = () => {
       </div> :
             <IonContent fullscreen className="contentSes">
                 <div className="form-containerSes">
+                    <IonImg className="sesImg" src="/signIn.svg"></IonImg>
                     <div className="form-cardSes">
                         <IonItem className="form-itemSes">
                             <label className="form-labelSes">DNI:</label>

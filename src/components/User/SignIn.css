@@ -68,12 +68,23 @@
   }
 
   .form-containerSes {
-    margin-top: 20px;
+  
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
+    gap: 10px;
+    flex-direction: column;
   }
+
+  .sesImg{
+    padding:20px;
+    max-width: 300px;
+    background: whitesmoke;
+    border-radius: 36px;
+  }
+
+
 
   .form-cardSes {
     display: flex;

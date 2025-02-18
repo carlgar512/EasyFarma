@@ -1,4 +1,4 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
 import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
 import "./MainPage.css";
 import * as icons from 'ionicons/icons';
@@ -121,7 +121,7 @@ const MainPage: React.FC = () => {
                                     icon={icons.rocketOutline}
                                     size="large"
                                 />
-                                <span className="sectionTitleText">Gestiona tus Operaciones de Manera Eficiente</span>
+                                <span className="sectionTitleText">Gestiona tus Operaciones de Forma Eficiente</span>
                             </div>
 
                             <div
@@ -253,23 +253,28 @@ interface OperationCardProps {
     operation: Operation;
 }
 const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
+    const [isLiked, setIsLiked] = useState(false);
+
+    const toggleLike = () => {
+      setIsLiked(!isLiked);
+    };
 
     return (
 
         <IonCard className="operationCard">
             <IonFab vertical="top" horizontal="end" >
-                <IonButton shape="round" color="success" fill="clear" size="default" type="button">
-                    <IonIcon slot="icon-only" color="success" icon={icons.heartOutline}></IonIcon>
+                <IonButton shape="round" color="success" fill={isLiked ? "outline" : "clear"} size="default" type="button"  onClick={toggleLike}>
+                    <IonIcon slot="icon-only" color="success" icon={isLiked ? icons.heartSharp : icons.heartOutline}></IonIcon>
                 </IonButton>
             </IonFab>
             <IonCardHeader className="cardHeader">
 
-                <IonCardTitle color={"success"} className="cardTittle">
+                <IonCardTitle  color="success" className="cardTittle">
                     <IonIcon icon={(icons as Record<string, string>)[operation.icon]} size="large"></IonIcon>
                     <span className="cardTittleText">{operation.title}</span>
                 </IonCardTitle>
             </IonCardHeader>
-            <img className="cardImage" alt={`/${operation.img}`} src={`/${operation.img}`} />
+            <IonImg className="cardImage" alt={`/${operation.img}`} src={`/${operation.img}`} />
 
 
             <IonCardContent>

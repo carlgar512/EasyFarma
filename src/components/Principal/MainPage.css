@@ -193,6 +193,7 @@ width: 95%;
 }
 
 .cardTittle {
+    
     display: flex;
     text-align: center;
     flex-direction: column;
@@ -203,6 +204,7 @@ width: 95%;
 }
 
 .cardTittleText {
+    color: var(--ion-color-customDark)!important;
     font-size: large;
 }
 
