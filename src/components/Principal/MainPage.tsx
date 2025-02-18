@@ -5,6 +5,7 @@ import * as icons from 'ionicons/icons';
 import { operations } from "../../features/operations";
 import { useRef, useState } from "react";
 import { Operation, sortOperations } from "../../features/Operation";
+import ConfirmDialog from "../Common/ConfirmDialog";
 
 const logOut = () => {
     window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
@@ -58,7 +59,7 @@ const MainPage: React.FC = () => {
                     </IonMenuToggle>
                 </IonHeader>
                 <IonContent className="ion-padding">
-                    
+
                     {orderOperationType.map((operation, index) => {
                         // Verificar si es el primer elemento o si el tipo ha cambiado
                         const isFirstOfType = index === 0 || operation.type !== orderOperationType[index - 1].type;
@@ -255,39 +256,69 @@ interface OperationCardProps {
 }
 const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
     const [isLiked, setIsLiked] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+
+
 
     const toggleLike = () => {
-      setIsLiked(!isLiked);
+        if (isLiked) {
+            setShowConfirm(true)
+        }
+        else {
+            setIsLiked(!isLiked);
+        }
     };
+
+    const removeLiked = () => {
+        setIsLiked(!isLiked);
+        setShowConfirm(false)
+    }
 
     const redirectTo = () => {
         window.location.assign(operation.url); // Reemplaza la URL actual y borra el historial
     };
 
     return (
+        <>
+            <IonCard className="operationCard" type="button" onClick={redirectTo}>
+                <IonFab vertical="top" horizontal="end" >
+                    <IonButton
+                        shape="round"
+                        color="success"
+                        fill={isLiked ? "outline" : "clear"}
+                        size="default"
+                        type="button"
+                        onClick={(event) => {
+                            event.stopPropagation(); // Evita que el click se propague al IonCard
+                            toggleLike();
+                        }}>
+                        <IonIcon slot="icon-only" color="success" icon={isLiked ? icons.heartSharp : icons.heartOutline}></IonIcon>
+                    </IonButton>
+                </IonFab>
+                <IonCardHeader className="cardHeader">
 
-        <IonCard className="operationCard" type="button" onClick={redirectTo}>
-            <IonFab vertical="top" horizontal="end" >
-                <IonButton shape="round" color="success" fill={isLiked ? "outline" : "clear"} size="default" type="button"  onClick={toggleLike}>
-                    <IonIcon slot="icon-only" color="success" icon={isLiked ? icons.heartSharp : icons.heartOutline}></IonIcon>
-                </IonButton>
-            </IonFab>
-            <IonCardHeader className="cardHeader">
-
-                <IonCardTitle  color="success" className="cardTittle">
-                    <IonIcon icon={(icons as Record<string, string>)[operation.icon]} size="large"></IonIcon>
-                    <span className="cardTittleText">{operation.title}</span>
-                </IonCardTitle>
-            </IonCardHeader>
-            <IonImg className="cardImage" alt={`/${operation.img}`} src={`/${operation.img}`} />
+                    <IonCardTitle color="success" className="cardTittle">
+                        <IonIcon icon={(icons as Record<string, string>)[operation.icon]} size="large"></IonIcon>
+                        <span className="cardTittleText">{operation.title}</span>
+                    </IonCardTitle>
+                </IonCardHeader>
+                <IonImg className="cardImage" alt={`/${operation.img}`} src={`/${operation.img}`} />
 
 
-            <IonCardContent>
-                <span className="cardDescription">
-                    {operation.description}
-                </span>
-            </IonCardContent>
-        </IonCard>
+                <IonCardContent>
+                    <span className="cardDescription">
+                        {operation.description}
+                    </span>
+                </IonCardContent>
+            </IonCard>
+            <ConfirmDialog
+                isOpen={showConfirm}
+                title="Eliminar elemento"
+                message="¿Estás seguro de que quieres eliminar este elemento? Esta acción no se puede deshacer."
+                onConfirm={removeLiked}
+                onCancel={() => setShowConfirm(false)}
+            />
+        </>
 
     );
 };
