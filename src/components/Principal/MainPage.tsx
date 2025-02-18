@@ -58,6 +58,7 @@ const MainPage: React.FC = () => {
                     </IonMenuToggle>
                 </IonHeader>
                 <IonContent className="ion-padding">
+                    
                     {orderOperationType.map((operation, index) => {
                         // Verificar si es el primer elemento o si el tipo ha cambiado
                         const isFirstOfType = index === 0 || operation.type !== orderOperationType[index - 1].type;
@@ -134,7 +135,7 @@ const MainPage: React.FC = () => {
                             >
                                 {orderOperationType.map((operation, index) => {
                                     return (
-                                        <OperationCard operation={operation} ></OperationCard>
+                                        <OperationCard operation={operation} key={operation.id} ></OperationCard>
                                     );
                                 })}
 
@@ -231,7 +232,7 @@ const UserMenu: React.FC = () => {
             <IonContent>
                 <IonList>
                     {perfilOperations.map((operation, index) => (
-                        <IonItem button={true} detail={false}>
+                        <IonItem button={true} detail={false} key={index}>
                             <IonLabel>{operation.title}</IonLabel>
                             <IonIcon aria-hidden={true} slot="end" icon={(icons as Record<string, string>)[operation.icon]}></IonIcon>
                         </IonItem>
@@ -259,9 +260,13 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
       setIsLiked(!isLiked);
     };
 
+    const redirectTo = () => {
+        window.location.assign(operation.url); // Reemplaza la URL actual y borra el historial
+    };
+
     return (
 
-        <IonCard className="operationCard">
+        <IonCard className="operationCard" type="button" onClick={redirectTo}>
             <IonFab vertical="top" horizontal="end" >
                 <IonButton shape="round" color="success" fill={isLiked ? "outline" : "clear"} size="default" type="button"  onClick={toggleLike}>
                     <IonIcon slot="icon-only" color="success" icon={isLiked ? icons.heartSharp : icons.heartOutline}></IonIcon>

@@ -46,6 +46,7 @@ import Register from './components/User/Register';
 import Lobby from './components/Menu/Lobby';
 import SignIn from './components/User/SignIn';
 import MainPage from './components/Principal/MainPage';
+import Profile from './components/User/Profile';
 
 
 setupIonicReact();
@@ -66,6 +67,9 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/principal">
             <MainPage />
+          </Route>
+          <Route exact path="/profile">
+            <Profile />
           </Route>
           <Route exact path="/">
             <Redirect to="/lobby" />

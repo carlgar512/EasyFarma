@@ -193,7 +193,7 @@ width: 95%;
 }
 
 .cardTittle {
-    
+    font-weight: medium;
     display: flex;
     text-align: center;
     flex-direction: column;
