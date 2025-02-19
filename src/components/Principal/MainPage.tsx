@@ -313,8 +313,9 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
             </IonCard>
             <ConfirmDialog
                 isOpen={showConfirm}
-                title="Eliminar elemento"
-                message="¿Estás seguro de que quieres eliminar este elemento? Esta acción no se puede deshacer."
+                title="Descartar operación de favoritos"
+                message={`¿Estás seguro de que deseas eliminar la operación ${operation.title} de tus favoritos? Podrás volver a añadirlo más tarde si lo deseas.`}
+                img= "/doubleCheckFavourite.svg"
                 onConfirm={removeLiked}
                 onCancel={() => setShowConfirm(false)}
             />

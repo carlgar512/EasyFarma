@@ -1,29 +1,38 @@
-import { IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonContent, IonText, IonFooter } from "@ionic/react";
-
+import { IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonContent, IonText, IonFooter, IonImg, IonIcon } from "@ionic/react";
+import "./ConfirmDialog.css";
+import { warningOutline } from "ionicons/icons";
 interface ConfirmDialogProps {
     isOpen: boolean;
     title?: string;
     message: string;
-    onConfirm: () => void;  // 👈 Permitir evento opcional
-    onCancel:  () => void;   // 👈 Permitir evento opcional
+    img: string;
+    onConfirm: () => void;
+    onCancel: () => void;
 }
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title = "Confirmar acción", message, onConfirm, onCancel }) => {
+const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title = "Confirmar acción", message, img, onConfirm, onCancel }) => {
     return (
-        <IonModal isOpen={isOpen} onDidDismiss={onCancel}>
+        <IonModal isOpen={isOpen} onDidDismiss={onCancel} >
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>{title}</IonTitle>
+                    <div className="dialogTittleContainer">
+                        <IonIcon color="warning" size="large" icon={warningOutline}></IonIcon>
+                        <IonTitle className="dialogTittle">{title}</IonTitle>
+                    </div>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                <IonText>{message}</IonText>
+                <div className="dialogContainer">
+                    <IonText className="dialogText">{message}</IonText>
+                    <IonImg className="dialogImg" src={img} />
+                </div>
+
             </IonContent>
             <IonFooter className="ion-padding">
-                <IonButton expand="full" color="danger" onClick={onConfirm}>
+                <IonButton className="confirmButton" shape="round" expand="block" onClick={onConfirm}>
                     Confirmar
                 </IonButton>
-                <IonButton expand="full" color="medium" onClick={onCancel}>
+                <IonButton className="cancelButton" shape="round" expand="block" color="danger" onClick={onCancel}>
                     Cancelar
                 </IonButton>
             </IonFooter>
