@@ -1,11 +1,13 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
 import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
-import "./MainPage.css";
+import "./PaginaPrincipal.css";
 import * as icons from 'ionicons/icons';
 import { operations } from "../../features/operations";
 import { useRef, useState } from "react";
 import { Operation, sortOperations } from "../../features/Operation";
-import ConfirmDialog from "../Common/ConfirmDialog";
+
+import React from "react";
+import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 
 const logOut = () => {
     window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
@@ -19,7 +21,7 @@ const handleEmergencyCall = () => {
     }
 };
 
-const MainPage: React.FC = () => {
+const PaginaPrincipal: React.FC = () => {
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -311,7 +313,7 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
                     </span>
                 </IonCardContent>
             </IonCard>
-            <ConfirmDialog
+            <DobleConfirmacion
                 isOpen={showConfirm}
                 title="Descartar operación de favoritos"
                 message={`¿Estás seguro de que deseas eliminar la operación ${operation.title} de tus favoritos? Podrás volver a añadirlo más tarde si lo deseas.`}
@@ -349,4 +351,4 @@ const EmergecyCall: React.FC = () => {
 
 
 
-export default MainPage;
+export default PaginaPrincipal;

@@ -10,7 +10,7 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
+
 
 
 /* Core CSS required for Ionic components to work properly */
@@ -42,11 +42,13 @@ import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import Register from './components/User/Register';
-import Lobby from './components/Menu/Lobby';
-import SignIn from './components/User/SignIn';
-import MainPage from './components/Principal/MainPage';
-import Profile from './components/User/Profile';
+import Registro from './components/registro/Registro';
+import Lobby from './components/lobby/Lobby';
+import IniciarSesion from './components/iniciarSesion/IniciarSesion';
+
+import React from 'react';
+import PaginaPrincipal from './components/paginaPrincipal/PaginaPrincipal';
+import PerfilYPreferencias from './components/perfil&Preferencias/PerfilYPreferencias';
 
 
 setupIonicReact();
@@ -57,19 +59,19 @@ const App: React.FC = () => (
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/register">
-            <Register />
+            <Registro />
           </Route>
           <Route exact path="/lobby">
             <Lobby />
           </Route>
           <Route exact path="/signIn">
-            <SignIn />
+            <IniciarSesion />
           </Route>
           <Route exact path="/principal">
-            <MainPage />
+            <PaginaPrincipal />
           </Route>
           <Route exact path="/profile">
-            <Profile />
+            <PerfilYPreferencias />
           </Route>
           <Route exact path="/">
             <Redirect to="/lobby" />

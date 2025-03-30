@@ -1,6 +1,7 @@
 import { IonPage } from "@ionic/react";
+import React from "react";
 
-const Profile: React.FC = () => { 
+const PerfilYPreferencias: React.FC = () => { 
     return(
         <IonPage>
             Hola
@@ -9,4 +10,4 @@ const Profile: React.FC = () => {
 
 };
 
-export default Profile;
+export default PerfilYPreferencias;

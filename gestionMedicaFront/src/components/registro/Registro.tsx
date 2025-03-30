@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import {  useState } from "react";
 import {
   IonButton,
   IonContent,
@@ -13,12 +13,13 @@ import {
   IonSpinner,
   IonImg,
 } from "@ionic/react";
-import "./Register.css"; // Importa el archivo CSS
+import "./Registro.css"; // Importa el archivo CSS
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
 import { registerUser } from "../../services/authService";
+import React from "react";
 
-const Register: React.FC = () => {
+const Registro: React.FC = () => {
   const [form, setForm] = useState({
     name: "",
     lastName: "",
@@ -287,4 +288,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register;
+export default Registro;

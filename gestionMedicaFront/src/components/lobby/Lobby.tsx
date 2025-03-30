@@ -3,6 +3,7 @@ import "./Lobby.css";
 import { callOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useHistory } from 'react-router-dom';
 import { useEffect } from "react";
+import React from "react";
 
 const Lobby: React.FC = () => {
     const history = useHistory();
@@ -16,7 +17,6 @@ const Lobby: React.FC = () => {
     useEffect(() => {
         history.replace("/lobby"); // Reemplaza la historia actual con /lobby
     }, [history]);
-
 
     //TODO probar en telf y cambiar numero
     const handleEmergencyCall = () => {

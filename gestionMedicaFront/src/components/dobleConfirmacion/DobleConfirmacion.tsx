@@ -1,16 +1,11 @@
 import { IonButton, IonModal, IonHeader, IonToolbar, IonTitle, IonContent, IonText, IonFooter, IonImg, IonIcon } from "@ionic/react";
-import "./ConfirmDialog.css";
+import "./DobleConfirmacion.css";
 import { warningOutline } from "ionicons/icons";
-interface ConfirmDialogProps {
-    isOpen: boolean;
-    title?: string;
-    message: string;
-    img: string;
-    onConfirm: () => void;
-    onCancel: () => void;
-}
+import React from "react";
+import { DobleConfirmacionProps } from "./DobleConfirmacionInterfaces";
 
-const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title = "Confirmar acción", message, img, onConfirm, onCancel }) => {
+
+const DobleConfirmacion: React.FC<DobleConfirmacionProps> = ({ isOpen, title = "Confirmar acción", message, img, onConfirm, onCancel }) => {
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onCancel} >
             <IonHeader>
@@ -40,4 +35,4 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title = "Confirma
     );
 };
 
-export default ConfirmDialog;
+export default DobleConfirmacion;

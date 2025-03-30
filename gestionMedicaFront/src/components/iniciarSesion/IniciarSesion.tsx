@@ -2,11 +2,12 @@ import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, I
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import "./SignIn.css";
+import "./IniciarSesion.css";
 import { loginUserWithDNI } from "../../services/authService";
+import React from "react";
 
 
-const SignIn: React.FC = () => {
+const IniciarSesion: React.FC = () => {
 
 
     const [form, setForm] = useState({
@@ -161,4 +162,4 @@ const SignIn: React.FC = () => {
         </IonPage>
     );
 };
-export default SignIn;
+export default IniciarSesion;
