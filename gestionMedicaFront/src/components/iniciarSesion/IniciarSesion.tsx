@@ -3,11 +3,28 @@ import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, pe
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./IniciarSesion.css";
-import { loginUserWithDNI } from "../../services/authService";
+
 import React from "react";
 
-
 const IniciarSesion: React.FC = () => {
+
+    const loginWithDNI = async (dni: string, password: string) => {
+        const response = await fetch("http://localhost:5001/easyfarma-5ead7/us-central1/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ dni, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Error al iniciar sesión");
+        }
+
+        return data;
+    };
 
 
     const [form, setForm] = useState({
@@ -48,7 +65,7 @@ const IniciarSesion: React.FC = () => {
         setLoadSpinner(true);
         console.log("Iniciando sesion...", form);
 
-        const response = await loginUserWithDNI(form.dni, form.password);
+        const response = await loginWithDNI(form.dni, form.password);
         setLoadSpinner(false);
         if (response.success) {
             setToastMessage("Sesión iniciada correctamente");
@@ -56,13 +73,13 @@ const IniciarSesion: React.FC = () => {
             setShowToast(true);
             setTimeout(() => {
                 history.replace('/principal');
-              }, 1000);
+            }, 1000);
         } else {
-            setToastMessage("Error al iniciar sesion:"+ response.error);
+            setToastMessage("Error al iniciar sesion:" + response.error);
             setIsSuccessToast(false);
             setShowToast(true);
         }
-       
+
     };
 
 
@@ -82,83 +99,83 @@ const IniciarSesion: React.FC = () => {
                     </div>
                 </IonToolbar>
             </IonHeader>
-    {loadSpinner ? 
-      <div className="content">
-        <div className="spinnerBackground">
-          <IonSpinner name="circular" className="spinner"></IonSpinner> 
-          <span className="mensajeSpinner">Estamos preparando todo para ti... ¡Casi listo!</span>
-        </div>
-          
-      </div> :
-            <IonContent fullscreen className="contentSes">
-                <div className="form-containerSes">
-                    <IonImg className="sesImg" src="/signIn.svg"></IonImg>
-                    <div className="form-cardSes">
-                        <IonItem className="form-itemSes">
-                            <label className="form-labelSes">DNI:</label>
-                            <IonInput
-                                color={"success"}
-                                placeholder="Escribe tu DNI"
-                                name="dni"
-                                value={form.dni}
-                                onIonChange={handleChange}
-                                clearInput={true}
-                            />
-                        </IonItem>
-                        <IonItem className="form-item">
-                            <label className="form-label">Contraseña:</label>
-                            <IonInput
-                                color={"success"}
-                                placeholder="Contraseña"
-                                name="password"
-                                type="password"
-                                value={form.password}
-                                onIonChange={handleChange}
-                                clearInput={true}
-                            />
-                        </IonItem>
-                        <IonButton
-                            expand="block"
-                            shape="round"
-                            size="default"
-                            className="ion-margin-top custom-buttonSes"
-                            onClick={handleSubmit}
-                        >
-                            <IonIcon icon={personOutline} slot="start"></IonIcon>
-                            Iniciar sesion
-                        </IonButton>
-
-                        <IonButton
-                            onClick={handleRegisterClick}
-                            expand="block"
-                            shape="round"
-                            size="default"
-                            className="ion-margin-top custom-button2Ses"
-                        >
-                            <IonIcon icon={personAddOutline} slot="start"></IonIcon>
-                            ¿No esta registrado?, Nueva cuenta
-                        </IonButton>
-
-                        <IonToast
-                            icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
-                            color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
-                            isOpen={showToast}
-                            onDidDismiss={() => setShowToast(false)}
-                            message={toastMessage}
-                            duration={2000}
-                            swipeGesture="vertical"
-                            buttons={[
-                                {
-                                    text: 'Descartar',
-                                    role: 'cancel',
-                                },
-                            ]}
-                        />
-
+            {loadSpinner ?
+                <div className="content">
+                    <div className="spinnerBackground">
+                        <IonSpinner name="circular" className="spinner"></IonSpinner>
+                        <span className="mensajeSpinner">Estamos preparando todo para ti... ¡Casi listo!</span>
                     </div>
-                </div>
-            </IonContent>
-}
+
+                </div> :
+                <IonContent fullscreen className="contentSes">
+                    <div className="form-containerSes">
+                        <IonImg className="sesImg" src="/signIn.svg"></IonImg>
+                        <div className="form-cardSes">
+                            <IonItem className="form-itemSes">
+                                <label className="form-labelSes">DNI:</label>
+                                <IonInput
+                                    color={"success"}
+                                    placeholder="Escribe tu DNI"
+                                    name="dni"
+                                    value={form.dni}
+                                    onIonChange={handleChange}
+                                    clearInput={true}
+                                />
+                            </IonItem>
+                            <IonItem className="form-item">
+                                <label className="form-label">Contraseña:</label>
+                                <IonInput
+                                    color={"success"}
+                                    placeholder="Contraseña"
+                                    name="password"
+                                    type="password"
+                                    value={form.password}
+                                    onIonChange={handleChange}
+                                    clearInput={true}
+                                />
+                            </IonItem>
+                            <IonButton
+                                expand="block"
+                                shape="round"
+                                size="default"
+                                className="ion-margin-top custom-buttonSes"
+                                onClick={handleSubmit}
+                            >
+                                <IonIcon icon={personOutline} slot="start"></IonIcon>
+                                Iniciar sesion
+                            </IonButton>
+
+                            <IonButton
+                                onClick={handleRegisterClick}
+                                expand="block"
+                                shape="round"
+                                size="default"
+                                className="ion-margin-top custom-button2Ses"
+                            >
+                                <IonIcon icon={personAddOutline} slot="start"></IonIcon>
+                                ¿No esta registrado?, Nueva cuenta
+                            </IonButton>
+
+                            <IonToast
+                                icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
+                                color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
+                                isOpen={showToast}
+                                onDidDismiss={() => setShowToast(false)}
+                                message={toastMessage}
+                                duration={2000}
+                                swipeGesture="vertical"
+                                buttons={[
+                                    {
+                                        text: 'Descartar',
+                                        role: 'cancel',
+                                    },
+                                ]}
+                            />
+
+                        </div>
+                    </div>
+                </IonContent>
+            }
         </IonPage>
     );
 };

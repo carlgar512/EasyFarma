@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import {
   IonButton,
   IonContent,
@@ -16,10 +16,40 @@ import {
 import "./Registro.css"; // Importa el archivo CSS
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
-import { registerUser } from "../../services/authService";
 import React from "react";
 
 const Registro: React.FC = () => {
+
+  const register = async (userData: {
+    name: string;
+    lastName: string;
+    dni: string;
+    email: string;
+    dateNac: string;
+    password: string;
+  }) => {
+    const response = await fetch(
+      "http://localhost:5001/easyfarma-5ead7/us-central1/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(userData)
+      }
+    );
+
+    const data = await response.json();
+    console.log(data);
+
+    if (!response.ok) {
+      throw new Error(data.error || "Error al registrar usuario");
+    }
+
+    return data;
+  };
+
+
   const [form, setForm] = useState({
     name: "",
     lastName: "",
@@ -47,7 +77,7 @@ const Registro: React.FC = () => {
 
   };
 
- 
+
   const handleLoginClick = () => {
     history.replace('/signIn')
   };
@@ -87,16 +117,16 @@ const Registro: React.FC = () => {
     setLoadSpinner(true);
     console.log("Registrando usuario:", form);
 
-    const response = await registerUser(
-      {
-        name: form.name,
-        lastName: form.lastName,
-        dni: form.dni,
-        email: form.email,
-        dateNac: form.dateNac,
-      },
-      form.password
-    );
+    const response = await register({
+      name: form.name,
+      lastName: form.lastName,
+      dni: form.dni,
+      email: form.email,
+      dateNac: form.dateNac,
+      password: form.password
+    });
+     
+    console.log(response);
     setLoadSpinner(false);
     if (response.success) {
       setToastMessage("Registro exitoso");
@@ -133,15 +163,15 @@ const Registro: React.FC = () => {
         </IonToolbar>
       </IonHeader>
 
-      {loadSpinner ? 
-      <div className="content">
-        <div className="spinnerBackground">
-          <IonSpinner name="circular" className="spinner"></IonSpinner> 
-          <span className="mensajeSpinner">Estamos preparando todo para ti... ¡Casi listo!</span>
-        </div>
-          
-      </div> :
-   
+      {loadSpinner ?
+        <div className="content">
+          <div className="spinnerBackground">
+            <IonSpinner name="circular" className="spinner"></IonSpinner>
+            <span className="mensajeSpinner">Estamos preparando todo para ti... ¡Casi listo!</span>
+          </div>
+
+        </div> :
+
         <IonContent fullscreen className="content">
           <div className="form-container">
             <IonImg src="/register.svg"></IonImg>

@@ -2,12 +2,12 @@ import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCon
 import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
 import "./PaginaPrincipal.css";
 import * as icons from 'ionicons/icons';
-import { operations } from "../../features/operations";
 import { useRef, useState } from "react";
-import { Operation, sortOperations } from "../../features/Operation";
 
+import {operations} from "../../shared/operations";
 import React from "react";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import { Operation, sortOperations } from "../../shared/interfaces/Operation";
 
 const logOut = () => {
     window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial

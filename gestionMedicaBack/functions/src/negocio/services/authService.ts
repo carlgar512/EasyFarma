@@ -1,0 +1,83 @@
+import { saveUserToFirestore, getEmailByDNI, getUserById } from "../../persistencia/repositorios/userDAO";
+import { auth } from "../../presentacion/config/firebaseConfig";
+import { logger } from "../../presentacion/config/logger";
+import { Usuario } from "../modelos/Usuario";
+
+/**
+ * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore
+ */
+export const registerUser = async (userData: Omit<Usuario, "uid">, password: string) => {
+  try {
+    console.log("➡️ Registrando usuario:", userData.email);
+
+    const userRecord = await auth.createUser({
+      email: userData.email,
+      password: password,
+    });
+
+    console.log("✅ Usuario creado en Firebase Auth:", userRecord.uid);
+
+    const user: Usuario = {
+      uid: userRecord.uid,
+      ...userData,
+    };
+
+    console.log("📝 Guardando en Firestore:", user.uid);
+    await saveUserToFirestore(user);
+
+    console.log("✅ Usuario guardado en Firestore:", user.uid);
+
+    return user;
+  } catch (error: any) {
+    console.error("❌ Error en registerUser:", error.message);
+    throw error;
+  }
+};
+
+
+/**
+ * Busca un usuario por DNI y devuelve su información desde Firebase Auth
+ */
+export const loginUserWithDNI = async (dni: string, password: any) => {
+  try {
+    logger.debug(`🔍 Buscando email por DNI: ${dni}`);
+    const email = await getEmailByDNI(dni);
+    if (!email) {
+      logger.warn(`⚠ No se encontró un usuario con DNI: ${dni}`);
+      throw new Error("DNI no encontrado");
+    }
+
+    const userRecord = await auth.getUserByEmail(email);
+    logger.info(`✅ Usuario autenticado: ${userRecord.uid}`);
+    return userRecord;
+  } catch (error: any) {
+    logger.error("❌ Error al iniciar sesión con DNI:", error.message);
+    throw new Error("Error al iniciar sesión");
+  }
+};
+
+/**
+ * Logout no se gestiona desde backend (solo cliente)
+ */
+export const logoutUser = async () => {
+  logger.warn("🚫 Logout intentado desde backend. Esta acción debe gestionarse en el cliente.");
+  throw new Error("Logout debe ser gestionado desde el cliente");
+};
+
+/**
+ * Obtiene la información del usuario desde Firestore
+ */
+export const getCurrentUser = async (userId: string) => {
+  try {
+    logger.debug(`🔍 Obteniendo datos de usuario: ${userId}`);
+    const user = await getUserById(userId);
+    if (!user) {
+      logger.warn(`⚠ Usuario no encontrado: ${userId}`);
+      throw new Error("Usuario no encontrado");
+    }
+    return user;
+  } catch (error: any) {
+    logger.error("❌ Error al obtener usuario:", error.message);
+    throw new Error("Error al obtener usuario");
+  }
+};
