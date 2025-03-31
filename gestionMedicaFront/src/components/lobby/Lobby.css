@@ -45,6 +45,7 @@
     justify-content: center;
     gap: 16px;
     width: 85%;
+    max-width: 1200px;
     height: 100%;
     margin-bottom: 20px;
     flex-grow: 1;

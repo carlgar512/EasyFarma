@@ -1,5 +1,5 @@
 import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
-import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
+import { alertCircleOutline, atOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./IniciarSesion.css";
@@ -19,8 +19,13 @@ const IniciarSesion: React.FC = () => {
     const [loadSpinner, setLoadSpinner] = useState(false);
 
     const history = useHistory();
-    const handleRegisterClick = () => {
+
+    const handleRegister = () => {
         history.replace('/register')
+    };
+
+    const handleRecuperarPassword = () => {
+        history.push('/passwordReset')
     };
 
     const handleGoBackClick = () => {
@@ -51,7 +56,7 @@ const IniciarSesion: React.FC = () => {
             dni: form.dni,
             password: form.password
         });
-        
+
         setLoadSpinner(false);
         if (response.success) {
             setToastMessage("Sesión iniciada correctamente");
@@ -127,19 +132,36 @@ const IniciarSesion: React.FC = () => {
                                 className="ion-margin-top custom-buttonSes"
                                 onClick={handleSubmit}
                             >
-                                <IonIcon icon={personOutline} slot="start"></IonIcon>
-                                Iniciar sesion
+                                <IonIcon icon={personOutline} size="large" slot="icon-only"></IonIcon>
+                                <span className="buttonText">
+                                    Iniciar sesion
+                                </span>
                             </IonButton>
 
                             <IonButton
-                                onClick={handleRegisterClick}
+                                onClick={handleRegister}
                                 expand="block"
                                 shape="round"
                                 size="default"
                                 className="ion-margin-top custom-button2Ses"
                             >
-                                <IonIcon icon={personAddOutline} slot="start"></IonIcon>
-                                ¿No esta registrado?, Nueva cuenta
+                                <IonIcon icon={personAddOutline} size="large" slot="icon-only"></IonIcon>
+                                <span className="buttonText">
+                                    ¿No esta registrado?, Nueva cuenta
+                                </span>
+                            </IonButton>
+
+                            <IonButton
+                                onClick={handleRecuperarPassword}
+                                expand="block"
+                                shape="round"
+                                size="default"
+                                className="ion-margin-top custom-button3Ses"
+                            >
+                                <IonIcon icon={atOutline} size="large" slot="icon-only"></IonIcon>
+                                <span className="buttonText">
+                                    ¿Olvidaste la contraseña?, Recuperar contraseña
+                                </span>
                             </IonButton>
 
                             <IonToast

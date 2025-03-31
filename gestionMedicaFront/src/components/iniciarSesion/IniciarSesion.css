@@ -87,6 +87,7 @@
     flex-direction: column;
     gap: 10px;
     width: 90%;
+    max-width: 1000px;
     height: auto;
     background: var(--ion-color-customUltraLight);
     padding: 20px;
@@ -122,11 +123,25 @@
   .custom-buttonSes {
     --background: var(--ion-color-customDark);
     --color: white;
-    border-radius: 36px;
+  
+ 
+    border-radius: 16px;
+    font-weight: bold;
   }
   .custom-button2Ses {
     --background: var(--ion-color-customMedium);
     --color: white;
-    border-radius: 36px;
+    border-radius: 16px;
+    font-weight: bold;
   }
 
+  .custom-button3Ses {
+    --background: var(--ion-color-customYellow);
+    --color: black;
+    border-radius: 16px;
+    font-weight: bold;
+  }
+
+.buttonText{
+  width: 80%;
+}
