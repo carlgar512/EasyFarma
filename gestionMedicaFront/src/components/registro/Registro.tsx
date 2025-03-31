@@ -17,38 +17,9 @@ import "./Registro.css"; // Importa el archivo CSS
 import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
 import React from "react";
+import { backendService } from "../../services/backendService";
 
 const Registro: React.FC = () => {
-
-  const register = async (userData: {
-    name: string;
-    lastName: string;
-    dni: string;
-    email: string;
-    dateNac: string;
-    password: string;
-  }) => {
-    const response = await fetch(
-      "http://localhost:5001/easyfarma-5ead7/us-central1/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userData)
-      }
-    );
-
-    const data = await response.json();
-    console.log(data);
-
-    if (!response.ok) {
-      throw new Error(data.error || "Error al registrar usuario");
-    }
-
-    return data;
-  };
-
 
   const [form, setForm] = useState({
     name: "",
@@ -117,7 +88,7 @@ const Registro: React.FC = () => {
     setLoadSpinner(true);
     console.log("Registrando usuario:", form);
 
-    const response = await register({
+    const response = await backendService.register({
       name: form.name,
       lastName: form.lastName,
       dni: form.dni,

@@ -5,27 +5,9 @@ import { useHistory } from "react-router-dom";
 import "./IniciarSesion.css";
 
 import React from "react";
+import { backendService } from "../../services/backendService";
 
 const IniciarSesion: React.FC = () => {
-
-    const loginWithDNI = async (dni: string, password: string) => {
-        const response = await fetch("http://localhost:5001/easyfarma-5ead7/us-central1/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ dni, password })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Error al iniciar sesión");
-        }
-
-        return data;
-    };
-
 
     const [form, setForm] = useState({
         dni: "",
@@ -65,7 +47,11 @@ const IniciarSesion: React.FC = () => {
         setLoadSpinner(true);
         console.log("Iniciando sesion...", form);
 
-        const response = await loginWithDNI(form.dni, form.password);
+        const response = await backendService.login({
+            dni: form.dni,
+            password: form.password
+        });
+        
         setLoadSpinner(false);
         if (response.success) {
             setToastMessage("Sesión iniciada correctamente");
