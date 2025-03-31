@@ -25,7 +25,7 @@ const IniciarSesion: React.FC = () => {
     };
 
     const handleRecuperarPassword = () => {
-        history.push('/passwordReset')
+        history.replace('/passwordReset')
     };
 
     const handleGoBackClick = () => {
