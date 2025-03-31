@@ -1,3 +1,5 @@
+
+import { UsuarioDTO } from "../../negocio/dtos/UsuarioDTO";
 import { Usuario } from "../../negocio/modelos/Usuario";
 import { db } from "../../presentacion/config/firebaseConfig";
 
@@ -6,10 +8,10 @@ import { db } from "../../presentacion/config/firebaseConfig";
  */
 export const saveUserToFirestore = async (user: Usuario) => {
   try {
-    console.log("📄 [DAO] Guardando en Firestore:", user.uid);
-    const userRef = db.collection("users").doc(user.uid);
-    await userRef.set(user);
-    console.log("✅ [DAO] Guardado exitoso:", user.uid);
+    console.log("📄 [DAO] Guardando en Firestore:", user.getIdUsuario());
+    const userRef = db.collection("users").doc(user.getIdUsuario());
+    await userRef.set(user.toFirestoreObject());
+    console.log("✅ [DAO] Guardado exitoso:", user.getIdUsuario());
   } catch (error: any) {
     console.error("❌ [DAO] Error guardando en Firestore:", error.message);
     throw error;
@@ -35,8 +37,8 @@ export const getEmailByDNI = async (dni: string): Promise<string | null> => {
 /**
  * Obtiene un usuario por su UID
  */
-export const getUserById = async (uid: string): Promise<Usuario | null> => {
+export const getUserById = async (uid: string): Promise<UsuarioDTO | null> => {
   const userRef = db.collection("users").doc(uid);
   const userDoc = await userRef.get();
-  return userDoc.exists ? (userDoc.data() as Usuario) : null;
+  return userDoc.exists ? (userDoc.data() as UsuarioDTO) : null;
 };

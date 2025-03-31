@@ -1,32 +1,29 @@
 import { saveUserToFirestore, getEmailByDNI, getUserById } from "../../persistencia/repositorios/userDAO";
 import { auth } from "../../presentacion/config/firebaseConfig";
 import { logger } from "../../presentacion/config/logger";
+import { UsuarioDTO } from "../dtos/UsuarioDTO";
 import { Usuario } from "../modelos/Usuario";
 
 /**
  * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore
  */
-export const registerUser = async (userData: Omit<Usuario, "uid">, password: string) => {
+export const registerUser = async (userData: UsuarioDTO & { password: string }) => {
   try {
     console.log("➡️ Registrando usuario:", userData.email);
 
     const userRecord = await auth.createUser({
       email: userData.email,
-      password: password,
+      password: userData.password,
     });
 
     console.log("✅ Usuario creado en Firebase Auth:", userRecord.uid);
+    const user :Usuario = new Usuario(userData.dni,userData.email,userData.name,userData.lastName,userData.dateNac);
+    user.setIdUsuario(userRecord.uid);
 
-    const user: Usuario = {
-      uid: userRecord.uid,
-      ...userData,
-    };
-
-    console.log("📝 Guardando en Firestore:", user.uid);
+    console.log("📝 Guardando en Firestore:", user.getIdUsuario());
     await saveUserToFirestore(user);
 
-    console.log("✅ Usuario guardado en Firestore:", user.uid);
-
+    console.log("✅ Usuario guardado en Firestore:", user.getIdUsuario());
     return user;
   } catch (error: any) {
     console.error("❌ Error en registerUser:", error.message);
