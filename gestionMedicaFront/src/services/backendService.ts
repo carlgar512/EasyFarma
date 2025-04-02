@@ -37,8 +37,8 @@ const login = async ({ dni, password }: LoginDTO) => {
     return data;
 };
 
-const recoveryRequest = async ({ dni }) => {
-    const response = await fetch(`${BASE_URL}/recovery-request`, {
+const recoveryRequest = async ( dni:string ) => {
+    const response = await fetch(`${BASE_URL}/recoveryRequest`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

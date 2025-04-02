@@ -17,19 +17,41 @@
       email: string,
       nombreUsuario: string,
       apellidosUsuario: string,
-      fechaNacimiento: string
+      fechaNacimiento: string,
+      telefono: string = "",
+      direccion: string = "",
+      numTarjeta: string = "",
+      modoAccesibilidad: boolean = false,
+      medicosFavoritos: string[] = [],
+      operacionesFavoritas: string[] = []
     ) {
       this.dni = dni;
       this.email = email;
       this.nombreUsuario = nombreUsuario;
       this.apellidosUsuario = apellidosUsuario;
       this.fechaNacimiento = fechaNacimiento;
-      this.telefono = "";
-      this.direccion = "";
-      this.numTarjeta = "";
-      this.modoAccesibilidad = false;
-      this.medicosFavoritos = [];
-      this.operacionesFavoritas=[]
+      this.telefono = telefono;
+      this.direccion = direccion;
+      this.numTarjeta = numTarjeta;
+      this.modoAccesibilidad = modoAccesibilidad;
+      this.medicosFavoritos = medicosFavoritos;
+      this.operacionesFavoritas = operacionesFavoritas;
+    }
+
+    static fromFirestore(data: any): Usuario {
+      return new Usuario(
+        data.dni,
+        data.email,
+        data.nombreUsuario,
+        data.apellidosUsuario,
+        data.fechaNacimiento,
+        data.telefono,
+        data.direccion,
+        data.numTarjeta,
+        data.modoAccesibilidad,
+        data.medicosFavoritos,
+        data.operacionesFavoritas
+      );
     }
 
     toFirestoreObject(): Record<string, any> {

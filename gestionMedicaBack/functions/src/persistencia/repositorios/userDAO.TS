@@ -42,3 +42,4 @@ export const getUserById = async (uid: string): Promise<UsuarioDTO | null> => {
   const userDoc = await userRef.get();
   return userDoc.exists ? (userDoc.data() as UsuarioDTO) : null;
 };
+

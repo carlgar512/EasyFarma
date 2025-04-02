@@ -1,5 +1,5 @@
 import { UsuarioDTO } from "../../negocio/dtos/UsuarioDTO";
-import { loginUserWithDNI, registerUser } from "../../negocio/services/authService";
+import { loginUserWithDNI, registerUser, searchUserByDNI } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 
 
@@ -19,15 +19,6 @@ export const registerHandler = onRequest(async (req, res) => {
     console.log("📩 [registerHandler] Request recibida:", req.body);
 
     const data: UsuarioDTO & { password: string } = req.body;
-
-    // Validación mínima manual
-    if (!data.name || !data.lastName || !data.dni || !data.email || !data.dateNac || !data.password) {
-      res.status(400).json({
-        success: false,
-        error: "Faltan campos obligatorios.",
-      });
-    }
-
     const newUser = await registerUser(data);
 
     res.status(201).json({
@@ -41,6 +32,31 @@ export const registerHandler = onRequest(async (req, res) => {
       success: false,
       error: "Error al registrar usuario.",
     });
+  }
+});
+
+export const recoveryRequestHandler = onRequest(async (req, res) => {
+  const { dni } = req.body;
+  try {
+    const userEmail = await searchUserByDNI(dni);
+    if (!userEmail) {
+      res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    //const code = authService.generateVerificationCode(); // ejemplo: 1234
+    //await authService.saveCodeForUser(user.email, code);
+    //await authService.sendCodeToEmail(user.email, code);
+
+    //const maskedEmail = maskEmail(user.email); // ej: j***@gmail.com
+
+    res.status(201).json({
+      success: true,
+      email: userEmail, // o solo algunos campos si prefieres
+    });
+
+  } catch (error) {
+    console.error("Error en recoveryRequestHandler:", error);
+    res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
 

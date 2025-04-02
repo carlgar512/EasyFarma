@@ -78,3 +78,21 @@ export const getCurrentUser = async (userId: string) => {
     throw new Error("Error al obtener usuario");
   }
 };
+
+
+export const searchUserByDNI = async (dni: string) => {
+  try {
+    logger.debug(`🔍 Buscando usuario por DNI: ${dni}`);
+
+    const userEmail = await getEmailByDNI(dni);
+
+    if (!userEmail) {
+      logger.warn(`⚠ Usuario no encontrado con DNI: ${dni}`);
+      throw new Error("Usuario no encontrado");
+    }
+    return userEmail;
+  } catch (error: any) {
+    logger.error(`❌ Error al buscar usuario por DNI: ${error.message}`);
+    throw new Error("Error al buscar usuario por DNI");
+  }
+};

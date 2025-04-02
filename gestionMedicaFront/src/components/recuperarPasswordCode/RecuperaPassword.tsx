@@ -60,10 +60,23 @@ const RecuperaPassword: React.FC = () => {
     };
 
     const handleBuscaDni = async () => {
+        const dni = formDni.dni?.toUpperCase().trim(); // Normaliza el DNI
+        // Validación: vacío o mal formato
+        const dniRegex = /^[0-9]{8}[A-Za-z]$/;
+        if (!dni || !dniRegex.test(dni)) {
+            setToast({
+                show: true,
+                message: "Por favor, introduce un DNI válido.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            return;
+        }
+
         try {
             setMode(FormModeEnum.Loading);
 
-            const response = await backendService.recoveryRequest(formDni);
+            const response = await backendService.recoveryRequest(formDni.dni);
 
             if (!response.success) {
                 setToast({
@@ -101,43 +114,43 @@ const RecuperaPassword: React.FC = () => {
 
     const handleCompruebaCodigo = async (code: string) => {
         console.log("Código recibido:", code);
-      
+
         try {
-          setMode(FormModeEnum.Loading);
-      
-          const response = await backendService.checkCode(code);
-      
-          if (!response.success) {
+            setMode(FormModeEnum.Loading);
+
+            const response = await backendService.checkCode(code);
+
+            if (!response.success) {
+                setToast({
+                    show: true,
+                    message: "El código ingresado no es válido. Por favor, intenta nuevamente.",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+                setMode(FormModeEnum.InsertCode);
+                return;
+            }
+
             setToast({
-              show: true,
-              message: "El código ingresado no es válido. Por favor, intenta nuevamente.",
-              color: "danger",
-              icon: alertCircleOutline,
+                show: true,
+                message: "Código verificado correctamente. Puedes establecer una nueva contraseña.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+
+            setMode(FormModeEnum.NewPassword);
+
+        } catch (error) {
+            console.error("Error al verificar el código:", error);
+            setToast({
+                show: true,
+                message: "Ha ocurrido un error al verificar el código. Intenta nuevamente más tarde.",
+                color: "danger",
+                icon: alertCircleOutline,
             });
             setMode(FormModeEnum.InsertCode);
-            return;
-          }
-      
-          setToast({
-            show: true,
-            message: "Código verificado correctamente. Puedes establecer una nueva contraseña.",
-            color: "success",
-            icon: checkmarkOutline,
-          });
-      
-          setMode(FormModeEnum.NewPassword);
-      
-        } catch (error) {
-          console.error("Error al verificar el código:", error);
-          setToast({
-            show: true,
-            message: "Ha ocurrido un error al verificar el código. Intenta nuevamente más tarde.",
-            color: "danger",
-            icon: alertCircleOutline,
-          });
-          setMode(FormModeEnum.InsertCode);
         }
-      };
+    };
 
     const handleReenvioCodigo = () => { }
 
@@ -253,9 +266,9 @@ const RecuperaPassword: React.FC = () => {
                     {mode === FormModeEnum.InsertCode &&
                         <div className="formCardRP">
                             <span className="infoTextRP">
-                                Se ha enviado un código de verificación al correo *********. Por favor, introdúcelo para restablecer tu contraseña.
+                                Se ha enviado un código de verificación al correo {email}. Por favor, introdúcelo para restablecer tu contraseña.
                             </span>
-                            <VerificationCodeInput onComplete={handleCompruebaCodigo}/>
+                            <VerificationCodeInput onComplete={handleCompruebaCodigo} />
                             <IonButton
                                 onClick={handleReenvioCodigo}
                                 expand="block"
