@@ -48,11 +48,9 @@ const Registro: React.FC = () => {
 
   };
 
-
   const handleLoginClick = () => {
     history.replace('/signIn')
   };
-
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -67,8 +65,6 @@ const Registro: React.FC = () => {
       setForm({ ...form, dateNac: formattedDate }); // Actualiza el estado con la fecha seleccionada
     }
   };
-
-
 
   const handleSubmit = async () => {
     if (!form.name || !form.lastName || !form.dni || !form.email || !form.password || !form.confirmPassword || !form.dateNac) {
@@ -97,7 +93,7 @@ const Registro: React.FC = () => {
       password: form.password
     });
      
-    console.log(response);
+    //console.log(response);
     setLoadSpinner(false);
     if (response.success) {
       setToastMessage("Registro exitoso");
@@ -111,11 +107,7 @@ const Registro: React.FC = () => {
       setIsSuccessToast(false);
       setShowToast(true);
     }
-
-
   };
-
-
 
   return (
     <IonPage>

@@ -15,11 +15,9 @@ const register = async (userData: RegisterDTO) => {
     });
 
     const data = await response.json();
-
     if (!response.ok) {
         throw new Error(data.error || "Error al registrar usuario");
     }
-
     return data;
 };
 
@@ -33,15 +31,62 @@ const login = async ({ dni, password }: LoginDTO) => {
     });
 
     const data = await response.json();
-
     if (!response.ok) {
         throw new Error(data.error || "Error al iniciar sesión");
     }
-
     return data;
 };
+
+const recoveryRequest = async ({ dni }) => {
+    const response = await fetch(`${BASE_URL}/recovery-request`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ dni }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || "Error en la busqueda de cuenta");
+    }
+    return data;
+};
+
+const passwordReset = async ( dni: string, password: string ) => {
+    const response = await fetch(`${BASE_URL}/passwordReset`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ dni,password }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || "Error al restablecer contraseña");
+    }
+    return data;
+};
+
+const checkCode = async ( code: string ) => {
+    const response = await fetch(`${BASE_URL}/checkCode`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || "Error al verificar código");
+    }
+    return data;
+};
+
 
 export const backendService = {
     register,
     login,
+    recoveryRequest,
+    passwordReset,
+    checkCode
 };

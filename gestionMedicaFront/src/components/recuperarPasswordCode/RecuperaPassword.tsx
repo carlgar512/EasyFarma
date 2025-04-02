@@ -1,9 +1,10 @@
-import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonToast, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
 import React, { useRef, useState } from "react";
 import "./RecuperaPassword.css";
-import { atOutline, checkmarkCircleOutline, checkmarkOutline, exitOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
+import { alertCircleOutline, atOutline, checkmarkCircleOutline, checkmarkOutline, exitOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { FormModeEnum, NotificationProps, VerificationCodeInputProps } from "./RecuperaPasswordInterfaces";
+import { backendService } from "../../services/backendService";
 
 
 const RecuperaPassword: React.FC = () => {
@@ -20,20 +21,27 @@ const RecuperaPassword: React.FC = () => {
         icon: checkmarkOutline,
     });
 
-
     const setMode = (newMode: FormModeEnum) => {
         setModeState(newMode);
         sessionStorage.setItem("recuperaPasswordMode", newMode);
     };
 
     const history = useHistory();
-
-    const [form, setForm] = useState({
+    const [email, setEmail] = useState("");
+    const [formDni, setForm] = useState({
         dni: "",
     });
+    const [formPassword, setFormPsw] = useState({
+        password: "",
+        confirmPassword: ""
+    });
+
+    const handleChangePsw = (e: any) => {
+        setFormPsw({ ...formPassword, [e.target.name]: e.target.value });
+    };
 
     const handleChange = (e: any) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setForm({ ...formDni, [e.target.name]: e.target.value });
     };
 
     const handleGoBackClick = () => {
@@ -51,26 +59,130 @@ const RecuperaPassword: React.FC = () => {
         history.replace('/SignIn')
     };
 
-    const handleBuscaDni = () => {
-        setMode(FormModeEnum.InsertCode);
-        console.log(mode);
-        //TODO LLamada backService para metodo exoistencia dni y regreso de email
-    }
+    const handleBuscaDni = async () => {
+        try {
+            setMode(FormModeEnum.Loading);
 
-    //TODO
-    const handleReenvioCodigo = () => { }
-    const handleEstablecerPassword = () => {
-        //Llamada Back
-        const corecto = true
-        if (corecto) {
+            const response = await backendService.recoveryRequest(formDni);
+
+            if (!response.success) {
+                setToast({
+                    show: true,
+                    message: "No existe ninguna cuenta vinculada a ese DNI.",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+                setMode(FormModeEnum.InsertDni);
+                return;
+            }
+
+            setEmail(response.email); // correo enmascarado
             setToast({
                 show: true,
-                message: "¡Contraseña cambiada con éxito!",
+                message: "Hemos enviado un código de verificación. Puede tardar unos segundos en llegar al correo.",
                 color: "success",
                 icon: checkmarkOutline,
             });
+            setMode(FormModeEnum.InsertCode);
+
+        } catch (error) {
+            console.error("Error al buscar DNI:", error);
+
+            setToast({
+                show: true,
+                message: "Ocurrió un error al procesar tu solicitud. Intenta nuevamente.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+
+            setMode(FormModeEnum.InsertDni);
         }
-    }
+    };
+
+    const handleCompruebaCodigo = async (code: string) => {
+        console.log("Código recibido:", code);
+      
+        try {
+          setMode(FormModeEnum.Loading);
+      
+          const response = await backendService.checkCode(code);
+      
+          if (!response.success) {
+            setToast({
+              show: true,
+              message: "El código ingresado no es válido. Por favor, intenta nuevamente.",
+              color: "danger",
+              icon: alertCircleOutline,
+            });
+            setMode(FormModeEnum.InsertCode);
+            return;
+          }
+      
+          setToast({
+            show: true,
+            message: "Código verificado correctamente. Puedes establecer una nueva contraseña.",
+            color: "success",
+            icon: checkmarkOutline,
+          });
+      
+          setMode(FormModeEnum.NewPassword);
+      
+        } catch (error) {
+          console.error("Error al verificar el código:", error);
+          setToast({
+            show: true,
+            message: "Ha ocurrido un error al verificar el código. Intenta nuevamente más tarde.",
+            color: "danger",
+            icon: alertCircleOutline,
+          });
+          setMode(FormModeEnum.InsertCode);
+        }
+      };
+
+    const handleReenvioCodigo = () => { }
+
+    const handleEstablecerPassword = async () => {
+        const { password, confirmPassword } = formPassword;
+
+        // Validación de campos
+        if (!password || !confirmPassword || password !== confirmPassword) {
+            setToast({
+                show: true,
+                message: "Las contraseñas no coinciden o hay campos vacíos. Por favor, revísalos.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            return;
+        }
+
+        try {
+            setMode(FormModeEnum.Loading);
+
+            const response = await backendService.passwordReset(formDni.dni, password);
+
+            if (response.success) {
+                setToast({
+                    show: true,
+                    message: "¡Contraseña cambiada con éxito!",
+                    color: "success",
+                    icon: checkmarkOutline,
+                });
+
+                handleGoInicioSesion();
+            } else {
+                throw new Error("Falló la operación");
+            }
+        } catch (error) {
+            setToast({
+                show: true,
+                message: "Algo salió mal al cambiar tu contraseña. ¡Vuelve a intentarlo en unos segundos!",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            setMode(FormModeEnum.NewPassword);
+        }
+    };
+
 
     return (
         <IonPage>
@@ -104,7 +216,7 @@ const RecuperaPassword: React.FC = () => {
                                     color={"success"}
                                     placeholder="Escribe tu DNI"
                                     name="dni"
-                                    value={form.dni}
+                                    value={formDni.dni}
                                     onIonChange={handleChange}
                                     clearInput={true}
                                 />
@@ -143,23 +255,7 @@ const RecuperaPassword: React.FC = () => {
                             <span className="infoTextRP">
                                 Se ha enviado un código de verificación al correo *********. Por favor, introdúcelo para restablecer tu contraseña.
                             </span>
-                            <VerificationCodeInput
-                                onComplete={(code) => {
-                                    console.log("Código recibido:", code);
-
-                                    // Simulación de verificación
-                                    const codigoEsperado = "1234"; // Cambia esto por el valor de prueba que tú quieras
-
-                                    if (code === codigoEsperado) {
-                                        alert("✅ Código correcto. Ahora puedes restablecer tu contraseña.");
-                                        setMode(FormModeEnum.NewPassword);// Cambiar al siguiente paso si quieres
-                                    } else {
-                                        alert("❌ Código incorrecto. Inténtalo de nuevo.");
-                                    }
-                                }}
-                            />
-
-
+                            <VerificationCodeInput onComplete={handleCompruebaCodigo}/>
                             <IonButton
                                 onClick={handleReenvioCodigo}
                                 expand="block"
@@ -187,8 +283,8 @@ const RecuperaPassword: React.FC = () => {
                                     placeholder="Nueva contraseña"
                                     name="password"
                                     type="password"
-                                    value={"form.password"}
-                                    onIonChange={handleChange}
+                                    value={formPassword.password}
+                                    onIonChange={handleChangePsw}
                                     clearInput={true}
                                 />
                             </IonItem>
@@ -200,8 +296,8 @@ const RecuperaPassword: React.FC = () => {
                                     name="confirmPassword"
                                     placeholder="Repite contraseña"
                                     type="password"
-                                    value={"form.confirmPassword"}
-                                    onIonChange={handleChange}
+                                    value={formPassword.confirmPassword}
+                                    onIonChange={handleChangePsw}
                                     clearInput={true}
                                 />
                             </IonItem>
@@ -223,9 +319,10 @@ const RecuperaPassword: React.FC = () => {
 
                     {mode === FormModeEnum.Loading &&
                         <div className="formCardRP">
-                            Pantalla Carga
+                            <IonSpinner name="circular" className="spinner"></IonSpinner>
                         </div>
                     }
+
                 </div>
                 <Notification
                     icon={toast.icon}
@@ -238,10 +335,6 @@ const RecuperaPassword: React.FC = () => {
         </IonPage >
     )
 }
-
-
-
-
 
 export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
     length = 4,
