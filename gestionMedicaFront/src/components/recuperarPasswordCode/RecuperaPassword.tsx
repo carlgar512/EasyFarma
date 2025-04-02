@@ -333,6 +333,7 @@ const RecuperaPassword: React.FC = () => {
                     {mode === FormModeEnum.Loading &&
                         <div className="formCardRP">
                             <IonSpinner name="circular" className="spinner"></IonSpinner>
+                            <span className="infoTextLoader">Procesando tu solicitud. Esto puede tardar unos segundos...</span>
                         </div>
                     }
 
