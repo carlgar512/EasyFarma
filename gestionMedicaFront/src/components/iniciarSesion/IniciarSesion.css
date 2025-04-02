@@ -141,6 +141,16 @@
     font-weight: bold;
   }
 
+
 .buttonText{
   width: 80%;
+  font-weight: 600;
+}
+
+.custom-buttonSes:hover, 
+.custom-button2Ses:hover, 
+.custom-button3Ses:hover,
+.leaveButtonSes:hover {
+  transform: scale(1.02);
+  transition: 0.3s ease-in-out;
 }

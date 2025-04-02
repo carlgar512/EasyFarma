@@ -49,7 +49,7 @@ import IniciarSesion from './components/iniciarSesion/IniciarSesion';
 import React from 'react';
 import PaginaPrincipal from './components/paginaPrincipal/PaginaPrincipal';
 import PerfilYPreferencias from './components/perfil&Preferencias/PerfilYPreferencias';
-import RecuperaPasswordCode from './components/recuperarPasswordCode/RecuperaPasswordCode';
+import RecuperaPassword from './components/recuperarPasswordCode/RecuperaPassword';
 
 
 setupIonicReact();
@@ -69,7 +69,7 @@ const App: React.FC = () => (
             <IniciarSesion />
           </Route>
           <Route exact path="/passwordReset">
-            <RecuperaPasswordCode />
+            <RecuperaPassword />
           </Route>
           <Route exact path="/principal">
             <PaginaPrincipal />

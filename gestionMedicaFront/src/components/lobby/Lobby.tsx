@@ -40,15 +40,15 @@ const Lobby: React.FC = () => {
 
                         <IonButton size="large" expand="full" shape="round" className="login-btn" onClick={handleSignInClick}>
                             <IonIcon slot="start" icon={personOutline}></IonIcon>
-                            Iniciar Sesión
+                            <span className="buttonText">Iniciar Sesión</span>
                         </IonButton>
                         <IonButton size="large" expand="full" shape="round" className="register-btn" onClick={handleRegisterClick}>
                             <IonIcon slot="start" icon={personAddOutline}></IonIcon>
-                            Registrarse
+                            <span className="buttonText">Registrarse</span>
                         </IonButton>
                         <IonButton size="large" expand="full" shape="round" className="emergency-btn" onClick={handleEmergencyCall}>
                             <IonIcon slot="start" icon={callOutline}></IonIcon>
-                            Emergencia
+                            <span className="buttonText">Emergencia</span>
                         </IonButton>
                     </div>
                 </div>
