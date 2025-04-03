@@ -1,6 +1,7 @@
 import { UsuarioDTO } from "../../negocio/dtos/UsuarioDTO";
-import { loginUserWithDNI, registerUser, searchUserByDNI } from "../../negocio/services/authService";
+import { generateVerificationCode, loginUserWithDNI, registerUser, searchUserByDNI } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
+import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
 
 export const loginHandler = onRequest(async (req, res) => {
@@ -43,9 +44,10 @@ export const recoveryRequestHandler = onRequest(async (req, res) => {
       res.status(404).json({ success: false, message: "Usuario no encontrado." });
     }
 
-    //const code = authService.generateVerificationCode(); // ejemplo: 1234
+    const code = generateVerificationCode(); // ejemplo: 1234
+    console.log(code);
     //await authService.saveCodeForUser(user.email, code);
-    //await authService.sendCodeToEmail(user.email, code);
+    eventBus.emit('send.verification.code', { email: userEmail, code });
 
     //const maskedEmail = maskEmail(user.email); // ej: j***@gmail.com
 

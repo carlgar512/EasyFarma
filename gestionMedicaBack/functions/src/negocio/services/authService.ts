@@ -4,6 +4,8 @@ import { logger } from "../../presentacion/config/logger";
 import { UsuarioDTO } from "../dtos/UsuarioDTO";
 import { Usuario } from "../modelos/Usuario";
 
+
+
 /**
  * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore
  */
@@ -95,4 +97,20 @@ export const searchUserByDNI = async (dni: string) => {
     logger.error(`❌ Error al buscar usuario por DNI: ${error.message}`);
     throw new Error("Error al buscar usuario por DNI");
   }
+};
+
+
+export const generateVerificationCode = () : string => {
+  return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
+}
+
+
+
+export const saveCodeForUser = async (email: string, code: string): Promise<void> => {
+  //const expiresAt = Date.now() + 5 * 60 * 1000; // expira en 5 minutos
+
+  /*await db.collection("verification_codes").doc(email).set({
+    code,
+    expiresAt
+  }); */
 };

@@ -8,6 +8,7 @@
  */
 
 import { loginHandler, recoveryRequestHandler, registerHandler } from "./presentacion/controllers/authController";
+import "./negocio/services/mailListenerService";
 
 // import {onRequest} from "firebase-functions/v2/https";
 // import * as logger from "firebase-functions/logger";
