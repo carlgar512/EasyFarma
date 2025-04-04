@@ -18,7 +18,7 @@
       nombreUsuario: string,
       apellidosUsuario: string,
       fechaNacimiento: string,
-      telefono: string = "",
+      telefono: string,
       direccion: string = "",
       numTarjeta: string = "",
       modoAccesibilidad: boolean = false,

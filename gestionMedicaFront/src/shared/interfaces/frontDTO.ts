@@ -3,6 +3,7 @@ export interface RegisterDTO {
     lastName: string;
     dni: string;
     email: string;
+    tlf: string;
     dateNac: string;
     password: string;
   }

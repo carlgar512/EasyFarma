@@ -81,3 +81,12 @@
   transform: scale(1.05);
   transition: 0.3s ease-in-out;
 }
+
+@media (max-width: 600px) {
+    .button-group{
+        margin-top: 200px;
+    }
+    .logo {
+      min-width: 300px;
+    }
+  }

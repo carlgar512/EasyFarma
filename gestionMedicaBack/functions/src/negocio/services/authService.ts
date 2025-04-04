@@ -15,7 +15,7 @@ export const registerUserService = async (userData:any & { password: string }) =
     const userRecord = await createUserInAuth(userData.email, userData.password);
 
     console.log("✅ Usuario creado en Firebase Auth:", userRecord.uid);
-    const user :Usuario = new Usuario(userData.dni,userData.email,userData.name,userData.lastName,userData.dateNac);
+    const user :Usuario = new Usuario(userData.dni,userData.email,userData.name,userData.lastName,userData.dateNac,userData.tlf);
     user.setIdUsuario(userRecord.uid);
 
     console.log("📝 Guardando en Firestore:", user.getIdUsuario());

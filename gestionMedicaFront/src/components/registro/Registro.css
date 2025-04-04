@@ -1,161 +1,222 @@
-
-  .top-BarBackground {
-    --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
-    --width: 100%;
-  }
-
-  .topBar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    color: white;
-    font-family: var(--font-primary);
-  }
-  .left-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex-grow: 1; /* Esto hace que ocupe el espacio central */
-    margin-left: 10px;
-  }
-  .leaveButton{
-    width: 7%;
-    margin-right: 10px;
-  }
-
-  .title {
-    font-size: 1rem;
-   
-  }
-  .spinnerBackground{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 60%;
-    height: 40%;
-    gap: 20px;
-    align-items: center;
-    background: var(--ion-color-customUltraLight);
-    padding: 10px;
-    border-radius: 36px;;
-  }
-
-  .mensajeSpinner{
-    font-family: var(--font-primary);
-    font-weight: bold;
-    color: var(--ion-color-customDark);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-
-  .spinner{
-    height:25%;
-    width:25%;
-    --color:var(--ion-color-customMedium);
-  }
-  .content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
-    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
-  }
-
-  .form-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-  }
-
-  @media (max-width: 600px) {
-    .form-container {
-        flex-direction: column;
-    }
+.top-BarBackground {
+  --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
+  --width: 100%;
 }
 
-  .form-card {
-    display: flex;
+.topBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: white;
+  font-family: var(--font-primary);
+}
+
+.left-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+  /* Esto hace que ocupe el espacio central */
+  margin-left: 10px;
+}
+
+.leaveButton {
+  width: 7%;
+  margin-right: 10px;
+}
+
+.title {
+  font-size: 1rem;
+
+}
+
+.spinnerBackground {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 60%;
+  height: 40%;
+  gap: 20px;
+  align-items: center;
+  background: var(--ion-color-customUltraLight);
+  padding: 10px;
+  border-radius: 36px;
+  ;
+}
+
+.mensajeSpinner {
+  font-family: var(--font-primary);
+  font-weight: bold;
+  color: var(--ion-color-customDark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.spinner {
+  height: 25%;
+  width: 25%;
+  --color: var(--ion-color-customMedium);
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+  --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
+
+.form-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.imagenReg {
+  max-width: 600px;
+}
+
+@media (max-width: 600px) {
+  .form-container {
     flex-direction: column;
-    gap: 10px;
-    width: 95%;
-    height: 100%;
-    background: var(--ion-color-customUltraLight);
-    padding: 20px;
-    margin: 10px;
-    border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
   }
+  .imagenReg {
+    margin-top: 120px;
+    max-width: 200px;
+  }
+}
 
-  .form-item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 100px;
-    border-radius: 36px;
-  }
+.form-card {
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 95%;
+  background: var(--ion-color-customUltraLight);
+  padding: 20px;
+  margin: 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
-  .form-label {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    text-align: center;
-    font-family: var(--font-primary);
-  }
+.form-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 100px;
+  border-radius: 36px;
+}
 
-  .title {
-    text-align: center;
-    font-size: 1.2rem;
-    padding: 15px;
-  }
+.form-label {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-primary);
+}
+
+.title {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 15px;
+}
 
 
-  .custom-button {
-    --background: var(--ion-color-customDark);
-    --color: white;
-    border-radius: 36px;
-  }
-  .custom-button2 {
-    --background: var(--ion-color-customMedium);
-    --color: white;
-    border-radius: 36px;
-  }
+.custom-button {
+  --background: var(--ion-color-customDark);
+  --color: white;
+  border-radius: 36px;
+}
 
-  .form-FechaNac {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    background-color: white;
-    border-radius: 36px;
-    padding: 10px;
-  }
+.custom-button2 {
+  --background: var(--ion-color-customMedium);
+  --color: white;
+  border-radius: 36px;
+}
 
-  /* Contenedor del calendario */
-  .calendar-wrapper {
-    max-height: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-   
-  }
-  ion-datetime {
-  --background:var(--ion-color-customUltraLight);
+.buttonTextReg {
+  font-weight: bold;
+  width: 80%;
+}
+
+.calendarButton {
+  border-radius: 16px;
+  --background: var(--ion-color-customDark);
+  width: 100px;
+  height: 50px;
+}
+
+.topBarModal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: white;
+  font-family: var(--font-primary);
+}
+ .modalTitle{
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+ }
+
+.leaveCalendarButton {
+  border-radius: 16px;
+  margin-right: 10px;
+  --background: var(--ion-color-customRed);
+  border-radius: 16px;
+}
+
+.custom-button:hover,
+.custom-button2:hover,
+.leaveButton:hover,
+.leaveCalendarButton:hover,
+.calendarButton:hover {
+  transform: scale(1.02);
+  transition: 0.3s ease-in-out;
+}
+
+
+.form-FechaNac {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background-color: white;
+  border-radius: 36px;
+  padding: 10px;
+}
+
+/* Contenedor del calendario */
+.calendar-wrapper {
+  max-height: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+
+}
+
+ion-datetime {
+  --background: var(--ion-color-customUltraLight);
   --background-rgb: var(--ion-color-customUltraLight);
   border-radius: 12px;
-    background: linear-gradient(145deg, #f3ffe3, #ccd6bf);
-    box-shadow: 10px 10px 20px #b3bca7,
-      -10px -10px 20px #ffffff;
+  background: linear-gradient(145deg, #f3ffe3, #ccd6bf);
+  box-shadow: 10px 10px 20px #b3bca7,
+    -10px -10px 20px #ffffff;
 }
