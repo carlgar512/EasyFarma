@@ -1,5 +1,5 @@
 import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToolbar } from "@ionic/react";
-import { alertCircleOutline, atOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
+import { alertCircleOutline, atOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./IniciarSesion.css";
@@ -25,6 +25,12 @@ const IniciarSesion: React.FC = () => {
     const [loadSpinner, setLoadSpinner] = useState(false);
 
     const history = useHistory();
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleRegister = () => {
         history.replace('/register')
@@ -134,13 +140,21 @@ const IniciarSesion: React.FC = () => {
                                 <label className="form-label">Contraseña:</label>
                                 <IonInput
                                     color={"success"}
-                                    placeholder="Contraseña"
+                                    placeholder="Nueva contraseña"
                                     name="password"
-                                    type="password"
+                                    type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
                                     value={form.password}
                                     onIonChange={handleChange}
                                     clearInput={true}
                                 />
+                                <IonButton
+                                    fill="clear"
+                                    size="small"
+                                    onClick={togglePasswordVisibility}
+                                    color="success"
+                                >
+                                    {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                                </IonButton>
                             </IonItem>
                             <IonButton
                                 expand="block"

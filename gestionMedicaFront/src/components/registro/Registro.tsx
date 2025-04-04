@@ -19,7 +19,7 @@ import {
   IonButtons,
 } from "@ionic/react";
 import "./Registro.css"; // Importa el archivo CSS
-import { alertCircleOutline, calendarNumberOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
+import { alertCircleOutline, calendarNumberOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
 import React from "react";
 import { backendService } from "../../services/backendService";
@@ -47,7 +47,6 @@ const Registro: React.FC = () => {
 
   const [isOpenCalendar, setIsOpen] = useState(false);
 
-
   const [loadSpinner, setLoadSpinner] = useState(false);
 
   const history = useHistory();
@@ -62,6 +61,13 @@ const Registro: React.FC = () => {
 
   };
 
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+
+  // Función para alternar la visibilidad de la contraseña
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  
   const handleLoginClick = () => {
     history.replace('/signIn')
   };
@@ -232,11 +238,19 @@ const Registro: React.FC = () => {
                   color={"success"}
                   placeholder="Nueva contraseña"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
                   value={form.password}
                   onIonChange={handleChange}
                   clearInput={true}
                 />
+                <IonButton
+                  fill="clear"
+                  size="small"
+                  onClick={togglePasswordVisibility}
+                  color="success"
+                >
+                  {showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
+                </IonButton>
               </IonItem>
 
               <IonItem className="form-item">
@@ -245,11 +259,19 @@ const Registro: React.FC = () => {
                   color={"success"}
                   name="confirmPassword"
                   placeholder="Repite contraseña"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
                   value={form.confirmPassword}
                   onIonChange={handleChange}
                   clearInput={true}
                 />
+                <IonButton
+                  fill="clear"
+                  size="small"
+                  onClick={togglePasswordVisibility}
+                  color="success"
+                >
+                  {showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
+                </IonButton>
               </IonItem>
 
               <IonItem className="form-item">

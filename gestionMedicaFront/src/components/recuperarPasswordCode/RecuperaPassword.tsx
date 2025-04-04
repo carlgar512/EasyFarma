@@ -1,7 +1,7 @@
 import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToolbar } from "@ionic/react";
 import React, { useRef, useState } from "react";
 import "./RecuperaPassword.css";
-import { alertCircleOutline, atOutline, checkmarkCircleOutline, checkmarkOutline, exitOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
+import { alertCircleOutline, atOutline, checkmarkCircleOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { FormModeEnum, VerificationCodeInputProps } from "./RecuperaPasswordInterfaces";
 import { backendService } from "../../services/backendService";
@@ -37,6 +37,13 @@ const RecuperaPassword: React.FC = () => {
         password: "",
         confirmPassword: ""
     });
+
+    const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+    
+      // Función para alternar la visibilidad de la contraseña
+      const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+      };
 
     const handleChangePsw = (e: any) => {
         setFormPsw({ ...formPassword, [e.target.name]: e.target.value });
@@ -290,31 +297,47 @@ const RecuperaPassword: React.FC = () => {
                             <span className="infoTextRP">
                                 Introduce tu nueva contraseña. Esta será la contraseña que quedará guardada en tu cuenta para futuros accesos.
                             </span>
-                            <IonItem className="form-itemRP">
-                                <label className="form-labelRP">Contraseña:</label>
-                                <IonInput
-                                    color={"success"}
-                                    placeholder="Nueva contraseña"
-                                    name="password"
-                                    type="password"
-                                    value={formPassword.password}
-                                    onIonChange={handleChangePsw}
-                                    clearInput={true}
-                                />
-                            </IonItem>
-
-                            <IonItem className="form-itemRP">
-                                <label className="form-labelRP">Confirmar contraseña:</label>
-                                <IonInput
-                                    color={"success"}
-                                    name="confirmPassword"
-                                    placeholder="Repite contraseña"
-                                    type="password"
-                                    value={formPassword.confirmPassword}
-                                    onIonChange={handleChangePsw}
-                                    clearInput={true}
-                                />
-                            </IonItem>
+                                <IonItem className="form-itemRP">
+                                            <label className="form-labelRP">Contraseña:</label>
+                                            <IonInput
+                                              color={"success"}
+                                              placeholder="Nueva contraseña"
+                                              name="password"
+                                              type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
+                                              value={formPassword.password}
+                                              onIonChange={handleChangePsw}
+                                              clearInput={true}
+                                            />
+                                            <IonButton
+                                              fill="clear"
+                                              size="small"
+                                              onClick={togglePasswordVisibility}
+                                              color="success"
+                                            >
+                                              {!showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
+                                            </IonButton>
+                                          </IonItem>
+                            
+                                          <IonItem className="form-itemRP">
+                                            <label className="form-labelRP">Confirmar Contraseña:</label>
+                                            <IonInput
+                                              color={"success"}
+                                              name="confirmPassword"
+                                              placeholder="Repite contraseña"
+                                              type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
+                                              value={formPassword.confirmPassword}
+                                              onIonChange={handleChangePsw}
+                                              clearInput={true}
+                                            />
+                                            <IonButton
+                                              fill="clear"
+                                              size="small"
+                                              onClick={togglePasswordVisibility}
+                                              color="success"
+                                            >
+                                              {!showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
+                                            </IonButton>
+                                          </IonItem>
 
                             <IonButton
                                 onClick={handleEstablecerPassword}
