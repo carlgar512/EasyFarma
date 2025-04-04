@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToolbar } from "@ionic/react";
 import { alertCircleOutline, atOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -6,6 +6,7 @@ import "./IniciarSesion.css";
 
 import React from "react";
 import { backendService } from "../../services/backendService";
+import NotificationToast from "../notification/NotificationToast";
 
 const IniciarSesion: React.FC = () => {
 
@@ -13,9 +14,14 @@ const IniciarSesion: React.FC = () => {
         dni: "",
         password: "",
     });
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
-    const [isSuccessToast, setIsSuccessToast] = useState(false);
+
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+
     const [loadSpinner, setLoadSpinner] = useState(false);
 
     const history = useHistory();
@@ -43,36 +49,47 @@ const IniciarSesion: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!form.dni || !form.password) {
-            console.log(form);
-            setToastMessage("Todos los campos son obligatorios");
-            setIsSuccessToast(false);
-            setShowToast(true);
+            showToast("Todos los campos son obligatorios", "danger", alertCircleOutline);
             return;
         }
         setLoadSpinner(true);
         console.log("Iniciando sesion...", form);
 
-        const response = await backendService.login({
-            dni: form.dni,
-            password: form.password
-        });
+        try {
+            // Llamada a la API de login
+            const response = await backendService.login({
+                dni: form.dni,
+                password: form.password,
+            });
 
-        setLoadSpinner(false);
-        if (response.success) {
-            setToastMessage("Sesión iniciada correctamente");
-            setIsSuccessToast(true);
-            setShowToast(true);
-            setTimeout(() => {
-                history.replace('/principal');
-            }, 1000);
-        } else {
-            setToastMessage("Error al iniciar sesion:" + response.error);
-            setIsSuccessToast(false);
-            setShowToast(true);
+            setLoadSpinner(false);
+
+            // Verifica la respuesta
+            if (response.success) {
+                showToast("Sesión iniciada correctamente", "success", checkmarkOutline);
+
+                // Redirige al usuario después de un pequeño retraso
+                setTimeout(() => {
+                    history.replace("/principal");
+                }, 1000);
+            } else {
+                showToast(`Error al iniciar sesión: ${response.error}`, "danger", alertCircleOutline);
+            }
+        } catch (error) {
+            setLoadSpinner(false);
+            console.error("Error en la solicitud de inicio de sesión:", error);
+            showToast("Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo.", "danger", alertCircleOutline);
         }
-
     };
 
+    const showToast = (message: string, color: string, icon: any) => {
+        setToast({
+            show: true,
+            message,
+            color,
+            icon,
+        });
+    };
 
     return (
         <IonPage>
@@ -163,21 +180,12 @@ const IniciarSesion: React.FC = () => {
                                     ¿Olvidaste la contraseña?, Recuperar contraseña
                                 </span>
                             </IonButton>
-
-                            <IonToast
-                                icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
-                                color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
-                                isOpen={showToast}
-                                onDidDismiss={() => setShowToast(false)}
-                                message={toastMessage}
-                                duration={2000}
-                                swipeGesture="vertical"
-                                buttons={[
-                                    {
-                                        text: 'Descartar',
-                                        role: 'cancel',
-                                    },
-                                ]}
+                            <NotificationToast
+                                icon={toast.icon}
+                                color={toast.color}
+                                message={toast.message}
+                                show={toast.show}
+                                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
                             />
 
                         </div>
