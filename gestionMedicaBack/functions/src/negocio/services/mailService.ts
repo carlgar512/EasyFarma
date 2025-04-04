@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 });
 
 
-export const sendCodeToEmail = async (email: string, code: string): Promise<void> => {
+export const sendCodeToEmailService = async (email: string, code: string): Promise<void> => {
     const logoPath = path.resolve(process.cwd(), "assets/imgs/Logo.png");
     
     const info = await transporter.sendMail({

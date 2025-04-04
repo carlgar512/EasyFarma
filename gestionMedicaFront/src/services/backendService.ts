@@ -67,13 +67,13 @@ const passwordReset = async ( dni: string, password: string ) => {
     return data;
 };
 
-const checkCode = async ( code: string ) => {
+const checkCode = async ( dni:string, code: string ) => {
     const response = await fetch(`${BASE_URL}/checkCode`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({dni, code }),
     });
     const data = await response.json();
     if (!response.ok) {

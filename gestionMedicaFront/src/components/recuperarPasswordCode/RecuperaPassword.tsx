@@ -61,7 +61,7 @@ const RecuperaPassword: React.FC = () => {
         history.replace('/SignIn')
     };
 
-    const handleBuscaDni = async () => {
+    const handleBuscaDniYCreaCodigo = async () => {
         const dni = formDni.dni?.toUpperCase().trim(); // Normaliza el DNI
         // Validación: vacío o mal formato
         const dniRegex = /^[0-9]{8}[A-Za-z]$/;
@@ -120,7 +120,7 @@ const RecuperaPassword: React.FC = () => {
         try {
             setMode(FormModeEnum.Loading);
 
-            const response = await backendService.checkCode(code);
+            const response = await backendService.checkCode(formDni.dni,code);
 
             if (!response.success) {
                 setToast({
@@ -154,7 +154,6 @@ const RecuperaPassword: React.FC = () => {
         }
     };
 
-    const handleReenvioCodigo = () => { }
 
     const handleEstablecerPassword = async () => {
         const { password, confirmPassword } = formPassword;
@@ -242,7 +241,7 @@ const RecuperaPassword: React.FC = () => {
                                 shape="round"
                                 size="default"
                                 className="ion-margin-top custom-buttonRP"
-                                onClick={handleBuscaDni}
+                                onClick={handleBuscaDniYCreaCodigo}
                             >
                                 <IonIcon icon={paperPlaneOutline} size="large" slot="icon-only"></IonIcon>
                                 <span className="buttonTextRP">
@@ -272,7 +271,7 @@ const RecuperaPassword: React.FC = () => {
                             </span>
                             <VerificationCodeInput onComplete={handleCompruebaCodigo} />
                             <IonButton
-                                onClick={handleReenvioCodigo}
+                                onClick={handleBuscaDniYCreaCodigo}
                                 expand="block"
                                 shape="round"
                                 size="default"

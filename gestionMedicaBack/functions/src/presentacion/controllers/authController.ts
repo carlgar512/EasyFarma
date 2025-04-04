@@ -1,5 +1,5 @@
-import { UsuarioDTO } from "../../negocio/dtos/UsuarioDTO";
-import { generateVerificationCode, loginUserWithDNI, maskEmail, registerUser, saveCodeForUser, searchUserByDNI } from "../../negocio/services/authService";
+
+import { checkVerificationCodeService, generateVerificationCodeService, loginUserWithDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
@@ -7,7 +7,7 @@ import { eventBus } from "../../serviciosComunes/event/event-emiter";
 export const loginHandler = onRequest(async (req, res) => {
   try {
     const { dni, password } = req.body;
-    const user = await loginUserWithDNI(dni, password);
+    const user = await loginUserWithDNIService(dni, password);
     res.status(200).json({ success: true, user });
   } catch (error: any) {
     res.status(401).json({ success: false, error: error.message });
@@ -19,8 +19,8 @@ export const registerHandler = onRequest(async (req, res) => {
   try {
     console.log("📩 [registerHandler] Request recibida:", req.body);
 
-    const data: UsuarioDTO & { password: string } = req.body;
-    const newUser = await registerUser(data);
+    const data: JSON & { password: string } = req.body;
+    const newUser = await registerUserService(data);
 
     res.status(201).json({
       success: true,
@@ -37,17 +37,18 @@ export const registerHandler = onRequest(async (req, res) => {
 });
 
 export const recoveryRequestHandler = onRequest(async (req, res) => {
-  const { dni } = req.body;
+
   try {
-    const userEmail = await searchUserByDNI(dni);
+    const { dni } = req.body;
+    const userEmail = await searchUserByDNIService(dni);
     if (!userEmail) {
       res.status(404).json({ success: false, message: "Usuario no encontrado." });
     }
 
-    const code = generateVerificationCode(); // ejemplo: 1234
-    await saveCodeForUser(dni, code);
+    const code = generateVerificationCodeService(); // ejemplo: 1234
+    await saveCodeForUserService(dni, code);
     eventBus.emit('send.verification.code', { email: userEmail, code });
-    const maskedEmail = maskEmail(userEmail); // ej: j***@gmail.com
+    const maskedEmail = maskEmailService(userEmail); // ej: j***@gmail.com
 
     res.status(201).json({
       success: true,
@@ -60,4 +61,35 @@ export const recoveryRequestHandler = onRequest(async (req, res) => {
   }
 });
 
+export const checkCodeHandler = onRequest(async (req, res) => {
+  try{
+    const { dni, code } = req.body;
 
+    const correcto= await checkVerificationCodeService(dni,code);
+
+    res.status(200).json({
+      success: correcto,
+    });
+
+  } catch (error) {
+    console.error("Error en checkCodeHandler:", error);
+    res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
+
+
+export const passwordResetHandler = onRequest(async (req, res) => {
+  try{
+    const { dni, password } = req.body;
+
+    const correcto= await passwordResetService(dni,password);
+
+    res.status(200).json({
+      success: correcto,
+    });
+
+  } catch (error) {
+    console.error("Error en checkCodeHandler:", error);
+    res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});

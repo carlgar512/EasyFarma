@@ -1,12 +1,12 @@
 import { deleteExpirationCode } from "../../persistencia/repositorios/expirationCodeDAO";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
-import { sendCodeToEmail } from "./mailService";
+import { sendCodeToEmailService } from "./mailService";
 
 
 
 eventBus.on('send.verification.code', async ({ email, code }) => {
   try {
-    await sendCodeToEmail(email, code);
+    await sendCodeToEmailService(email, code);
     console.log(`📧 Código enviado a ${email}`);
   } catch (err) {
     console.error(`❌ Error enviando código a ${email}:`, err);

@@ -36,7 +36,7 @@ export class CodigoExpiracion {
     }
 
     // Método para convertir de modelo de Firebase a objeto
-    public fromFirestoreObject(firebaseModel: any) {
+    public static fromFirestoreObject(firebaseModel: any):CodigoExpiracion {
         const dni = firebaseModel.dni;
         const code = firebaseModel.code;
         const expiresAt = new Date(firebaseModel.expiresAt); // Convierte el timestamp a Date
