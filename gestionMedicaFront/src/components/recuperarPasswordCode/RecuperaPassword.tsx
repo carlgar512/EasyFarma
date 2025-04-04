@@ -1,10 +1,12 @@
-import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToast, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToolbar } from "@ionic/react";
 import React, { useRef, useState } from "react";
 import "./RecuperaPassword.css";
 import { alertCircleOutline, atOutline, checkmarkCircleOutline, checkmarkOutline, exitOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
-import { FormModeEnum, NotificationProps, VerificationCodeInputProps } from "./RecuperaPasswordInterfaces";
+import { FormModeEnum, VerificationCodeInputProps } from "./RecuperaPasswordInterfaces";
 import { backendService } from "../../services/backendService";
+import NotificationToast from "../notification/NotificationToast";
+
 
 
 const RecuperaPassword: React.FC = () => {
@@ -338,7 +340,7 @@ const RecuperaPassword: React.FC = () => {
                     }
 
                 </div>
-                <Notification
+                <NotificationToast 
                     icon={toast.icon}
                     color={toast.color}
                     message={toast.message}
@@ -404,31 +406,4 @@ export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
         </div>
     );
 }
-
-export const Notification: React.FC<NotificationProps> = ({
-    icon,
-    color,
-    message,
-    show,
-    onClose,
-}) => {
-    return (
-        <IonToast
-            icon={icon}
-            color={color}
-            isOpen={show}
-            onDidDismiss={onClose}
-            message={message}
-            duration={2000}
-            swipeGesture="vertical"
-            buttons={[
-                {
-                    text: "Descartar",
-                    role: "cancel",
-                },
-            ]}
-        />
-    );
-};
-
 export default RecuperaPassword;

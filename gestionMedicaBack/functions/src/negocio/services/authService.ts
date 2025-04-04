@@ -1,7 +1,10 @@
+import { checkExpirationCodeExists, deleteExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
 import { saveUserToFirestore, getEmailByDNI, getUserById } from "../../persistencia/repositorios/userDAO";
 import { auth } from "../../presentacion/config/firebaseConfig";
 import { logger } from "../../presentacion/config/logger";
+import { eventBus } from "../../serviciosComunes/event/event-emiter";
 import { UsuarioDTO } from "../dtos/UsuarioDTO";
+import { CodigoExpiracion } from "../modelos/CodigoExpiracion";
 import { Usuario } from "../modelos/Usuario";
 
 
@@ -99,18 +102,48 @@ export const searchUserByDNI = async (dni: string) => {
   }
 };
 
-
+// Genera codigo verificación
 export const generateVerificationCode = () : string => {
   return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
 }
 
 
 
-export const saveCodeForUser = async (email: string, code: string): Promise<void> => {
-  //const expiresAt = Date.now() + 5 * 60 * 1000; // expira en 5 minutos
+export const saveCodeForUser = async (dni: string, code: string): Promise<void> => {
+  try {
+    logger.info(`Iniciando el proceso de guardado para el DNI: ${dni}`);
 
-  /*await db.collection("verification_codes").doc(email).set({
-    code,
-    expiresAt
-  }); */
+    const existeCode= await checkExpirationCodeExists(dni);
+    if(existeCode){
+      await deleteExpirationCode(dni);
+    }
+    // Crear la fecha de expiración (5 minutos)
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);  // Expira en 5 minutos
+
+    // Crear el código de expiración
+    const expirationCode: CodigoExpiracion = new CodigoExpiracion(dni, code, expiresAt);
+
+    // Llamar a la función para guardar el código en Firestore
+    await saveExpirationCodeToFirestore(expirationCode);
+    
+    eventBus.emit('schedule.deletion', { dni, expiresAt });
+    logger.info(`Código de expiración guardado correctamente en Firestore para el DNI: ${dni}`);
+  } catch (error) {
+    // Si algo falla
+    logger.error(`❌ Error al guardar el código de expiración para el DNI: ${dni}`, error);
+  }
+};
+
+export const maskEmail = (email: string): string => {
+  const [localPart, domain] = email.split('@'); // Divide el email en la parte local y el dominio
+
+  // Enmascara la parte local, dejando la primera letra visible y 5 asteriscos
+  const maskedLocalPart = localPart[0] + '*'.repeat(5);  // 5 asteriscos después de la primera letra
+
+  // Enmascara la parte del dominio (todo lo que está después de `@` queda igual)
+  const [domainName, tld] = domain.split('.');  // Divide el dominio en el nombre y el TLD (ej. "example" y "com")
+  const maskedDomainName = domainName;
+
+  // Devuelve el email con la parte local y el dominio enmascarados
+  return `${maskedLocalPart}@${maskedDomainName}.${tld}`;
 };

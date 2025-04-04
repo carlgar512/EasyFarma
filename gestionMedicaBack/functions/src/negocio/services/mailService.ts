@@ -14,11 +14,6 @@ const transporter = nodemailer.createTransport({
 
 export const sendCodeToEmail = async (email: string, code: string): Promise<void> => {
     const logoPath = path.resolve(process.cwd(), "assets/imgs/Logo.png");
-
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    console.log(logoPath);
-    console.log("USER:", env.EMAIL_USER);
-    console.log("PASS:", env.EMAIL_PASS);
     
     const info = await transporter.sendMail({
       from: `"EasyFarma Seguros" <${env.EMAIL_USER}>`,

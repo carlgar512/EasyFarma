@@ -9,11 +9,3 @@ export interface VerificationCodeInputProps {
     length?: number;
     onComplete?: (code: string) => void;
 }
-
-export interface NotificationProps {
-    icon: string;
-    color: string;
-    message: string;
-    show: boolean;
-    onClose: () => void;
-}

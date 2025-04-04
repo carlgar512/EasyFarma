@@ -1,5 +1,5 @@
 import { UsuarioDTO } from "../../negocio/dtos/UsuarioDTO";
-import { generateVerificationCode, loginUserWithDNI, registerUser, searchUserByDNI } from "../../negocio/services/authService";
+import { generateVerificationCode, loginUserWithDNI, maskEmail, registerUser, saveCodeForUser, searchUserByDNI } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
@@ -45,15 +45,13 @@ export const recoveryRequestHandler = onRequest(async (req, res) => {
     }
 
     const code = generateVerificationCode(); // ejemplo: 1234
-    console.log(code);
-    //await authService.saveCodeForUser(user.email, code);
+    await saveCodeForUser(dni, code);
     eventBus.emit('send.verification.code', { email: userEmail, code });
-
-    //const maskedEmail = maskEmail(user.email); // ej: j***@gmail.com
+    const maskedEmail = maskEmail(userEmail); // ej: j***@gmail.com
 
     res.status(201).json({
       success: true,
-      email: userEmail, // o solo algunos campos si prefieres
+      email: maskedEmail, // o solo algunos campos si prefieres
     });
 
   } catch (error) {
