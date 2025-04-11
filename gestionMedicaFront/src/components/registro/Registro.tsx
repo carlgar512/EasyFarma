@@ -175,7 +175,9 @@ const Registro: React.FC = () => {
 
         <IonContent fullscreen className="content">
           <div className="form-container">
-            <IonImg className="imagenReg" src="/register.svg"></IonImg>
+            <div className="imgContainer">
+              <IonImg className="imagenReg" src="/register.svg"></IonImg>
+            </div>
             <div className="form-card">
               <IonItem className="form-item">
                 <label className="form-label">Nombre:</label>

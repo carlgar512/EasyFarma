@@ -75,14 +75,19 @@
 
 .form-container {
   height: 100%;
+  margin-bottom: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
 }
-
+.imgContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .imagenReg {
-  max-width: 600px;
+  max-width: 400px;
 }
 
 @media (max-width: 600px) {

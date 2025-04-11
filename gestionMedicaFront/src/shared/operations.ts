@@ -100,7 +100,7 @@ export const perfilOperations: Operation[] = [
         description: "Elige tu modo de interfaz preferido y adapta la aplicación a tus necesidades.",
         type: "Perfil",
         icon: "constructOutline",
-        url: "/insured-card",
+        url: "/preferences",
         img: "preferencias.svg"
     },
     {
@@ -109,7 +109,7 @@ export const perfilOperations: Operation[] = [
         description: "Consulta y accede a tu tarjeta digital de asegurado de forma rápida y segura.",
         type: "Perfil",
         icon: "cardOutline",
-        url: "/appointment-history",
+        url: "/insured-card",
         img: "creditCard.svg"
     },
     {

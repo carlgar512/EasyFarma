@@ -39,12 +39,24 @@
 
 .labelContainer {
     background: white;
-    width: 90%;
+    width: 80%;
     height: 20vh;
     max-width: 1000px;
     max-height: 300px;
     border-radius: 16px;
     display: flex;
+    user-select: none; 
+    cursor: pointer;               /* 👉 Cambia el cursor al pasar por encima */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* animación suave */
+}
+
+.labelContainer:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* sombra al pasar el mouse */
+    transform: scale(1.02);                     /* efecto de "levantar" */
+}
+
+.labelContainer:active {
+    transform: scale(0.98);                     /* efecto al hacer clic */
 }
 
 .leftOperationLabel {

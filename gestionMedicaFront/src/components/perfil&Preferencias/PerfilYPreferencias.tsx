@@ -9,10 +9,13 @@ import { perfilOperations } from "../../shared/operations";
 import { sortOperations } from "../../shared/interfaces/Operation";
 
 import * as icons from 'ionicons/icons';
+import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+
 
 
 const PerfilYPreferencias: React.FC = () => {
     const [orderOperationType, setOperation] = useState(sortOperations(perfilOperations, "type"));
+
     return (
         <>
             <SideMenu />
@@ -32,6 +35,7 @@ const PerfilYPreferencias: React.FC = () => {
                     </div>
                 </IonContent>
                 <MainFooter />
+
             </IonPage>
         </>
     );
@@ -39,23 +43,70 @@ const PerfilYPreferencias: React.FC = () => {
 };
 
 const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
-    return (
+    const [showConfirm, setShowConfirm] = useState(false);
+    const initialModalConfig = {
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    };
+    const [modalConfig, setModalConfig] = useState(initialModalConfig);
 
-        <div className="labelContainer">
-            <div className="leftOperationLabel">
-                <IonIcon
-                    color={operation.id === 13 || operation.id === 14 ? 'danger' : 'success'}
-                    className="iconOperation"
-                    slot="icon-only"
-                    icon={(icons as Record<string, string>)[operation.icon]}
-                    size="large"
-                />
-                <span className="operationTittle">{operation.title}</span>
+    const handleOperation = () => {
+        if (operation.id === 13) {
+            console.log("Entra aqui 13");
+            setModalConfig({
+                tittle: operation.title,
+                message: "¿Estás seguro de que deseas cerrar sesión? Tu sesión se cerrará y deberás iniciar sesión nuevamente para continuar usando la aplicación.",
+                img: operation.img,
+                onConfirm: () => { }
+            });
+            setShowConfirm(true);
+        }
+        else if (operation.id === 14) {
+            console.log("Entra aqui 14");
+            setModalConfig({
+                tittle: operation.title,
+                message: "¿Estás seguro de que deseas dar de baja tu cuenta? Esta acción es permanente.Perderás el acceso a tu cuenta y a todos tus datos, y no podrás volver a acceder.",
+                img: operation.img,
+                onConfirm: () => { },
+            });
+            setShowConfirm(true);
+        }
+        else {
+            window.location.href = operation.url;
+        }
+    };
+
+
+    return (
+        <>
+            <div className="labelContainer" onClick={handleOperation}>
+                <div className="leftOperationLabel">
+                    <IonIcon
+                        color={operation.id === 13 || operation.id === 14 ? 'danger' : 'success'}
+                        className="iconOperation"
+                        slot="icon-only"
+                        icon={(icons as Record<string, string>)[operation.icon]}
+                        size="large"
+                    />
+                    <span className="operationTittle">{operation.title}</span>
+                </div>
+                <div className="rightOperationLabel">
+                    <IonImg src={operation.img} alt={operation.description} className="operationImg" />
+                </div>
             </div>
-            <div className="rightOperationLabel">
-                <IonImg src={operation.img} alt={operation.description} className="operationImg" />
-            </div>
-        </div>
+            <DobleConfirmacion
+                isOpen={showConfirm}
+                tittle={modalConfig.tittle}
+                message={modalConfig.message}
+                img={modalConfig.img}
+                onConfirm={modalConfig.onConfirm}
+                onCancel={() => setShowConfirm(false)}
+            />
+        </>
     )
 };
+
+
 export default PerfilYPreferencias;

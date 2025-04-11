@@ -188,7 +188,7 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
             </IonCard>
             <DobleConfirmacion
                 isOpen={showConfirm}
-                title="Descartar operación de favoritos"
+                tittle="Descartar operación de favoritos"
                 message={`¿Estás seguro de que deseas eliminar la operación ${operation.title} de tus favoritos? Podrás volver a añadirlo más tarde si lo deseas.`}
                 img="/doubleCheckFavourite.svg"
                 onConfirm={removeLiked}
