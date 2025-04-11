@@ -1,17 +1,19 @@
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
-import { arrowBackOutline, callOutline, fitnessOutline, homeOutline, logOutOutline, menuOutline, personCircleOutline, schoolOutline, starOutline, trashBin } from "ionicons/icons";
+import { callOutline, fitnessOutline, homeOutline, schoolOutline, starOutline } from "ionicons/icons";
 import "./PaginaPrincipal.css";
 import * as icons from 'ionicons/icons';
 import { useRef, useState } from "react";
 
-import {operations} from "../../shared/operations";
+import { operations } from "../../shared/operations";
 import React from "react";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
-import { Operation, sortOperations } from "../../shared/interfaces/Operation";
+import { sortOperations } from "../../shared/interfaces/Operation";
+import SideMenu from "../sideMenu/SideMenu";
+import MainHeader from "../mainHeader/MainHeader";
+import { OperationCardProps } from "./PaginaPrincipalInterfaces";
+import MainFooter from "../mainFooter/MainFooter";
 
-const logOut = () => {
-    window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
-};
+
 
 const handleEmergencyCall = () => {
     if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
@@ -49,72 +51,11 @@ const PaginaPrincipal: React.FC = () => {
     const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
     //TODO probar en telf y cambiar numero
 
-
     return (
         <>
-            <IonMenu type="overlay" contentId="main-content">
-                <IonHeader>
-                    <IonMenuToggle>
-                        <IonButton fill="clear" color="success">
-                            <IonIcon slot="icon-only" ios={arrowBackOutline}></IonIcon>
-                        </IonButton>
-                    </IonMenuToggle>
-                </IonHeader>
-                <IonContent className="ion-padding">
-
-                    {orderOperationType.map((operation, index) => {
-                        // Verificar si es el primer elemento o si el tipo ha cambiado
-                        const isFirstOfType = index === 0 || operation.type !== orderOperationType[index - 1].type;
-
-                        return (
-                            <div key={index}>
-                                {/* Encabezado solo cuando cambia el tipo */}
-                                {isFirstOfType &&
-                                    <IonItem button={false}>
-                                        <IonLabel
-                                            color={"medium"}
-                                            className="menuHeader">
-                                            <h1>{operation.type}</h1>
-                                        </IonLabel>
-                                    </IonItem>
-
-                                }
-
-                                {/* Renderización de la operación */}
-                                <IonItem button>
-                                    <IonIcon
-                                        color="success"
-                                        slot="start"
-                                        icon={(icons as Record<string, string>)[operation.icon]}
-                                        size="large"
-                                    />
-                                    <IonLabel >{operation.title}</IonLabel>
-                                </IonItem>
-                            </div>
-                        );
-                    })}
-                    <IonItem button={true} onClick={logOut} >
-                        <IonIcon color="danger" slot="start" ios={logOutOutline} size="large"></IonIcon>
-                        <IonLabel>Cerrar sesión</IonLabel>
-                    </IonItem>
-                </IonContent>
-            </IonMenu>
+        <SideMenu/>
             <IonPage id="main-content">
-                <IonHeader className="headerBar">
-                    <IonMenuToggle>
-                        <IonButton shape="round" className="upperButton" size="large" fill="outline">
-                            <IonIcon slot="icon-only" icon={menuOutline}></IonIcon>
-                        </IonButton>
-                    </IonMenuToggle>
-                    <div className="principalBar">
-                        <IonTitle>Inicio</IonTitle>
-                        <IonSearchbar className="searchBar" clearIcon={trashBin} value=""></IonSearchbar>
-                    </div>
-                    <IonButton shape="round" className="upperButton" size="large" fill="outline" id="Userpopover-button">
-                        <IonIcon slot="icon-only" icon={personCircleOutline}></IonIcon>
-                    </IonButton>
-                    <UserMenu />
-                </IonHeader>
+                <MainHeader/>
                 <IonContent fullscreen className="content">
                     <div className="contentContainer">
                         <div className="sectionContainer">
@@ -141,9 +82,6 @@ const PaginaPrincipal: React.FC = () => {
                                         <OperationCard operation={operation} key={operation.id} ></OperationCard>
                                     );
                                 })}
-
-
-
                             </div>
                         </div>
                         <div className="sectionContainer">
@@ -183,40 +121,10 @@ const PaginaPrincipal: React.FC = () => {
                             </div>
                         </div>
                     </div>
-
-
-
-
+                    
                     <EmergecyCall />
                 </IonContent>
-                <IonFooter className="iconBar">
-
-                    <div className="downItemContainer">
-                        <IonButton shape="round" size="large" fill="outline" className="downButton">
-                            <IonIcon slot="icon-only" ios={homeOutline}></IonIcon>
-                        </IonButton>
-                        <span>Inicio</span>
-                    </div>
-                    <div className="downItemContainer">
-                        <IonButton shape="round" size="large" fill="outline" className="downButton">
-                            <IonIcon slot="icon-only" ios={starOutline}></IonIcon>
-                        </IonButton>
-                        <span>Favoritos</span>
-                    </div>
-                    <div className="downItemContainer">
-                        <IonButton shape="round" size="large" fill="outline" className="downButton">
-                            <IonIcon slot="icon-only" ios={schoolOutline}> </IonIcon>
-                        </IonButton>
-                        <span>Médicos</span>
-                    </div>
-                    <div className="downItemContainer">
-                        <IonButton shape="round" size="large" fill="outline" className="downButton">
-                            <IonIcon slot="icon-only" ios={fitnessOutline}></IonIcon>
-                        </IonButton>
-                        <span>Tratamiento</span>
-                    </div>
-
-                </IonFooter>
+                <MainFooter/>
             </IonPage>
         </>
 
@@ -224,44 +132,9 @@ const PaginaPrincipal: React.FC = () => {
 };
 
 
-const UserMenu: React.FC = () => {
-
-
-    const perfilOperations = operations.filter(op => op.type === "Perfil");
-    //TODO meter las posibles opciones.
-    return (
-
-        <IonPopover trigger="Userpopover-button" dismissOnSelect={true}>
-            <IonContent>
-                <IonList>
-                    {perfilOperations.map((operation, index) => (
-                        <IonItem button={true} detail={false} key={index}>
-                            <IonLabel>{operation.title}</IonLabel>
-                            <IonIcon aria-hidden={true} slot="end" icon={(icons as Record<string, string>)[operation.icon]}></IonIcon>
-                        </IonItem>
-                    ))}
-                    <IonItem color="danger" button={true} detail={false} onClick={logOut} >
-                        <IonLabel>Cerrar sesión</IonLabel>
-                        <IonIcon aria-hidden={true} slot="end" ios={logOutOutline}></IonIcon>
-                    </IonItem>
-                </IonList>
-            </IonContent>
-        </IonPopover>
-
-    );
-};
-
-
-
-interface OperationCardProps {
-    operation: Operation;
-}
 const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
     const [isLiked, setIsLiked] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-
-
-
     const toggleLike = () => {
         if (isLiked) {
             setShowConfirm(true)
@@ -317,7 +190,7 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
                 isOpen={showConfirm}
                 title="Descartar operación de favoritos"
                 message={`¿Estás seguro de que deseas eliminar la operación ${operation.title} de tus favoritos? Podrás volver a añadirlo más tarde si lo deseas.`}
-                img= "/doubleCheckFavourite.svg"
+                img="/doubleCheckFavourite.svg"
                 onConfirm={removeLiked}
                 onCancel={() => setShowConfirm(false)}
             />

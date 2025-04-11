@@ -1,0 +1,33 @@
+.headerBar {
+    background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
+    padding: 0 20px 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.principalBar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding-top: 20px;
+    gap: 10px;
+    color: var(--ion-color-customUltraLight);
+    font-weight: bold;
+    font-family: var(--font-primary);
+    width: 100%;
+}
+
+.upperButton {
+    padding-top: 20px;
+    color: var(--ion-color-customUltraLight);
+    --border-color: var(--ion-color-customUltraLight) !important;
+}
+
+.tittleBarText{
+    font-size: 1.7rem;
+    font-weight: bold;
+}
