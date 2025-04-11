@@ -18,7 +18,6 @@ const TarjetaSeguro: React.FC = () => {
     };
     const [Open, setIsOpen] = useState(false);
 
-
     return (
         <>
             <SideMenu />
@@ -49,8 +48,6 @@ const TarjetaSeguro: React.FC = () => {
                         </div>
 
                     </div>
-
-
                     <IonModal isOpen={Open}>
                         <IonContent className="ion-padding">
                             <div className="modalContent">
@@ -68,7 +65,6 @@ const TarjetaSeguro: React.FC = () => {
                     </IonModal>
                 </IonContent>
                 <MainFooter />
-
             </IonPage>
         </>
 

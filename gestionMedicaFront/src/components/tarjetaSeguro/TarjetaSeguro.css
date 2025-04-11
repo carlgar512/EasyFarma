@@ -39,7 +39,7 @@
     align-items: center;
 }
 
-.buttonContainerCredit{
+.buttonContainerCredit {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -48,36 +48,39 @@
     gap: 10px;
 }
 
-.cardButton1{
+.cardButton1 {
     width: 90%;
     max-width: 1000px;
     --background: var(--ion-color-customDark);
 }
-.cardButton2{
+
+.cardButton2 {
     width: 90%;
     max-width: 1000px;
     --background: var(--ion-color-customRed);
 }
-.buttonTextCredit{
-    font-weight: bold ;
+
+.buttonTextCredit {
+    font-weight: bold;
     width: 80%;
 }
 
-.cardButton1:hover, 
-.cardButton2:hover{
-  transform: scale(1.02);
-  transition: 0.3s ease-in-out;
+.cardButton1:hover,
+.cardButton2:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
 }
 
 
 /*  Modal QR #########################################################*/
-.modalText{
+.modalText {
     font-size: 1.4rem;
     font-weight: bold;
     text-align: center;
     width: 90%;
 }
-.tittleContainerModal{
+
+.tittleContainerModal {
     color: var(--ion-color-customDark);
     display: flex;
     justify-content: center;
@@ -85,13 +88,15 @@
     gap: 10px;
     margin: 10px;
 }
-.modalContent{
+
+.modalContent {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
     height: 100%;
 }
+
 /*  CREDIT CARD #########################################################*/
 
 .creditCard {
@@ -128,12 +133,10 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-        120deg,
-        transparent,
-        rgba(255, 255, 255, 0.2),
-        transparent
-    );
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
     transform: rotate(25deg);
     pointer-events: none;
     opacity: 0;
@@ -151,6 +154,7 @@
     0% {
         transform: translateX(-100%) rotate(25deg);
     }
+
     100% {
         transform: translateX(100%) rotate(25deg);
     }
@@ -214,4 +218,5 @@
     top: 6.5em;
     left: 13em;
 }
+
 /*  CREDIT CARD #########################################################*/
