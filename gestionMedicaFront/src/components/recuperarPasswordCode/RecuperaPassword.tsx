@@ -85,7 +85,7 @@ const RecuperaPassword: React.FC = () => {
         try {
             setMode(FormModeEnum.Loading);
 
-            const response = await backendService.recoveryRequest(formDni.dni);
+            const response = await backendService.recoveryRequest(dni);
 
             if (!response.success) {
                 setToast({

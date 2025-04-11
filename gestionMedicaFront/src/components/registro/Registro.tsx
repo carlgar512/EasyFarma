@@ -7,16 +7,11 @@ import {
   IonItem,
   IonPage,
   IonToolbar,
-  IonToast,
   IonIcon,
   IonDatetime,
   IonSpinner,
   IonImg,
-  IonPopover,
-  IonLabel,
-  IonTitle,
   IonModal,
-  IonButtons,
 } from "@ionic/react";
 import "./Registro.css"; // Importa el archivo CSS
 import { alertCircleOutline, calendarNumberOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, personAddOutline, personOutline } from 'ionicons/icons';
@@ -67,7 +62,7 @@ const Registro: React.FC = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-  
+
   const handleLoginClick = () => {
     history.replace('/signIn')
   };
@@ -87,10 +82,22 @@ const Registro: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const dni = form.dni?.toUpperCase().trim(); // Normaliza el DNI
+    // Validación: vacío o mal formato
+    const dniRegex = /^[0-9]{8}[A-Za-z]$/;
     if (!form.name || !form.lastName || !form.dni || !form.email || !form.tlf || !form.password || !form.confirmPassword || !form.dateNac) {
       setToast({
         show: true,
         message: "Todos los campos son obligatorios",
+        color: "danger",
+        icon: alertCircleOutline,
+      });
+      return;
+    }
+    else if (!dniRegex.test(dni)) {
+      setToast({
+        show: true,
+        message: "Por favor, introduce un DNI válido.",
         color: "danger",
         icon: alertCircleOutline,
       });
@@ -111,7 +118,7 @@ const Registro: React.FC = () => {
     const response = await backendService.register({
       name: form.name,
       lastName: form.lastName,
-      dni: form.dni,
+      dni: dni,
       email: form.email,
       tlf: form.tlf,
       dateNac: form.dateNac,
@@ -249,7 +256,7 @@ const Registro: React.FC = () => {
                   onClick={togglePasswordVisibility}
                   color="success"
                 >
-                  {showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
+                  {showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
                 </IonButton>
               </IonItem>
 
@@ -270,7 +277,7 @@ const Registro: React.FC = () => {
                   onClick={togglePasswordVisibility}
                   color="success"
                 >
-                  {showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
+                  {showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
                 </IonButton>
               </IonItem>
 
