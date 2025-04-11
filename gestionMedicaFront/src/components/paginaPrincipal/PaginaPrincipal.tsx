@@ -1,5 +1,5 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonImg, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonPage, IonPopover, IonSearchbar, IonTitle } from "@ionic/react";
-import { callOutline, fitnessOutline, homeOutline, schoolOutline, starOutline } from "ionicons/icons";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonIcon, IonImg, IonPage} from "@ionic/react";
+import { callOutline, starOutline } from "ionicons/icons";
 import "./PaginaPrincipal.css";
 import * as icons from 'ionicons/icons';
 import { useRef, useState } from "react";
@@ -55,7 +55,7 @@ const PaginaPrincipal: React.FC = () => {
         <>
         <SideMenu/>
             <IonPage id="main-content">
-                <MainHeader/>
+                <MainHeader tittle="Inicio"/>
                 <IonContent fullscreen className="content">
                     <div className="contentContainer">
                         <div className="sectionContainer">

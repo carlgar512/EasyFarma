@@ -83,3 +83,51 @@ export const operations: Operation[] = [
         img: "familia.svg"
     }
 ];
+
+export const perfilOperations: Operation[] = [
+    {
+        id: 10,
+        title: "Modificar información de perfil",
+        description: "Modificá tus datos de usuario registrados y mantené tu perfil actualizado.",
+        type: "Perfil",
+        icon: "createOutline",
+        url: "/editProfile",
+        img: "editPerfil.svg"
+    },
+    {
+        id: 11,
+        title: "Preferencias de accesibilidad",
+        description: "Elige tu modo de interfaz preferido y adapta la aplicación a tus necesidades.",
+        type: "Perfil",
+        icon: "constructOutline",
+        url: "/insured-card",
+        img: "preferencias.svg"
+    },
+    {
+        id: 12,
+        title: "Tarjeta del asegurado",
+        description: "Consulta y accede a tu tarjeta digital de asegurado de forma rápida y segura.",
+        type: "Perfil",
+        icon: "cardOutline",
+        url: "/appointment-history",
+        img: "creditCard.svg"
+    },
+    {
+        id: 13,
+        title: "Cerrar sesión",
+        description: "Cierra tu sesión actual y protege tu información personal.",
+        type: "Perfil",
+        icon: "exitOutline",
+        url: "/logout",
+        img: "cerrarSesion.svg"
+    },
+    {
+        id: 14,
+        title: "Baja de cuenta",
+        description: "Elimina tu cuenta de forma permanente y borra todos tus datos registrados.",
+        type: "Perfil",
+        icon: "trashOutline",
+        url: "/account-delete",
+        img: "bajaCuenta.svg"
+    },
+];

@@ -4,24 +4,25 @@ import React from "react";
 import { operations } from "../../shared/operations";
 import * as icons from 'ionicons/icons';
 import "./MainHeader.css";
+import { MainHeaderProps } from "./MainHeaderInterfaces";
 
-const MainHeader: React.FC = () => {
+const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
 
     return (
-    <IonHeader className="headerBar">
-        <IonMenuToggle>
-            <IonButton shape="round" className="upperButton" size="large" fill="outline">
-                <IonIcon slot="icon-only" icon={menuOutline}></IonIcon>
+        <IonHeader className="headerBar">
+            <IonMenuToggle>
+                <IonButton shape="round" className="upperButton" size="large" fill="outline">
+                    <IonIcon slot="icon-only" icon={menuOutline}></IonIcon>
+                </IonButton>
+            </IonMenuToggle>
+            <div className="principalBar">
+                <IonTitle size="large" className="tittleBarText">{tittle}</IonTitle>
+            </div>
+            <IonButton shape="round" className="upperButton" size="large" fill="outline" id="Userpopover-button">
+                <IonIcon slot="icon-only" icon={personCircleOutline}></IonIcon>
             </IonButton>
-        </IonMenuToggle>
-        <div className="principalBar">
-            <IonTitle size="large" className="tittleBarText">Inicio</IonTitle>
-        </div>
-        <IonButton shape="round" className="upperButton" size="large" fill="outline" id="Userpopover-button">
-            <IonIcon slot="icon-only" icon={personCircleOutline}></IonIcon>
-        </IonButton>
-        <UserMenu />
-    </IonHeader>
+            <UserMenu />
+        </IonHeader>
     );
 };
 

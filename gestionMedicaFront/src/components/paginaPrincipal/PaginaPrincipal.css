@@ -26,6 +26,14 @@ ion-fab-button {
     gap: 10px;
 }
 
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
 
 .contentContainer {
     display: flex;
