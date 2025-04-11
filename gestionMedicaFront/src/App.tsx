@@ -1,11 +1,7 @@
 import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
-  IonIcon,
-  IonLabel,
   IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
   IonTabs,
   setupIonicReact
 } from '@ionic/react';
@@ -50,6 +46,9 @@ import React from 'react';
 import PaginaPrincipal from './components/paginaPrincipal/PaginaPrincipal';
 import PerfilYPreferencias from './components/perfil&Preferencias/PerfilYPreferencias';
 import RecuperaPassword from './components/recuperarPasswordCode/RecuperaPassword';
+import ModificaPerfil from './components/modificaPerfil/ModificaPerfil';
+import Preferencias from './components/preferencias/Preferencias';
+import TarjetaSeguro from './components/tarjetaSeguro/TarjetaSeguro';
 
 
 setupIonicReact();
@@ -76,6 +75,15 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/profile">
             <PerfilYPreferencias />
+          </Route>
+          <Route exact path="/editProfile">
+            <ModificaPerfil />
+          </Route>
+          <Route exact path="/preferences">
+            <Preferencias />
+          </Route>
+          <Route exact path="/insured-card">
+            <TarjetaSeguro />
           </Route>
           <Route exact path="/">
             <Redirect to="/lobby" />
