@@ -3,7 +3,7 @@ import SideMenu from "../sideMenu/SideMenu";
 import { IonButton, IonCheckbox, IonContent, IonIcon, IonImg, IonPage } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import MainFooter from "../mainFooter/MainFooter";
-import { arrowBackOutline, constructOutline, saveOutline } from "ionicons/icons";
+import { arrowBackOutline, constructOutline, folderOutline} from "ionicons/icons";
 import './Preferencias.css'
 
 const Preferencias: React.FC = () => {
@@ -15,6 +15,7 @@ const Preferencias: React.FC = () => {
             setAccesibilidad(nuevaVistaEsAccesible);
         }
     };
+    
     const handleVolver = () => {
         window.history.back();
     };
@@ -92,7 +93,7 @@ const Preferencias: React.FC = () => {
                                 onClick={guardarPreferencias}
                                 disabled={accesibilidad === valorOriginal}
                             >
-                                <IonIcon slot="start" icon={saveOutline}></IonIcon>
+                                <IonIcon slot="start" icon={folderOutline}></IonIcon>
                                 <span className="buttonTextP">Guardar cambios</span>
                             </IonButton>
                             <IonButton size="large" expand="full" shape="round" className="PButton2" onClick={handleVolver}>

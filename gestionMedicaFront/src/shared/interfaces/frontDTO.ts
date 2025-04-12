@@ -12,4 +12,3 @@ export interface LoginDTO {
     dni: string;
     password: string;
   }
-  

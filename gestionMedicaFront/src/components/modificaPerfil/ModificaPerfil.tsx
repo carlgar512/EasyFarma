@@ -1,8 +1,115 @@
-import React from "react";
+import React, { useState } from "react";
+import SideMenu from "../sideMenu/SideMenu";
+import { IonButton, IonContent, IonIcon, IonInput, IonItem, IonLabel, IonPage } from "@ionic/react";
+import MainHeader from "../mainHeader/MainHeader";
+import MainFooter from "../mainFooter/MainFooter";
+import { arrowBackOutline, atOutline, brushOutline, optionsOutline } from "ionicons/icons";
+import './ModificaPerfil.css'
 
 const ModificaPerfil: React.FC = () => {
-    return(
-        <>ModificaPerfil</>
+
+    const [form, setForm] = useState({
+        name: "Carlos",
+        lastName: "Garcia",
+        dni: "71315332Z",
+        dateNac: "15/11/2001",
+        email: "cargarmisa@gmail.com",
+        direccion: "Calle Caceres 14 Tudela de Duero Valladolid",
+        tlf: "600882146",
+        password: "",
+        confirmPassword: "",
+        tipoUsuario: "Regular",
+    });
+
+    const handleChange = (e: any) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleCambiarContraseña = () => {
+      
+    };
+
+    const handleVolver = () => {
+        window.history.back();
+    };
+
+    return (
+        <>
+            <SideMenu />
+            <IonPage id="main-content">
+                <MainHeader tittle="Mi perfil & preferencias" />
+                <IonContent fullscreen className="contentMP">
+                    <div className="contentMPCentral">
+                        <div className="titleContainerMP">
+                            <IonIcon
+                                className="iconOperation"
+                                slot="icon-only"
+                                icon={optionsOutline}
+                                size="large"
+                            />
+                            <span className="tittleTextMP">Buenas tardes, {form.name}</span>
+                        </div>
+                        <div className="infoContainer">
+                            <DatoUsuario label="Nombre:" value={form.name} editable={false} />
+                            <DatoUsuario label="Apellidos:" value={form.lastName} editable={false} />
+                            <DatoUsuario label="Dni:" value={form.dni} editable={false} />
+                            <DatoUsuario label="Fecha de nacimiento:" value={form.dateNac} editable={false} />
+                            <DatoUsuario label="Email:" value={form.email} editable={true} />
+                            <DatoUsuario label="Dirección:" value={form.direccion} editable={true} />
+                            <DatoUsuario label="Teléfono:" value={form.tlf} editable={true} />
+                            <DatoUsuario label="Tipo de usuario:" value={form.tipoUsuario} editable={false} />
+                            <IonButton
+                                onClick={handleCambiarContraseña}
+                                expand="block"
+                                shape="round"
+                                size="default"
+                                className="ion-margin-top buttonCambiarPsw"
+                            >
+                                <IonIcon icon={atOutline} size="large" slot="icon-only"></IonIcon>
+                                <span className="buttonTextMP">
+                                    Cambiar contraseña
+                                </span>
+                            </IonButton>
+
+                            <IonButton
+                                onClick={handleVolver}
+                                expand="block"
+                                shape="round"
+                                size="large"
+                                className="ion-margin-top buttonVolver"
+                            >
+                                <IonIcon icon={arrowBackOutline} size="large" slot="icon-only"></IonIcon>
+                                <span className="buttonTextMP">
+                                    Volver
+                                </span>
+                            </IonButton>
+                        </div>
+
+                    </div>
+
+                </IonContent>
+                <MainFooter />
+            </IonPage>
+        </>
+    );
+};
+
+
+const DatoUsuario: React.FC<DatoUsuarioProps> = ({ label, value, editable = false }) => {
+    return (
+        <div className="form-itemMP">
+            <label className="form-labelMP">{label}</label>
+            <IonLabel className="form-inputMP">{value}</IonLabel>
+
+            <div className="buttonContainer">
+                {editable && (
+                    <IonButton className="buttonEdit">
+                        <IonIcon slot="icon-only" icon={brushOutline} size="large" />
+                    </IonButton>
+                )}
+            </div>
+
+        </div>
     );
 };
 
