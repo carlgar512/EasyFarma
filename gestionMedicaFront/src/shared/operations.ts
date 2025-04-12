@@ -87,10 +87,10 @@ export const operations: Operation[] = [
 export const perfilOperations: Operation[] = [
     {
         id: 10,
-        title: "Modificar información de perfil",
+        title: "Mi cuenta",
         description: "Modificá tus datos de usuario registrados y mantené tu perfil actualizado.",
         type: "Perfil",
-        icon: "createOutline",
+        icon: "optionsOutline",
         url: "/editProfile",
         img: "editPerfil.svg"
     },
