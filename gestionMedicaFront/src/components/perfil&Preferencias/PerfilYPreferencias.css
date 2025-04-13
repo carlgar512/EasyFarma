@@ -96,3 +96,14 @@
     --width: 100px;
     --color: var(--ion-color-customDark);
 }
+
+.buttonReturn{
+    --background: var(--ion-color-customRed);
+    border-radius: 32px;
+    width: 80%;
+    max-width: 1000px;
+}
+.buttonReturn:hover{
+  transform: scale(1.02);
+  transition: 0.3s ease-in-out;
+}

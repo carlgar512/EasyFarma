@@ -1,4 +1,4 @@
-import { IonContent, IonIcon, IonImg, IonPage } from "@ionic/react";
+import { IonButton, IonContent, IonIcon, IonImg, IonPage } from "@ionic/react";
 import React, { useState } from "react";
 import MainHeader from "../mainHeader/MainHeader";
 import SideMenu from "../sideMenu/SideMenu";
@@ -14,6 +14,9 @@ import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 
 
 const PerfilYPreferencias: React.FC = () => {
+    const handleVolver = () => {
+        window.history.back();
+    };
     const [orderOperationType, setOperation] = useState(sortOperations(perfilOperations, "type"));
 
     return (
@@ -32,7 +35,19 @@ const PerfilYPreferencias: React.FC = () => {
                                 <OperationLabel operation={operation} key={operation.id} ></OperationLabel>
                             );
                         })}
+                         <IonButton 
+                         className="buttonReturn" 
+                         shape="round" 
+                         size="large" 
+                         expand="full"
+                         onClick={handleVolver}
+                         >
+                        <IonIcon icon={icons.arrowBackOutline}></IonIcon>
+                        <span className="buttonText">Volver</span>
+                        </IonButton>
                     </div>
+
+                    
                 </IonContent>
                 <MainFooter />
 
