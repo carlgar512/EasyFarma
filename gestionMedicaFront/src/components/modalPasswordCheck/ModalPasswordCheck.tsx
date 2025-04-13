@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { arrowForwardOutline, closeOutline, eyeOff, eyeOutline, lockClosedOutline } from "ionicons/icons";
 import './ModalPasswordCheck.css'
 
-const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsModalOpen }) => {
+const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsModalOpen, dni, onSuccess }) => {
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -13,11 +13,12 @@ const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsMo
     };
 
     const checkPsw = () => {
-        //TODO Back envia dni y Psw
+        //Llamada al back
+        onSuccess(); // Llama a la función recibida desde props
     };
 
     return (
-        <IonModal  isOpen={isOpen} onDidDismiss={() => setIsModalOpen(false)}>
+        <IonModal isOpen={isOpen} onDidDismiss={() => setIsModalOpen(false)}>
             <IonContent className="ion-padding">
                 <div className="modalContainerPw">
                     {/* Título */}
@@ -39,13 +40,13 @@ const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsMo
                     {/* Input */}
 
                     <div className="pwCheckInputContainer">
-                        
+
                         <IonInput
                             placeholder="Introduce tu contraseña"
                             className="form-inputPW"
                             clearInput
                             color={"success"}
-                            type={showPassword ? "text" : "password"} 
+                            type={showPassword ? "text" : "password"}
                         />
                         <IonButton
                             fill="clear"
