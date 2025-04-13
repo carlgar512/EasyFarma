@@ -25,7 +25,7 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
-import 'leaflet/dist/leaflet.css';
+
 
 
 /**
@@ -52,7 +52,7 @@ import RecuperaPassword from './components/recuperarPasswordCode/RecuperaPasswor
 import ModificaPerfil from './components/modificaPerfil/ModificaPerfil';
 import Preferencias from './components/preferencias/Preferencias';
 import TarjetaSeguro from './components/tarjetaSeguro/TarjetaSeguro';
-
+import 'leaflet/dist/leaflet.css';
 
 setupIonicReact();
 

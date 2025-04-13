@@ -8,6 +8,7 @@ import './ModificaPerfil.css'
 import { DatoUsuarioProps, FormularioUsuario, ModalCambioDatoRegularProps } from "./ModificaPerfilInterfaces";
 import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
 import NotificationToast from "../notification/NotificationToast";
+import MapComponent from "../mapComponent/MapComponent";
 
 const ModificaPerfil: React.FC = () => {
 
@@ -352,8 +353,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
 
                                     {/* Aquí irá el mapa */}
                                     <div className="mapContainer">
-                                        Mapa
-                                        {/*<MapComponent onSelect={(direccion) => setNuevaDireccion(direccion)} /> */}
+                                        <MapComponent onSelect={(direccion) => setNuevaDireccion(direccion)}  direccionInicial={valor ?? "Valladolid"}/>
                                     </div>
                                 </div>
                             ) :

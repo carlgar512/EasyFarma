@@ -252,3 +252,14 @@
 }
 
 /*Modal Dato Regular*/
+
+.mapContainer {
+    margin-top: 16px;
+    border: 2px solid var(--ion-color-customUltraLight);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
