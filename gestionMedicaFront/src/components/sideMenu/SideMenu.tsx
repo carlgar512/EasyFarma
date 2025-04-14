@@ -5,10 +5,13 @@ import * as icons from 'ionicons/icons';
 import { sortOperations } from "../../shared/interfaces/Operation";
 import { operations } from "../../shared/operations";
 import './SideMenu.css'
+import { useAuth } from "../../context/AuthContext"; 
 
 const SideMenu: React.FC = () => {
-      const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
+    const {logout} = useAuth();
+    const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
     const logOut = () => {
+        logout();
         window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
     };
 

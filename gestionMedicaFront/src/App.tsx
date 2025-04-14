@@ -53,48 +53,53 @@ import ModificaPerfil from './components/modificaPerfil/ModificaPerfil';
 import Preferencias from './components/preferencias/Preferencias';
 import TarjetaSeguro from './components/tarjetaSeguro/TarjetaSeguro';
 import 'leaflet/dist/leaflet.css';
+import { AuthProvider } from './context/AuthContext'; // Ajustá el path si es necesario
+
 
 setupIonicReact();
 
 const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/register">
-            <Registro />
-          </Route>
-          <Route exact path="/lobby">
-            <Lobby />
-          </Route>
-          <Route exact path="/signIn">
-            <IniciarSesion />
-          </Route>
-          <Route exact path="/passwordReset">
-            <RecuperaPassword />
-          </Route>
-          <Route exact path="/principal">
-            <PaginaPrincipal />
-          </Route>
-          <Route exact path="/profile">
-            <PerfilYPreferencias />
-          </Route>
-          <Route exact path="/editProfile">
-            <ModificaPerfil />
-          </Route>
-          <Route exact path="/preferences">
-            <Preferencias />
-          </Route>
-          <Route exact path="/insured-card">
-            <TarjetaSeguro />
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/lobby" />
-          </Route>
-        </IonRouterOutlet>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
+  <AuthProvider>
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route exact path="/register">
+              <Registro />
+            </Route>
+            <Route exact path="/lobby">
+              <Lobby />
+            </Route>
+            <Route exact path="/signIn">
+              <IniciarSesion />
+            </Route>
+            <Route exact path="/passwordReset">
+              <RecuperaPassword />
+            </Route>
+            <Route exact path="/principal">
+              <PaginaPrincipal />
+            </Route>
+            <Route exact path="/profile">
+              <PerfilYPreferencias />
+            </Route>
+            <Route exact path="/editProfile">
+              <ModificaPerfil />
+            </Route>
+            <Route exact path="/preferences">
+              <Preferencias />
+            </Route>
+            <Route exact path="/insured-card">
+              <TarjetaSeguro />
+            </Route>
+            <Route exact path="/">
+              <Redirect to="/lobby" />
+            </Route>
+          </IonRouterOutlet>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  </AuthProvider>
 );
+
 
 export default App;

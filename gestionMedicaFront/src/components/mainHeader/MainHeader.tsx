@@ -6,12 +6,11 @@ import * as icons from 'ionicons/icons';
 import "./MainHeader.css";
 import { MainHeaderProps } from "./MainHeaderInterfaces";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import { useAuth } from "../../context/AuthContext"; 
 
-const logOut = () => {
-    window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
-};
 
 const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
+    
 
     return (
         <>
@@ -36,6 +35,12 @@ const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
 
 const UserMenu: React.FC = () => {
     const [showConfirm, setShowConfirm] = useState(false);
+    const {logout} = useAuth();
+    const logOut = () => {
+        logout();
+        window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
+    };
+    
 
     const perfilOperations = operations.filter(op => op.type === "Perfil");
     //TODO meter las posibles opciones.

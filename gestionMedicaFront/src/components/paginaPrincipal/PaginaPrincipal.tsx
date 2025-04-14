@@ -2,7 +2,7 @@ import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCon
 import { callOutline, starOutline } from "ionicons/icons";
 import "./PaginaPrincipal.css";
 import * as icons from 'ionicons/icons';
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { operations } from "../../shared/operations";
 import React from "react";
@@ -12,6 +12,7 @@ import SideMenu from "../sideMenu/SideMenu";
 import MainHeader from "../mainHeader/MainHeader";
 import { OperationCardProps } from "./PaginaPrincipalInterfaces";
 import MainFooter from "../mainFooter/MainFooter";
+import { useAuth } from "../../context/AuthContext"; // Asegúrate de poner la ruta correcta
 
 
 
@@ -24,6 +25,13 @@ const handleEmergencyCall = () => {
 };
 
 const PaginaPrincipal: React.FC = () => {
+    
+    //const { user, token , logout} = useAuth();
+    /*useEffect(() => {
+        console.log("👤 Usuario en contexto:", user);
+        console.log("🔐 Token en contexto:", token);
+      }, [user, token]);
+      */
 
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);

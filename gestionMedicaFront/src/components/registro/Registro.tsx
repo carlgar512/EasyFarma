@@ -19,8 +19,11 @@ import { useHistory } from "react-router-dom";
 import React from "react";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
+import { useAuth } from "../../context/AuthContext"; // Ajusta el path si es necesario
+
 
 const Registro: React.FC = () => {
+  const { setAuth } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -145,7 +148,9 @@ const Registro: React.FC = () => {
 
     //console.log(response);
     setLoadSpinner(false);
+
     if (response.success) {
+      setAuth(response.user, response.token);
       setToast({
         show: true,
         message: "Registro exitoso",

@@ -7,8 +7,12 @@ import "./IniciarSesion.css";
 import React from "react";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
+import { useAuth } from "../../context/AuthContext"; // Ajusta el path si es necesario
+
 
 const IniciarSesion: React.FC = () => {
+    const { setAuth } = useAuth();
+
 
     const [form, setForm] = useState({
         dni: "",
@@ -66,7 +70,6 @@ const IniciarSesion: React.FC = () => {
             return;
         }
             setLoadSpinner(true);
-            console.log("Iniciando sesion...", form);
 
             try {
                 // Llamada a la API de login
@@ -79,6 +82,7 @@ const IniciarSesion: React.FC = () => {
 
                 // Verifica la respuesta
                 if (response.success) {
+                    setAuth(response.user, response.token);
                     showToast("Sesión iniciada correctamente", "success", checkmarkOutline);
 
                     // Redirige al usuario después de un pequeño retraso
