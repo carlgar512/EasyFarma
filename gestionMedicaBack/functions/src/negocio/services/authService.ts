@@ -1,5 +1,5 @@
 import {  deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
-import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUserByEmailFromAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
+import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 import { CodigoExpiracion } from "../modelos/CodigoExpiracion";
@@ -8,47 +8,52 @@ import { Usuario } from "../modelos/Usuario";
 /**
  * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore
  */
-export const registerUserService = async (userData:any & { password: string }) => {
+export const registerUserService = async (userData: any & { password: string }) => {
   try {
-    console.log("➡️ Registrando usuario:", userData.email);
+    logger.info(`➡️ Registrando usuario: ${userData.email}`);
 
     const userRecord = await createUserInAuth(userData.email, userData.password);
 
-    console.log("✅ Usuario creado en Firebase Auth:", userRecord.uid);
-    const user :Usuario = new Usuario(userData.dni,userData.email,userData.name,userData.lastName,userData.dateNac,userData.tlf);
+    logger.info?.(`✅ Usuario creado en Firebase Auth: ${userRecord.uid}`); // usa logger.info si no tienes logger.success
+    const user: Usuario = new Usuario(
+      userData.dni,
+      userData.email,
+      userData.name,
+      userData.lastName,
+      userData.dateNac,
+      userData.tlf
+    );
     user.setIdUsuario(userRecord.uid);
 
-    console.log("📝 Guardando en Firestore:", user.getIdUsuario());
+    logger.info(`📝 Guardando en Firestore: ${user.getIdUsuario()}`);
     await saveUserToFirestore(user);
 
-    console.log("✅ Usuario guardado en Firestore:", user.getIdUsuario());
+    logger.info(`✅ Usuario guardado en Firestore: ${user.getIdUsuario()}`);
     return user;
   } catch (error: any) {
-    console.error("❌ Error en registerUser:", error.message);
+    logger.error(`❌ Error en registerUser: ${error.message}`);
     throw error;
   }
 };
 
+
 /**
  * Busca un usuario por DNI y devuelve su información desde Firebase Auth
  */
-export const loginUserWithDNIService = async (dni: string, password: any) => {
-  try {
-    logger.debug(`🔍 Buscando email por DNI: ${dni}`);
-    const email = await getEmailByDNI(dni);
-    if (!email) {
-      logger.warn(`⚠ No se encontró un usuario con DNI: ${dni}`);
-      throw new Error("DNI no encontrado");
-    }
+export const getEmailFromDNIService = async (dni: string): Promise<string> => {
+  logger.info(`🔍 Buscando email asociado al DNI: ${dni}`);
 
-    const userRecord = await getUserByEmailFromAuth(email);
-    logger.info(`✅ Usuario autenticado: ${userRecord?.uid}`);
-    return userRecord;
-  } catch (error: any) {
-    logger.error("❌ Error al iniciar sesión con DNI:", error.message);
-    throw new Error("Error al iniciar sesión");
+  const email = await getEmailByDNI(dni);
+
+  if (!email) {
+    logger.warn(`⚠️ No se encontró ningún email para el DNI: ${dni}`);
+    throw new Error("DNI no encontrado");
   }
+
+  logger.info(`✅ Email encontrado: ${email}`);
+  return email;
 };
+
 
 /**
  * Logout no se gestiona desde backend (solo cliente)

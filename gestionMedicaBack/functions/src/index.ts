@@ -7,7 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { checkCodeHandler, loginHandler, passwordResetHandler, recoveryRequestHandler, registerHandler } from "./presentacion/controllers/authController";
+import { checkCodeHandler, getEmailByDniHandler, passwordResetHandler, recoveryRequestHandler, registerHandler } from "./presentacion/controllers/authController";
 import "./negocio/services/ListenerService";
 
 // import {onRequest} from "firebase-functions/v2/https";
@@ -21,7 +21,7 @@ import "./negocio/services/ListenerService";
 //   response.send("Hello from Firebase!");
 // });
 
-export const login = loginHandler;
+export const getEmailByDni = getEmailByDniHandler;
 export const register = registerHandler;
 export const recoveryRequest= recoveryRequestHandler;
 export const checkCode = checkCodeHandler;

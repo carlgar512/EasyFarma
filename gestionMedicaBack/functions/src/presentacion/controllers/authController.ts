@@ -1,14 +1,18 @@
 
-import { checkVerificationCodeService, generateVerificationCodeService, loginUserWithDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
+import { checkVerificationCodeService, generateVerificationCodeService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
 
-export const loginHandler = onRequest(async (req, res) => {
+export const getEmailByDniHandler = onRequest(async (req, res) => {
   try {
-    const { dni, password } = req.body;
-    const user = await loginUserWithDNIService(dni, password);
-    res.status(200).json({ success: true, user });
+    const { dni } = req.query;
+    if (!dni || typeof dni !== "string") {
+      throw new Error("DNI no válido");
+    }
+    console.log(dni);
+    const userEmail = await getEmailFromDNIService(dni);
+    res.status(200).json({ success: true, email: userEmail });
   } catch (error: any) {
     res.status(401).json({ success: false, error: error.message });
   }

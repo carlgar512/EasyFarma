@@ -1,6 +1,8 @@
 // src/services/backendService.ts
 
 import { LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebaseConfig"; // Asegúrate de que este path es correcto
 
 const BASE_URL = "http://localhost:5001/easyfarma-5ead7/us-central1";
 
@@ -21,20 +23,43 @@ const register = async (userData: RegisterDTO) => {
     return data;
 };
 
-const login = async ({ dni, password }: LoginDTO) => {
-    const response = await fetch(`${BASE_URL}/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ dni, password }),
-    });
+export const login = async ({ dni, password }: LoginDTO) => {
+    try {
+        // 1. Obtener el email asociado al DNI
+        const res = await fetch(`${BASE_URL}/getEmailByDni?dni=${dni}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
 
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.error || "Error al iniciar sesión");
+        const data = await res.json();
+        if (!res.ok) {
+            return {
+                success: false,
+                error: data.error || "No se pudo obtener el email asociado al DNI",
+            };
+        }
+
+        const email = data.email;
+
+        // 2. Hacer login con Firebase
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const token = await userCredential.user.getIdToken();
+        // 3. Devolver la info relevante
+        return {
+            success: true,
+            user: userCredential.user,
+            token,
+        };
+
+       
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error?.message || "Error al iniciar sesión",
+        };
     }
-    return data;
 };
 
 const recoveryRequest = async ( dni:string ) => {

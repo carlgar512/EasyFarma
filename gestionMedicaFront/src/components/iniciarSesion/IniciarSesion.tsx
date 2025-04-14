@@ -136,7 +136,7 @@ const IniciarSesion: React.FC = () => {
                                     <label className="form-labelSes">DNI:</label>
                                     <IonInput
                                         color={"success"}
-                                        placeholder="Escribe tu DNI"
+                                        placeholder="Escribe tu DNI..."
                                         name="dni"
                                         value={form.dni}
                                         onIonChange={handleChange}
@@ -147,7 +147,7 @@ const IniciarSesion: React.FC = () => {
                                     <label className="form-label">Contraseña:</label>
                                     <IonInput
                                         color={"success"}
-                                        placeholder="Nueva contraseña"
+                                        placeholder="Contraseña..."
                                         name="password"
                                         type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
                                         value={form.password}
