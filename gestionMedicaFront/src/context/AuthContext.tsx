@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import React from "react";
+import { AuthContextType } from "./AuthContextInterfaces";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../services/firebaseConfig";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -8,12 +11,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si hay token guardado, lo recupera al iniciar
+    // Recuperar token guardado en localStorage
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       setToken(storedToken);
-      // Podrías también validar el token o cargar el usuario si hiciera falta
     }
+
+    // Escuchar si Firebase tiene un usuario logueado
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe(); // Limpiar el listener al desmontar
   }, []);
 
   const setAuth = (user: any, token: string) => {

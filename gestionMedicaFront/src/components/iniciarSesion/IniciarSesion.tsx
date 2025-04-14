@@ -82,7 +82,9 @@ const IniciarSesion: React.FC = () => {
 
                 // Verifica la respuesta
                 if (response.success) {
-                    setAuth(response.user, response.token);
+                    if (response.user && response.token) {
+                        setAuth(response.user, response.token);
+                      }
                     showToast("Sesión iniciada correctamente", "success", checkmarkOutline);
 
                     // Redirige al usuario después de un pequeño retraso

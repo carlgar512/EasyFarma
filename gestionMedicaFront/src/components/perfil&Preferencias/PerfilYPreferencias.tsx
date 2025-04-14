@@ -12,6 +12,9 @@ import * as icons from 'ionicons/icons';
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useAuth } from "../../context/AuthContext";
 import { useHistory } from "react-router-dom";
+import { backendService } from "../../services/backendService";
+import NotificationToast from "../notification/NotificationToast";
+import { checkmarkOutline } from "ionicons/icons";
 
 
 
@@ -19,6 +22,8 @@ const PerfilYPreferencias: React.FC = () => {
     const handleVolver = () => {
         window.history.back();
     };
+
+   
     const [orderOperationType, setOperation] = useState(sortOperations(perfilOperations, "type"));
 
     return (
@@ -58,7 +63,17 @@ const PerfilYPreferencias: React.FC = () => {
 };
 
 const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
-    const { logout } = useAuth();
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: icons.checkmarkOutline,
+      });
+      
+    const { logout, user } = useAuth();
+    const auth = useAuth();
+    console.log(auth);
+    
     const history = useHistory();
     const [showConfirm, setShowConfirm] = useState(false);
     const initialModalConfig = {
@@ -78,17 +93,39 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
                 onConfirm: () => {
                     logout();
                     history.replace('/lobby');
+                    setShowConfirm(false);
                 }
             });
             setShowConfirm(true);
         }
         else if (operation.id === 14) {
+            console.log(user?.uid);
             setModalConfig({
                 tittle: operation.title,
                 message: "¿Estás seguro de que deseas dar de baja tu cuenta? Esta acción es permanente.Perderás el acceso a tu cuenta y a todos tus datos, y no podrás volver a acceder.",
                 img: operation.img,
-                onConfirm: () => {
-                    //TODO Baja de app
+                onConfirm: async () => {
+                    const res = await backendService.deactivateUser(user?.uid);
+                    if (res.success) {
+                        setToast({
+                                show: true,
+                                message: "Su cuenta ha sido dada de baja correctamente.",
+                                color: "success",
+                                icon: checkmarkOutline,
+                              });
+                              logout();
+                              history.replace('/lobby');
+                              setShowConfirm(false);
+                    }
+                    else{
+                        setToast({
+                            show: true,
+                            message: "No se ha podido realizar la baja, intentelo más tarde.",
+                            color: "danger",
+                            icon: icons.alertCircleOutline,
+                          });
+                          setShowConfirm(false);
+                    }
                  },
             });
             setShowConfirm(true);
@@ -124,6 +161,13 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
                 onConfirm={modalConfig.onConfirm}
                 onCancel={() => setShowConfirm(false)}
             />
+              <NotificationToast
+                            icon={toast.icon}
+                            color={toast.color}
+                            message={toast.message}
+                            show={toast.show}
+                            onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+                          />
         </>
     )
 };

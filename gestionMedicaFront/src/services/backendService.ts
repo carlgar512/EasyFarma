@@ -133,11 +133,26 @@ const checkCode = async (dni: string, code: string) => {
     return data;
 };
 
+const deactivateUser = async (idUsuario: string) => {
+    const response = await fetch(`${BASE_URL}/bajaUsuario`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idUsuario }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || "Error al dar de baja");
+    }
+    return data;
+};
 
 export const backendService = {
     register,
     login,
     recoveryRequest,
     passwordReset,
-    checkCode
+    checkCode,
+    deactivateUser
 };

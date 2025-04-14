@@ -134,7 +134,6 @@ const Registro: React.FC = () => {
       return;
     }
     setLoadSpinner(true);
-    console.log("Registrando usuario:", form);
 
     const response = await backendService.register({
       name: form.name,
@@ -150,7 +149,9 @@ const Registro: React.FC = () => {
     setLoadSpinner(false);
 
     if (response.success) {
-      setAuth(response.user, response.token);
+      if (response.user && response.token) {
+        setAuth(response.user, response.token);
+      }
       setToast({
         show: true,
         message: "Registro exitoso",
