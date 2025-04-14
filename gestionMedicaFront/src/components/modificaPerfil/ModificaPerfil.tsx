@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonButton, IonContent, IonIcon, IonInput, IonItem, IonLabel, IonModal, IonPage, IonSpinner } from "@ionic/react";
+import { IonButton, IonContent, IonIcon, IonInput, IonLabel, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import MainFooter from "../mainFooter/MainFooter";
-import { alertCircleOutline, arrowBackOutline, arrowForwardOutline, atOutline, brushOutline, checkmarkDoneOutline, checkmarkOutline, closeOutline, cloudUploadOutline, eyeOff, eyeOutline, optionsOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, atOutline, brushOutline, checkmarkDoneOutline, checkmarkOutline, closeOutline, cloudUploadOutline, eyeOff, eyeOutline, optionsOutline, warningOutline } from "ionicons/icons";
 import './ModificaPerfil.css'
 import { DatoUsuarioProps, FormularioUsuario, ModalCambioDatoRegularProps } from "./ModificaPerfilInterfaces";
 import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
@@ -175,6 +175,8 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [nuevaDireccion, setNuevaDireccion] = useState("");
+    const [finalCheck, setfinalCheck] = useState(false);
+
 
 
     const togglePasswordVisibility = () => {
@@ -203,6 +205,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
 
 
     const handleActualizar = async () => {
+        setfinalCheck(false);
         if (!esValorValido()) {
 
             if (campo === "password") {
@@ -263,6 +266,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
 
 
     const handleCerrar = () => {
+        setfinalCheck(false);
         setNuevoValor(valor); // Resetea
         setIsModalOpen(false);
         // Limpia el foco manualmente
@@ -270,6 +274,17 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
             (document.activeElement as HTMLElement)?.blur();
         }, 50);
     };
+
+
+    const handleCancel = () => {
+        setfinalCheck(false);
+    };
+    
+
+    const handleFinalCheck = () => {
+        setfinalCheck(true);
+    };
+
 
     const esEmailValido = (email: string) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -318,6 +333,40 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     return (
         <>
             <IonModal isOpen={isOpen} onDidDismiss={handleCerrar}>
+
+                {
+                finalCheck ? (
+                    <IonContent className="ion-padding">
+                        <div className="modalContainerMPDR">
+                            <div className="modalTittleMPDR">
+                                <IonIcon icon={warningOutline} color={"warning"} size="large" />
+                                <span className="modalTittleMPDR">Confirmación de actualización de perfil</span>
+                            </div>
+                            <div className="dataContainer">
+                                <span className="finalCheckText">
+                                ¿Estás seguro de que deseas registrar este cambio?
+                                Aunque no es un cambio permanente, afectará a tus futuras operaciones y será utilizado como referencia en tus próximos accesos y gestiones.
+                                </span>
+                            </div>
+                            <div className="modalButtonContainerMPDR">
+                                    <IonButton
+                                        className="buttonMPDR1"
+                                        shape="round"
+                                        onClick={handleActualizar}
+                                        disabled={esBotonDesactivado()}
+                                    >
+                                        <IonIcon icon={cloudUploadOutline} />
+                                        <span className="buttonTextMPDR">Confirmar actualización</span>
+                                    </IonButton>
+                                    <IonButton className="buttonMPDR2" shape="round" onClick={handleCancel}>
+                                        <IonIcon icon={closeOutline} />
+                                        <span className="buttonTextMPDR">Cancelar</span>
+                                    </IonButton>
+                                </div>
+                        </div>
+                    </IonContent>
+
+                ): (
                 <IonContent className="ion-padding">
                     <div className="modalContainerMPDR">
                         {/* Título */}
@@ -353,7 +402,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
 
                                     {/* Aquí irá el mapa */}
                                     <div className="mapContainer">
-                                        <MapComponent onSelect={(direccion) => setNuevaDireccion(direccion)}  direccionInicial={valor ?? "Valladolid"}/>
+                                        <MapComponent onSelect={(direccion) => setNuevaDireccion(direccion)} direccionInicial={valor ?? "Valladolid"} />
                                     </div>
                                 </div>
                             ) :
@@ -428,7 +477,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
                                     <IonButton
                                         className="buttonMPDR1"
                                         shape="round"
-                                        onClick={handleActualizar}
+                                        onClick={handleFinalCheck}
                                         disabled={esBotonDesactivado()}
                                     >
                                         <IonIcon icon={cloudUploadOutline} />
@@ -444,6 +493,8 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
                     </div>
 
                 </IonContent>
+                )
+}
 
             </IonModal>
             <NotificationToast
