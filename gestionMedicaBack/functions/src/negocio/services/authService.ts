@@ -1,6 +1,6 @@
-import { saveAltaClienteToFirestore } from "../../persistencia/repositorios/altaCienteDAO";
+import { getAltaActivaFromFirestore, saveAltaClienteToFirestore } from "../../persistencia/repositorios/altaCienteDAO";
 import { generarTarjetaConContador } from "../../persistencia/repositorios/contadorTarjetaDAO";
-import {  deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
+import { deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
 import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
@@ -59,6 +59,19 @@ export const getEmailFromDNIService = async (dni: string): Promise<string> => {
     logger.warn(`⚠️ No se encontró ningún email para el DNI: ${dni}`);
     throw new Error("DNI no encontrado");
   }
+  // Obtener UID
+  const uid = await getUIDByDNI(dni);
+  if (!uid) {
+    logger.error(`❌ No se encontró UID para el DNI: ${dni}`);
+    throw new Error("Usuario no encontrado en el sistema");
+  }
+
+  const altaActiva = await getAltaActivaFromFirestore(uid);
+  if (!altaActiva) {
+    logger.warn(`⛔ El usuario con DNI ${dni} está dado de baja`);
+    throw new Error("El usuario actualmente está dado de baja");
+  }
+
 
   logger.info(`✅ Email encontrado: ${email}`);
   return email;
@@ -110,7 +123,7 @@ export const searchUserByDNIService = async (dni: string) => {
 };
 
 // Genera codigo verificación
-export const generateVerificationCodeService = () : string => {
+export const generateVerificationCodeService = (): string => {
   return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
 }
 
@@ -120,8 +133,8 @@ export const saveCodeForUserService = async (dni: string, code: string): Promise
   try {
     logger.info(`Iniciando el proceso de guardado para el DNI: ${dni}`);
 
-    const existeCode= await getExpirationCode(dni);
-    if(existeCode){
+    const existeCode = await getExpirationCode(dni);
+    if (existeCode) {
       await deleteExpirationCode(dni);
     }
     // Crear la fecha de expiración (5 minutos)
@@ -132,7 +145,7 @@ export const saveCodeForUserService = async (dni: string, code: string): Promise
 
     // Llamar a la función para guardar el código en Firestore
     await saveExpirationCodeToFirestore(expirationCode);
-    
+
     eventBus.emit('schedule.deletion', { dni, expiresAt });
     logger.info(`Código de expiración guardado correctamente en Firestore para el DNI: ${dni}`);
   } catch (error) {

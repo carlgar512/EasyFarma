@@ -276,7 +276,7 @@ const Registro: React.FC = () => {
                   onClick={togglePasswordVisibility}
                   color="success"
                 >
-                  {showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                  {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
                 </IonButton>
               </IonItem>
 
@@ -297,7 +297,7 @@ const Registro: React.FC = () => {
                   onClick={togglePasswordVisibility}
                   color="success"
                 >
-                  {showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                  {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
                 </IonButton>
               </IonItem>
 

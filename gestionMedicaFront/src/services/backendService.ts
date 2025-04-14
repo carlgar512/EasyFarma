@@ -8,20 +8,49 @@ const BASE_URL = "http://localhost:5001/easyfarma-5ead7/us-central1";
 
 
 const register = async (userData: RegisterDTO) => {
-    const response = await fetch(`${BASE_URL}/register`, {
+    try {
+      // 1. Registro en backend
+      const response = await fetch(`${BASE_URL}/register`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.error || "Error al registrar usuario");
+      });
+  
+      const data = await response.json();
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || "Error al registrar usuario",
+        };
+      }
+  
+      // 2. Autenticación automática
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        userData.email,
+        userData.password
+      );
+  
+      // 3. Obtener token
+      const token = await userCredential.user.getIdToken();
+  
+      // 4. Devolver info útil
+      return {
+        success: true,
+        user: userCredential.user,
+        token,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || "Error inesperado durante el registro",
+      };
     }
-    return data;
-};
+  };
+
+  
 
 export const login = async ({ dni, password }: LoginDTO) => {
     try {
@@ -40,9 +69,7 @@ export const login = async ({ dni, password }: LoginDTO) => {
                 error: data.error || "No se pudo obtener el email asociado al DNI",
             };
         }
-
         const email = data.email;
-
         // 2. Hacer login con Firebase
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const token = await userCredential.user.getIdToken();
@@ -53,7 +80,6 @@ export const login = async ({ dni, password }: LoginDTO) => {
             token,
         };
 
-       
     } catch (error: any) {
         return {
             success: false,
@@ -62,7 +88,7 @@ export const login = async ({ dni, password }: LoginDTO) => {
     }
 };
 
-const recoveryRequest = async ( dni:string ) => {
+const recoveryRequest = async (dni: string) => {
     const response = await fetch(`${BASE_URL}/recoveryRequest`, {
         method: "POST",
         headers: {
@@ -77,13 +103,13 @@ const recoveryRequest = async ( dni:string ) => {
     return data;
 };
 
-const passwordReset = async ( dni: string, password: string ) => {
+const passwordReset = async (dni: string, password: string) => {
     const response = await fetch(`${BASE_URL}/passwordReset`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ dni,password }),
+        body: JSON.stringify({ dni, password }),
     });
     const data = await response.json();
     if (!response.ok) {
@@ -92,13 +118,13 @@ const passwordReset = async ( dni: string, password: string ) => {
     return data;
 };
 
-const checkCode = async ( dni:string, code: string ) => {
+const checkCode = async (dni: string, code: string) => {
     const response = await fetch(`${BASE_URL}/checkCode`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({dni, code }),
+        body: JSON.stringify({ dni, code }),
     });
     const data = await response.json();
     if (!response.ok) {
