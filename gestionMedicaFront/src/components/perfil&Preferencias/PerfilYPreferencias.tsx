@@ -10,6 +10,8 @@ import { sortOperations } from "../../shared/interfaces/Operation";
 
 import * as icons from 'ionicons/icons';
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import { useAuth } from "../../context/AuthContext";
+import { useHistory } from "react-router-dom";
 
 
 
@@ -35,19 +37,17 @@ const PerfilYPreferencias: React.FC = () => {
                                 <OperationLabel operation={operation} key={operation.id} ></OperationLabel>
                             );
                         })}
-                         <IonButton 
-                         className="buttonReturn" 
-                         shape="round" 
-                         size="large" 
-                         expand="full"
-                         onClick={handleVolver}
-                         >
-                        <IonIcon icon={icons.arrowBackOutline}></IonIcon>
-                        <span className="buttonText">Volver</span>
+                        <IonButton
+                            className="buttonReturn"
+                            shape="round"
+                            size="large"
+                            expand="full"
+                            onClick={handleVolver}
+                        >
+                            <IonIcon icon={icons.arrowBackOutline}></IonIcon>
+                            <span className="buttonText">Volver</span>
                         </IonButton>
                     </div>
-
-                    
                 </IonContent>
                 <MainFooter />
 
@@ -58,6 +58,8 @@ const PerfilYPreferencias: React.FC = () => {
 };
 
 const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
+    const { logout } = useAuth();
+    const history = useHistory();
     const [showConfirm, setShowConfirm] = useState(false);
     const initialModalConfig = {
         tittle: "",
@@ -69,22 +71,25 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
 
     const handleOperation = () => {
         if (operation.id === 13) {
-            console.log("Entra aqui 13");
             setModalConfig({
                 tittle: operation.title,
                 message: "¿Estás seguro de que deseas cerrar sesión? Tu sesión se cerrará y deberás iniciar sesión nuevamente para continuar usando la aplicación.",
                 img: operation.img,
-                onConfirm: () => { }
+                onConfirm: () => {
+                    logout();
+                    history.replace('/lobby');
+                }
             });
             setShowConfirm(true);
         }
         else if (operation.id === 14) {
-            console.log("Entra aqui 14");
             setModalConfig({
                 tittle: operation.title,
                 message: "¿Estás seguro de que deseas dar de baja tu cuenta? Esta acción es permanente.Perderás el acceso a tu cuenta y a todos tus datos, y no podrás volver a acceder.",
                 img: operation.img,
-                onConfirm: () => { },
+                onConfirm: () => {
+                    //TODO Baja de app
+                 },
             });
             setShowConfirm(true);
         }

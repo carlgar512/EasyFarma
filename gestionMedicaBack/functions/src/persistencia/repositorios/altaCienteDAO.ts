@@ -65,3 +65,15 @@ export const getAltaActivaFromFirestore = async (idUsuario: string) => {
       throw error;
     }
   };
+
+  export const updateAltaCliente = async (idAlta: string, data: Partial<any>) => {
+    try {
+      const docRef = db.collection("altasCliente").doc(idAlta);
+      await docRef.update(data);
+      console.log(`✅ Alta actualizada correctamente (ID: ${idAlta})`);
+      return true;
+    } catch (error: any) {
+      console.error(`❌ [DAO AltaCliente] Error al actualizar alta:`, error.message);
+      throw error;
+    }
+  };

@@ -1,4 +1,4 @@
-import { getAltaActivaFromFirestore, saveAltaClienteToFirestore } from "../../persistencia/repositorios/altaCienteDAO";
+import { getAltaActivaFromFirestore, saveAltaClienteToFirestore, updateAltaCliente } from "../../persistencia/repositorios/altaCienteDAO";
 import { generarTarjetaConContador } from "../../persistencia/repositorios/contadorTarjetaDAO";
 import { deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
 import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
@@ -217,3 +217,33 @@ export const passwordResetService = async (dni: string, password: string): Promi
     throw error; // Lanza el error para que el controlador lo maneje
   }
 };
+
+
+
+export const bajaUserService = async (idUsuario: string): Promise<boolean> => {
+  try {
+    // 1. Obtener el alta activa
+    const altaActiva = await getAltaActivaFromFirestore(idUsuario);
+
+    if (!altaActiva) {
+      logger.warn(`⚠️ No se encontró alta activa para el usuario con ID: ${idUsuario}`);
+      throw new Error("No hay alta activa para este usuario");
+    }
+    const { id, ...datosAlta } = altaActiva;
+
+    const altaUsuario = AltaCliente.fromFirestoreObject(datosAlta);
+    // 2. Preparar la actualización con fecha de baja
+    altaUsuario.setFechaBaja(new Date());
+
+    // 3. Actualizar el documento en Firestore
+    await updateAltaCliente(id, altaUsuario.toFirestoreObject());
+
+    logger.info(`✅ Usuario con ID ${idUsuario} dado de baja correctamente en alta ID ${altaActiva.id}`);
+    return true;
+
+  } catch (error: any) {
+    logger.error(`❌ Error en bajaUserService para ID ${idUsuario}: ${error.message}`);
+    throw error;
+  }
+};
+

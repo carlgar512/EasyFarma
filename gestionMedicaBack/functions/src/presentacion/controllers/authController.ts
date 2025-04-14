@@ -1,5 +1,5 @@
 
-import { checkVerificationCodeService, generateVerificationCodeService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
+import { bajaUserService, checkVerificationCodeService, generateVerificationCodeService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
@@ -92,7 +92,21 @@ export const passwordResetHandler = onRequest(async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error en checkCodeHandler:", error);
+    console.error("Error en passwordResetHandler:", error);
+    res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
+
+export const bajaUsuarioHandler = onRequest(async (req, res) => {
+  try{
+    const { idUsuario } = req.body;
+    const correcto = await bajaUserService(idUsuario);
+    res.status(200).json({
+      success: correcto,
+    });
+
+  } catch (error) {
+    console.error("Error en bajaUsuarioHandler:", error);
     res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });

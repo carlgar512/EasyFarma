@@ -19,7 +19,7 @@ import { useHistory } from "react-router-dom";
 import React from "react";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
-import { useAuth } from "../../context/AuthContext"; // Ajusta el path si es necesario
+import { useAuth } from "../../context/AuthContext";
 
 
 const Registro: React.FC = () => {
