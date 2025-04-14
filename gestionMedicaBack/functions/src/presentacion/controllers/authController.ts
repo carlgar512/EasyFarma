@@ -21,7 +21,6 @@ export const getEmailByDniHandler = onRequest(async (req, res) => {
 
 export const registerHandler = onRequest(async (req, res) => {
   try {
-    console.log("📩 [registerHandler] Request recibida:", req.body);
 
     const data: JSON & { password: string } = req.body;
     const newUser = await registerUserService(data);

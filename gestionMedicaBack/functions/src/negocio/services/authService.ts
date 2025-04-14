@@ -1,7 +1,9 @@
+import { saveAltaClienteToFirestore } from "../../persistencia/repositorios/altaCienteDAO";
 import {  deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
 import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
+import { AltaCliente } from "../modelos/AltaCliente";
 import { CodigoExpiracion } from "../modelos/CodigoExpiracion";
 import { Usuario } from "../modelos/Usuario";
 
@@ -27,6 +29,11 @@ export const registerUserService = async (userData: any & { password: string }) 
 
     logger.info(`📝 Guardando en Firestore: ${user.getIdUsuario()}`);
     await saveUserToFirestore(user);
+
+    const alta = new AltaCliente(user.getIdUsuario(), new Date());
+    logger.info(`📁 Creando alta de cliente para el usuario: ${user.getIdUsuario()}`);
+    await saveAltaClienteToFirestore(alta.toFirestoreObject());
+    logger.info(`✅ Alta de cliente registrada correctamente.`);
 
     logger.info(`✅ Usuario guardado en Firestore: ${user.getIdUsuario()}`);
     return user;
