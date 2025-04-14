@@ -112,6 +112,24 @@ const Registro: React.FC = () => {
       });
       return;
     }
+    // 👉 Validación de edad mínima (18 años)
+    const nacimiento = new Date(form.dateNac);
+    const hoy = new Date();
+    const edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mesDiferencia = hoy.getMonth() - nacimiento.getMonth();
+    const diaDiferencia = hoy.getDate() - nacimiento.getDate();
+
+    const esMenor = edad < 18 || (edad === 18 && (mesDiferencia < 0 || (mesDiferencia === 0 && diaDiferencia < 0)));
+
+    if (esMenor) {
+      setToast({
+        show: true,
+        message: "Debes tener al menos 18 años para registrarte.",
+        color: "danger",
+        icon: alertCircleOutline,
+      });
+      return;
+    }
     setLoadSpinner(true);
     console.log("Registrando usuario:", form);
 
@@ -298,7 +316,7 @@ const Registro: React.FC = () => {
                 <IonButton onClick={() => setIsOpen(true)} className="calendarButton">
                   <IonIcon icon={calendarNumberOutline} size="large" slot="icon-only" ></IonIcon>
                 </IonButton>
-                <IonModal isOpen={isOpenCalendar}>
+                <IonModal isOpen={isOpenCalendar} onDidDismiss={() => setIsOpen(false)}>
                   <IonHeader>
                     <IonToolbar className="top-BarBackground">
                       <div className="topBarModal">
