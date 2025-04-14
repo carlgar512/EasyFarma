@@ -11,6 +11,7 @@
     private modoAccesibilidad: boolean;
     private medicosFavoritos: string[];
     private operacionesFavoritas: string[];
+    private tipoUsuario: "Regular" | "Infantil";
   
     constructor(
       dni: string,
@@ -19,11 +20,12 @@
       apellidosUsuario: string,
       fechaNacimiento: string,
       telefono: string,
+      numTarjeta: string,
       direccion: string = "",
-      numTarjeta: string = "",
       modoAccesibilidad: boolean = false,
       medicosFavoritos: string[] = [],
-      operacionesFavoritas: string[] = []
+      operacionesFavoritas: string[] = [],
+      tipoUsuario: "Regular" | "Infantil" = "Regular" // ✅ POR DEFECTO REGULAR
     ) {
       this.dni = dni;
       this.email = email;
@@ -36,6 +38,7 @@
       this.modoAccesibilidad = modoAccesibilidad;
       this.medicosFavoritos = medicosFavoritos;
       this.operacionesFavoritas = operacionesFavoritas;
+      this.tipoUsuario = tipoUsuario;
     }
 
     static fromFirestore(data: any): Usuario {
@@ -50,7 +53,8 @@
         data.numTarjeta,
         data.modoAccesibilidad,
         data.medicosFavoritos,
-        data.operacionesFavoritas
+        data.operacionesFavoritas, 
+        data.tipoUsuario
       );
     }
 
@@ -68,6 +72,7 @@
         modoAccesibilidad: this.getModoAccesibilidad(),
         medicosFavoritos: this.getMedicosFavoritos(),
         operacionesFavoritas: this.getOperacionesFavoritas(),
+        tipoUsuario: this.getTipoUsuario(),
       };
     }
   
@@ -119,6 +124,10 @@
       return this.operacionesFavoritas;
     }
 
+    public getTipoUsuario(): "Regular" | "Infantil" {
+      return this.tipoUsuario;
+    }
+
     public setIdUsuario(id :string):void{
       this.uid= id;
     }
@@ -157,6 +166,10 @@
   
     public setFechaNac(fecha: string): void {
       this.fechaNacimiento = fecha;
+    }
+
+    public setTipoUsuario(tipo: "Regular" | "Infantil"): void {
+      this.tipoUsuario = tipo;
     }
   
     public añadirOperacionFavorita(idOperacion: string): boolean {

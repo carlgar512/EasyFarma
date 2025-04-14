@@ -1,4 +1,5 @@
 import { saveAltaClienteToFirestore } from "../../persistencia/repositorios/altaCienteDAO";
+import { generarTarjetaConContador } from "../../persistencia/repositorios/contadorTarjetaDAO";
 import {  deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
 import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
@@ -15,6 +16,7 @@ export const registerUserService = async (userData: any & { password: string }) 
     logger.info(`➡️ Registrando usuario: ${userData.email}`);
 
     const userRecord = await createUserInAuth(userData.email, userData.password);
+    const tarjeta = await generarTarjetaConContador();
 
     logger.info?.(`✅ Usuario creado en Firebase Auth: ${userRecord.uid}`); // usa logger.info si no tienes logger.success
     const user: Usuario = new Usuario(
@@ -23,7 +25,8 @@ export const registerUserService = async (userData: any & { password: string }) 
       userData.name,
       userData.lastName,
       userData.dateNac,
-      userData.tlf
+      userData.tlf,
+      tarjeta
     );
     user.setIdUsuario(userRecord.uid);
 
