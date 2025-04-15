@@ -107,3 +107,13 @@ export const getUserByEmailFromAuth = async (email: string): Promise<UserRecord 
     return null; // Si el usuario no se encuentra, retorna null
   }
 };
+
+export const updateUserInFirestore = async (uid: string, userData:any) => {
+  try {
+    const userRef = db.collection("users").doc(uid);
+    await userRef.update(userData);
+  } catch (error) {
+    console.error("❌ [DAO User] Error al actualizar en Firestore:", error);
+    throw error;
+  }
+};

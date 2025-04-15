@@ -3,19 +3,29 @@ import SideMenu from "../sideMenu/SideMenu";
 import { IonButton, IonCheckbox, IonContent, IonIcon, IonImg, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import MainFooter from "../mainFooter/MainFooter";
-import { arrowBackOutline, constructOutline, folderOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, checkmarkOutline, constructOutline, folderOutline } from "ionicons/icons";
 import './Preferencias.css'
 import { useUser } from "../../context/UserContext";
+import { updateUserInfo } from "../../services/backendService";
+import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
+import NotificationToast from "../notification/NotificationToast";
 
 const Preferencias: React.FC = () => {
     const [valorOriginal, setValorOriginal] = useState(false);
     const [accesibilidad, setAccesibilidad] = useState(false);
-    const { userData } = useUser();
+    const { userData, setUserData } = useUser();
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+    const [loading, setLoading] = useState(false);
+
 
     // Logs cuando los datos realmente se actualizan
     useEffect(() => {
         if (userData) {
-            console.log("✅ userData actualizado:", userData);
             setAccesibilidad(userData.modoAccesibilidad);
             setValorOriginal(userData.modoAccesibilidad);
         }
@@ -32,24 +42,55 @@ const Preferencias: React.FC = () => {
     };
 
     const guardarPreferencias = async () => {
+        setLoading(true);
         if (accesibilidad !== valorOriginal) {
+            const usuarioActualizado: InfoUserDTO = {
+                ...userData!,
+                modoAccesibilidad: accesibilidad,
+            };
+
             try {
-                // Aquí llamarías al backend:
-                // await api.post('/usuario/preferencias', { accesibilidad });
-                console.log("Guardado correctamente:", accesibilidad);
-                setValorOriginal(accesibilidad); // ✅ Actualiza estado original tras guardar
+                const response = await updateUserInfo(usuarioActualizado);
+                if (response.success) {
+                    setUserData(usuarioActualizado); // 👈 actualizar el contexto
+                    setValorOriginal(accesibilidad); // ✅ sincronizar con el nuevo valor
+                    setToast({
+                        show: true,
+                        message: "Preferencias de accesibilidad actualizadas correctamente.",
+                        color: "success",
+                        icon: checkmarkOutline,
+                    });
+                    setLoading(false);
+                } else {
+                    console.error("❌ Error del servidor:", response.error);
+                    setToast({
+                        show: true,
+                        message: "No se ha podido realizar el cambio de accesibilidad",
+                        color: "danger",
+                        icon: alertCircleOutline,
+                    });
+                    setLoading(false);
+                }
             } catch (error) {
-                console.error("Error al guardar:", error);
+                console.error("❌ Error al guardar:", error);
+                setToast({
+                    show: true,
+                    message: "No se ha podido realizar el cambio de accesibilidad",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+                setLoading(false);
             }
         }
     };
+
 
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Mi perfil & preferencias" />
-                {userData ? (
+                {userData && !loading && (
                     <IonContent fullscreen className="contentP">
                         <div className="contentPCentral">
                             <div className="titleContainerP">
@@ -104,30 +145,40 @@ const Preferencias: React.FC = () => {
                         </div>
 
                     </IonContent>
-                ) : (
+                )
+                } {(loading || !userData) &&
                     <IonContent fullscreen className="contentTA">
                         <div className="contentTACentralP">
                             <div className="spinnerContainerP">
                                 <IonSpinner className="spinner" name="circular"></IonSpinner>
                                 <span className="textSpinnerP">Cargando su información. Un momento, por favor...</span>
                             </div>
-                            <div className="buttonContainerP">
-                                <IonButton
-                                    size="large"
-                                    expand="full"
-                                    shape="round"
-                                    className="cardButton2"
-                                    onClick={handleVolver}
-                                >
-                                    <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
-                                    <span className="buttonTextP">Volver</span>
-                                </IonButton>
-                            </div>
+                            {!loading &&
+                                <div className="buttonContainerP">
+                                    <IonButton
+                                        size="large"
+                                        expand="full"
+                                        shape="round"
+                                        className="cardButton2"
+                                        onClick={handleVolver}
+                                    >
+                                        <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
+                                        <span className="buttonTextP">Volver</span>
+                                    </IonButton>
+                                </div>
+                            }
                         </div>
                     </IonContent>
-                )}
+                }
                 <MainFooter />
             </IonPage>
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
         </>
     );
 };

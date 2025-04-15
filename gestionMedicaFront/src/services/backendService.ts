@@ -1,6 +1,6 @@
 // src/services/backendService.ts
 
-import { LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
+import { InfoUserDTO, LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseConfig"; // Asegúrate de que este path es correcto
 
@@ -9,48 +9,48 @@ const BASE_URL = "http://localhost:5001/easyfarma-5ead7/us-central1";
 
 const register = async (userData: RegisterDTO) => {
     try {
-      // 1. Registro en backend
-      const response = await fetch(`${BASE_URL}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-  
-      const data = await response.json();
-      if (!response.ok) {
-        return {
-          success: false,
-          error: data.error || "Error al registrar usuario",
-        };
-      }
-  
-      // 2. Autenticación automática
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        userData.email,
-        userData.password
-      );
-  
-      // 3. Obtener token
-      const token = await userCredential.user.getIdToken();
-  
-      // 4. Devolver info útil
-      return {
-        success: true,
-        user: userCredential.user,
-        token,
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        error: error.message || "Error inesperado durante el registro",
-      };
-    }
-  };
+        // 1. Registro en backend
+        const response = await fetch(`${BASE_URL}/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(userData),
+        });
 
-  
+        const data = await response.json();
+        if (!response.ok) {
+            return {
+                success: false,
+                error: data.error || "Error al registrar usuario",
+            };
+        }
+
+        // 2. Autenticación automática
+        const userCredential = await signInWithEmailAndPassword(
+            auth,
+            userData.email,
+            userData.password
+        );
+
+        // 3. Obtener token
+        const token = await userCredential.user.getIdToken();
+
+        // 4. Devolver info útil
+        return {
+            success: true,
+            user: userCredential.user,
+            token,
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error.message || "Error inesperado durante el registro",
+        };
+    }
+};
+
+
 
 export const login = async ({ dni, password }: LoginDTO) => {
     try {
@@ -150,34 +150,62 @@ const deactivateUser = async (idUsuario: string) => {
 
 export const getUserInfo = async (idUsuario: string) => {
     try {
-      const res = await fetch(`${BASE_URL}/getUserInfo?idUsuario=${idUsuario}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      const data = await res.json();
-  
-      if (!res.ok || !data.success) {
+        const res = await fetch(`${BASE_URL}/getUserInfo?idUsuario=${idUsuario}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+            return {
+                success: false,
+                error: data.error || "No se pudo obtener la información del usuario.",
+            };
+        }
+
         return {
-          success: false,
-          error: data.error || "No se pudo obtener la información del usuario.",
+            success: true,
+            ...data,
         };
-      }
-  
-      return {
-        success: true,
-        ...data,
-      };
-  
+
     } catch (error: any) {
-      return {
-        success: false,
-        error: error?.message || "Error al obtener información del usuario.",
-      };
+        return {
+            success: false,
+            error: error?.message || "Error al obtener información del usuario.",
+        };
     }
-  };
+};
+
+export const updateUserInfo = async (updatedUser: InfoUserDTO) => {
+    try {
+        const res = await fetch(`${BASE_URL}/updateUserInfo`, {
+            method: "PATCH", // sigue siendo PATCH, porque es una actualización
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedUser), // 👈 enviás el objeto completo
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            return {
+                success: false,
+                error: data.error || "No se pudo actualizar la información del usuario.",
+            };
+        }
+        return {
+            success: true,
+            data: data.updatedUser, // opcional: lo que devuelva tu backend
+        };
+    } catch (error: any) {
+        return {
+            success: false,
+            error: error?.message || "Error al actualizar información del usuario.",
+        };
+    }
+};
 
 
 export const backendService = {
@@ -187,5 +215,7 @@ export const backendService = {
     passwordReset,
     checkCode,
     deactivateUser,
-    getUserInfo
+    getUserInfo,
+    updateUserInfo
+
 };

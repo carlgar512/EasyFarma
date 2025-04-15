@@ -7,7 +7,6 @@ import './TarjetaSeguro.css'
 import { arrowBackOutline, cardOutline, qrCodeOutline } from "ionicons/icons";
 import { CardProps } from "./TarjetaSeguroInterfaces";
 import { QRCodeSVG } from 'qrcode.react';
-import { useAuth } from "../../context/AuthContext";
 import { useUser } from "../../context/UserContext"; // ajustá la ruta si es necesario
 
 
@@ -15,7 +14,7 @@ import { useUser } from "../../context/UserContext"; // ajustá la ruta si es ne
 const TarjetaSeguro: React.FC = () => {
     const { userData, altaClienteData } = useUser();
 
-    console.log(userData);
+
     const formatearFecha = (fechaTexto: string): string => {
         const fecha = new Date(fechaTexto);
 

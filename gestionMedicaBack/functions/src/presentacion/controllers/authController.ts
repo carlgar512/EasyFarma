@@ -1,5 +1,5 @@
 
-import { bajaUserService, checkVerificationCodeService, generateVerificationCodeService, getCurrentUserLastAltaClienteService, getCurrentUserService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
+import { bajaUserService, checkVerificationCodeService, generateVerificationCodeService, getCurrentUserLastAltaClienteService, getCurrentUserService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService, updateUserService } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
@@ -129,5 +129,32 @@ export const getUserInfoHandler = onRequest(async (req, res) => {
     });
   } catch (error: any) {
     res.status(401).json({ success: false, error: error.message });
+  }
+});
+
+export const updateUserInfoHandler = onRequest(async (req, res) => {
+  try {
+    const userData = req.body; // 👈 Aquí asumimos que ya es el objeto completo
+
+    if (!userData || !userData.uid) {
+      res.status(400).json({
+        success: false,
+        message: "Datos de usuario inválidos o incompletos.",
+      });
+    }
+
+    await updateUserService(userData);
+
+    res.status(200).json({
+      success: true,
+    });
+
+  } catch (error: any) {
+    console.error("❌ Error en updateUserInfoHandler:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor.",
+      error: error?.message || error,
+    });
   }
 });

@@ -1,7 +1,7 @@
 import { getAltaActivaFromFirestore, saveAltaClienteToFirestore, updateAltaCliente } from "../../persistencia/repositorios/altaCienteDAO";
 import { generarTarjetaConContador } from "../../persistencia/repositorios/contadorTarjetaDAO";
 import { deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
-import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI } from "../../persistencia/repositorios/userDAO";
+import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI, updateUserInFirestore } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 import { AltaCliente } from "../modelos/AltaCliente";
@@ -261,5 +261,22 @@ export const getCurrentUserLastAltaClienteService = async (userId: string) => {
   } catch (error: any) {
     logger.error("❌ Error al obtener alta de usuario:", error.message);
     throw new Error("Error al obtener alta de usuario");
+  }
+};
+
+
+export const updateUserService = async (userData:any) => {
+  try {
+    logger.debug(`✏️ Actualizando usuario UID: ${userData.uid}`);
+
+    await updateUserInFirestore(userData.uid, userData);
+
+    logger.info(`✅ Usuario ${userData.uid} actualizado correctamente.`);
+
+    return;
+
+  } catch (error: any) {
+    logger.error(`❌ Error al actualizar usuario ${userData.uid}:`, error.message);
+    throw new Error("Error al actualizar los datos del usuario.");
   }
 };
