@@ -17,6 +17,6 @@ export interface DatoUsuarioProps {
     setIsModalOpen: (open: boolean) => void;
     campo: CampoFormularioEditable|null;
     valor: string; // valor actual del campo
-    onGuardar: (nuevoValor: string) => void; // función que actualiza el estado
+    onGuardar: (nuevoValor: string , campo: string) =>Promise<boolean>; // función que actualiza el estado
   }
   export type CampoFormularioEditable = keyof InfoUserDTO | "password";

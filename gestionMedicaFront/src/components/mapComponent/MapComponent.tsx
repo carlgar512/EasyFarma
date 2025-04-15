@@ -8,6 +8,7 @@ interface MapComponentProps {
   onSelect: (direccion: string) => void;
 }
 
+//Pensar en coger ub del telefono
 const fallbackPosition: [number, number] = [41.6529, -4.7286]; // Valladolid
 
 const MapComponent: React.FC<MapComponentProps> = ({ direccionInicial, onSelect }) => {
@@ -34,14 +35,24 @@ const MapComponent: React.FC<MapComponentProps> = ({ direccionInicial, onSelect 
           setPosition(coords);
           setMapCenter(coords);
           setDireccionActual(direccionInicial);
+        } else {
+          setMapCenter(fallbackPosition);
+          setPosition(fallbackPosition);
+          setDireccionActual("Ubicación predeterminada");
         }
       } catch (err) {
         console.warn('No se pudo obtener la ubicación desde la dirección inicial. Se usará fallback.');
         setMapCenter(fallbackPosition);
+        setPosition(fallbackPosition);
+        setDireccionActual("Ubicación predeterminada");
       }
     };
 
-    if (direccionInicial) {
+    if (!direccionInicial || direccionInicial.trim() === "") {
+      setMapCenter(fallbackPosition);
+      setPosition(fallbackPosition);
+      setDireccionActual("Ubicación predeterminada");
+    } else {
       fetchCoords();
     }
   }, [direccionInicial]);

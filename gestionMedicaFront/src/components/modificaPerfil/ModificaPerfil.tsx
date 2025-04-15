@@ -11,6 +11,7 @@ import NotificationToast from "../notification/NotificationToast";
 import MapComponent from "../mapComponent/MapComponent";
 import { useUser } from "../../context/UserContext";
 import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
+import { backendService, updateUserInfo } from "../../services/backendService";
 
 const ModificaPerfil: React.FC = () => {
 
@@ -27,15 +28,39 @@ const ModificaPerfil: React.FC = () => {
         window.history.back();
     };
 
-    const handleGuardarNuevoValor = (nuevoValor: string) => {
-        if (campoEditando) {
-            // 👉 Aquí puedes hacer la llamada al backend si quieres persistir el cambio
-            // Por ejemplo:
-            // await api.post('/usuario/actualizar', { [campoEditando]: nuevoValor });
-            //setForm((prev) => ({ ...prev, [campoEditando]: nuevoValor }));
+    const handleGuardarNuevoValor = async (nuevoValor: string, campo: string): Promise<boolean> => {
+        if (!campoEditando || !userData) return false;
 
+        const usuarioActualizado: InfoUserDTO = {
+            ...userData,
+            [campo]: campo === "modoAccesibilidad" ? nuevoValor === "true" : nuevoValor,
+        };
+
+        // 🔐 Si se está actualizando el email → primero Firebase Auth
+        if (campo === "email") {
+            try {
+                await backendService.updateEmailFirebaseAuth(nuevoValor);
+              } catch (error) {
+                console.error("❌ Error al actualizar email en Firebase Auth:", error);
+                return false;
+              }
+        }
+
+        try {
+            const response = await updateUserInfo(usuarioActualizado);
+            if (response.success) {
+                setUserData(usuarioActualizado);
+                return true; // ✅ Todo bien
+            } else {
+                console.error("❌ Error del servidor:", response.error);
+                return false;
+            }
+        } catch (error) {
+            console.error("❌ Error al guardar:", error);
+            return false;
         }
     };
+
 
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
     const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
@@ -196,6 +221,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     const [nuevaDireccion, setNuevaDireccion] = useState("");
     const [finalCheck, setfinalCheck] = useState(false);
 
+
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
@@ -221,63 +247,61 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
 
     const handleActualizar = async () => {
         setfinalCheck(false);
+
         if (!esValorValido()) {
-
-            if (campo === "password") {
-                setToast({
-                    show: true,
-                    message: `La contraseña y su confirmación deben ser iguales.`,
-                    color: "danger",
-                    icon: alertCircleOutline,
-                });
-            }
-            else {
-                setToast({
-                    show: true,
-                    message: `El formato del campo introducido no es válido. Por favor, introduce un valor correcto para el campo ${campo?.toLowerCase()}`,
-                    color: "danger",
-                    icon: alertCircleOutline,
-                });
-            }
-
+            setToast({
+                show: true,
+                message: campo === "password"
+                    ? "La contraseña y su confirmación deben ser iguales."
+                    : `El formato del campo introducido no es válido. Por favor, introduce un valor correcto para el campo ${campo?.toLowerCase()}`,
+                color: "danger",
+                icon: alertCircleOutline,
+            });
             return;
         }
 
-
         try {
-            setCargando(true); // ⏳ Mostramos spinner
-            // ⏱ Simular tiempo de espera de 1 segundo
+            setCargando(true);
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            await onGuardar(
+
+            const ok = await onGuardar(
                 campo === "password"
                     ? nuevaPassword
                     : campo === "direccion"
                         ? nuevaDireccion
-                        : nuevoValor
+                        : nuevoValor,
+                campo!
             );
 
-            // Llama al back y espera
+            if (ok) {
+                setToast({
+                    show: true,
+                    message: `El campo ${campo?.toLowerCase()} se ha actualizado correctamente.`,
+                    color: "success",
+                    icon: checkmarkDoneOutline,
+                });
+                setIsModalOpen(false);
+            } else {
+                setToast({
+                    show: true,
+                    message: `Hubo un error al guardar el campo ${campo?.toLowerCase()}. Inténtalo más tarde.`,
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+            }
 
-            // ✅ Si va bien
-            setToast({
-                show: true,
-                message: `El campo ${campo?.toLowerCase()} se ha actualizado correctamente.`,
-                color: "success",
-                icon: checkmarkDoneOutline,
-            });
-            setIsModalOpen(false);
         } catch (error) {
-            // ❌ Si falla el backend
             setToast({
                 show: true,
-                message: `Hubo un error al guardar el campo ${campo?.toLowerCase()}. Inténtalo más tarde.`,
+                message: `Error inesperado al guardar el campo ${campo?.toLowerCase()}.`,
                 color: "danger",
                 icon: alertCircleOutline,
             });
         } finally {
-            setCargando(false); // 🔁 Siempre quitamos el spinner
+            setCargando(false);
         }
     };
+
 
     const handleCerrar = () => {
         setfinalCheck(false);

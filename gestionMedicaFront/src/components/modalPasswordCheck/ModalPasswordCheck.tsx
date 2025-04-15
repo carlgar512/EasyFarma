@@ -57,6 +57,7 @@ const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsMo
                 setPassword("");
                 onSuccess();
                 setLoading(false);
+                setShowPassword(false);
             }
 
         } catch (error: any) {
@@ -73,7 +74,7 @@ const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsMo
     return (
         <>
 
-            <IonModal isOpen={isOpen} onDidDismiss={() => { setIsModalOpen(false); setPassword(""); }}>
+            <IonModal isOpen={isOpen} onDidDismiss={() => { setIsModalOpen(false); setPassword(""); setShowPassword(false);}}>
                 {loading ? (
                     <IonContent className="ion-padding">
                         <div className="modalContainerPw">
@@ -136,7 +137,7 @@ const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsMo
                                     <IonIcon icon={arrowForwardOutline} />
                                     <span className="buttonTextPW">Continuar</span>
                                 </IonButton>
-                                <IonButton className="buttonPW2" shape="round" onClick={() => { setIsModalOpen(false); setPassword(""); }}>
+                                <IonButton className="buttonPW2" shape="round" onClick={() => { setIsModalOpen(false); setPassword(""); setShowPassword(false); }}>
                                     <IonIcon icon={closeOutline} />
                                     <span className="buttonTextPW">Cerrar</span>
                                 </IonButton>
