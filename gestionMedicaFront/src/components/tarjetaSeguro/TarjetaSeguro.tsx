@@ -8,14 +8,14 @@ import { arrowBackOutline, cardOutline, qrCodeOutline } from "ionicons/icons";
 import { CardProps } from "./TarjetaSeguroInterfaces";
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from "../../context/AuthContext";
-import { AltaClienteDTO, InfoUserDTO } from "../../shared/interfaces/frontDTO";
-import { backendService } from "../../services/backendService";
+import { useUser } from "../../context/UserContext"; // ajustá la ruta si es necesario
+
 
 
 const TarjetaSeguro: React.FC = () => {
-    const { user, token } = useAuth();
-    const [userData, setUserData] = useState<InfoUserDTO | null>(null);
-    const [altaClienteData, setAltaClienteData] = useState<AltaClienteDTO | null>(null);
+    const { userData, altaClienteData } = useUser();
+
+    console.log(userData);
     const formatearFecha = (fechaTexto: string): string => {
         const fecha = new Date(fechaTexto);
 
@@ -25,42 +25,6 @@ const TarjetaSeguro: React.FC = () => {
 
         return `${dia} / ${mes} / ${anio}`;
     };
-
-    useEffect(() => {
-        if (!user || !token) return;
-
-        const fetchData = async () => {
-            try {
-                const response = await backendService.getUserInfo(user.uid);
-
-                if (response.success && response.data) {
-                    setUserData(response.data.userData);
-                    setAltaClienteData(response.data.altaCliente);
-                    console.log(response);
-                } else {
-                    console.error("❌ Error en getUserInfo:", response.error);
-                }
-            } catch (error) {
-                console.error("❌ Error al obtener datos del usuario:", error);
-            }
-        };
-
-        fetchData();
-    }, [user, token]);
-
-    // Logs cuando los datos realmente se actualizan
-    useEffect(() => {
-        if (userData) {
-            console.log("✅ userData actualizado:", userData);
-        }
-    }, [userData]);
-
-    useEffect(() => {
-        if (altaClienteData) {
-            console.log("✅ altaClienteData actualizado:", altaClienteData);
-        }
-    }, [altaClienteData]);
-
 
     const handleGenerarQR = () => {
         setIsOpen(true);

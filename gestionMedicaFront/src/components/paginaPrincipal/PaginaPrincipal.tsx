@@ -1,4 +1,4 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonIcon, IonImg, IonPage} from "@ionic/react";
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFab, IonFabButton, IonFabList, IonIcon, IonImg, IonPage } from "@ionic/react";
 import { callOutline, starOutline } from "ionicons/icons";
 import "./PaginaPrincipal.css";
 import * as icons from 'ionicons/icons';
@@ -12,7 +12,8 @@ import SideMenu from "../sideMenu/SideMenu";
 import MainHeader from "../mainHeader/MainHeader";
 import { OperationCardProps } from "./PaginaPrincipalInterfaces";
 import MainFooter from "../mainFooter/MainFooter";
-import { useAuth } from "../../context/AuthContext"; // Asegúrate de poner la ruta correcta
+import { useUser } from "../../context/UserContext";
+
 
 
 
@@ -25,7 +26,9 @@ const handleEmergencyCall = () => {
 };
 
 const PaginaPrincipal: React.FC = () => {
-    
+
+    //const { userData } = useUser();
+
     //const { user, token , logout} = useAuth();
     /*useEffect(() => {
         console.log("👤 Usuario en contexto:", user);
@@ -61,9 +64,9 @@ const PaginaPrincipal: React.FC = () => {
 
     return (
         <>
-        <SideMenu/>
+            <SideMenu />
             <IonPage id="main-content">
-                <MainHeader tittle="Inicio"/>
+                <MainHeader tittle="Inicio" />
                 <IonContent fullscreen className="content">
                     <div className="contentContainer">
                         <div className="sectionContainer">
@@ -129,10 +132,10 @@ const PaginaPrincipal: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    
+
                     <EmergecyCall />
                 </IonContent>
-                <MainFooter/>
+                <MainFooter />
             </IonPage>
         </>
 
