@@ -25,6 +25,14 @@ export class AltaCliente {
         };
     }
 
+    public toFrontendObject(){
+        return {
+          fechaAlta: this.fechaAlta.toString(),
+          fechaBaja: this.fechaBaja ? this.fechaBaja.toString() : "",
+          idUsuario: this.idUsuario,
+        };
+      }
+
     // 🔁 Para reconstruir desde Firestore
     public static fromFirestoreObject(firebaseData: any): AltaCliente {
 

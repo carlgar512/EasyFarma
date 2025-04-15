@@ -148,11 +148,44 @@ const deactivateUser = async (idUsuario: string) => {
     return data;
 };
 
+export const getUserInfo = async (idUsuario: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/getUserInfo?idUsuario=${idUsuario}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok || !data.success) {
+        return {
+          success: false,
+          error: data.error || "No se pudo obtener la información del usuario.",
+        };
+      }
+  
+      return {
+        success: true,
+        ...data,
+      };
+  
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error?.message || "Error al obtener información del usuario.",
+      };
+    }
+  };
+
+
 export const backendService = {
     register,
     login,
     recoveryRequest,
     passwordReset,
     checkCode,
-    deactivateUser
+    deactivateUser,
+    getUserInfo
 };

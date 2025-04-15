@@ -247,3 +247,19 @@ export const bajaUserService = async (idUsuario: string): Promise<boolean> => {
   }
 };
 
+
+export const getCurrentUserLastAltaClienteService = async (userId: string) => {
+  try {
+    logger.debug(`🔍 Obteniendo datos de la alta de cliente del usuario: ${userId}`);
+    const userAlta = await getAltaActivaFromFirestore(userId);
+    if (!userAlta) {
+      logger.warn(`⚠ Alta de cliente no encontrada: ${userId}`);
+      throw new Error("Alta de cliente no encontrada");
+    }
+    const alta = AltaCliente.fromFirestoreObject(userAlta);
+    return alta.toFrontendObject();
+  } catch (error: any) {
+    logger.error("❌ Error al obtener alta de usuario:", error.message);
+    throw new Error("Error al obtener alta de usuario");
+  }
+};

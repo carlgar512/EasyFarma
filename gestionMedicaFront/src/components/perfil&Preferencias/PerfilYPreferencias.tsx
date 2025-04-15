@@ -7,7 +7,6 @@ import './PerfilYPreferencias.css'
 import { OperationLabelProps } from "./PerfilYPreferenciasInterfaces";
 import { perfilOperations } from "../../shared/operations";
 import { sortOperations } from "../../shared/interfaces/Operation";
-
 import * as icons from 'ionicons/icons';
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useAuth } from "../../context/AuthContext";
@@ -71,8 +70,6 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
       });
       
     const { logout, user } = useAuth();
-    const auth = useAuth();
-    console.log(auth);
     
     const history = useHistory();
     const [showConfirm, setShowConfirm] = useState(false);

@@ -1,15 +1,67 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MainHeader from "../mainHeader/MainHeader";
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonImg, IonModal, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonIcon, IonImg, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import SideMenu from "../sideMenu/SideMenu";
 import MainFooter from "../mainFooter/MainFooter";
 import './TarjetaSeguro.css'
 import { arrowBackOutline, cardOutline, qrCodeOutline } from "ionicons/icons";
 import { CardProps } from "./TarjetaSeguroInterfaces";
-import {QRCodeSVG} from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
+import { useAuth } from "../../context/AuthContext";
+import { AltaClienteDTO, InfoUserDTO } from "../../shared/interfaces/frontDTO";
+import { backendService } from "../../services/backendService";
 
 
 const TarjetaSeguro: React.FC = () => {
+    const { user, token } = useAuth();
+    const [userData, setUserData] = useState<InfoUserDTO | null>(null);
+    const [altaClienteData, setAltaClienteData] = useState<AltaClienteDTO | null>(null);
+    const formatearFecha = (fechaTexto: string): string => {
+        const fecha = new Date(fechaTexto);
+
+        const dia = String(fecha.getDate()).padStart(2, "0");
+        const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // +1 porque enero = 0
+        const anio = fecha.getFullYear();
+
+        return `${dia} / ${mes} / ${anio}`;
+    };
+
+    useEffect(() => {
+        if (!user || !token) return;
+
+        const fetchData = async () => {
+            try {
+                const response = await backendService.getUserInfo(user.uid);
+
+                if (response.success && response.data) {
+                    setUserData(response.data.userData);
+                    setAltaClienteData(response.data.altaCliente);
+                    console.log(response);
+                } else {
+                    console.error("❌ Error en getUserInfo:", response.error);
+                }
+            } catch (error) {
+                console.error("❌ Error al obtener datos del usuario:", error);
+            }
+        };
+
+        fetchData();
+    }, [user, token]);
+
+    // Logs cuando los datos realmente se actualizan
+    useEffect(() => {
+        if (userData) {
+            console.log("✅ userData actualizado:", userData);
+        }
+    }, [userData]);
+
+    useEffect(() => {
+        if (altaClienteData) {
+            console.log("✅ altaClienteData actualizado:", altaClienteData);
+        }
+    }, [altaClienteData]);
+
+
     const handleGenerarQR = () => {
         setIsOpen(true);
     };
@@ -23,47 +75,85 @@ const TarjetaSeguro: React.FC = () => {
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Mi perfil & preferencias" />
-                <IonContent fullscreen className="contentTA">
-                    <div className="contentTACentral">
-                        <div className="titleContainerTA">
-                            <IonIcon
-                                className="iconOperation"
-                                slot="icon-only"
-                                icon={cardOutline}
-                                size="large"
-                            />
-                            <span className="tittleTextTA">Tarjeta del asegurado</span>
-                        </div>
-                        <Card name={"Usuario Name"} dateInit={"10 / 12 / 23"} numTarjeta={"1111 2222 3333 4444"} />
-                        <div className="buttonContainerCredit">
-                            <IonButton size="large" expand="full" shape="round" className="cardButton1" onClick={handleGenerarQR}>
-                                <IonIcon slot="start" icon={qrCodeOutline}></IonIcon>
-                                <span className="buttonTextCredit">Generar código QR</span>
-                            </IonButton>
-
-                            <IonButton size="large" expand="full" shape="round" className="cardButton2" onClick={handleVolver}>
-                                <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
-                                <span className="buttonTextCredit">Volver</span>
-                            </IonButton>
-                        </div>
-
-                    </div>
-                    <IonModal isOpen={Open}>
-                        <IonContent className="ion-padding">
-                            <div className="modalContent">
-                                <div className="tittleContainerModal">
-                                    <IonIcon size="large" slot="start" icon={qrCodeOutline}></IonIcon>
-                                    <span className="modalText">
-                                        Escanear este código para la verificar la tarjeta del asegurado.
-                                    </span>
-                                </div>
-                                
-                                <QRCodeSVG  value={"1111 2222 3333 4444"} size={250} />
-                                <IonButton expand="full" shape="round" className="cardButton2" onClick={() => setIsOpen(false)}>Close</IonButton>
+                {userData && altaClienteData ? (
+                    <IonContent fullscreen className="contentTA">
+                        <div className="contentTACentral">
+                            <div className="titleContainerTA">
+                                <IonIcon
+                                    className="iconOperation"
+                                    slot="icon-only"
+                                    icon={cardOutline}
+                                    size="large"
+                                />
+                                <span className="tittleTextTA">Tarjeta del asegurado</span>
                             </div>
-                        </IonContent>
-                    </IonModal>
-                </IonContent>
+                            <Card
+                                name={userData.nombreUsuario + " " + userData.apellidosUsuario}
+                                dateInit={formatearFecha(altaClienteData.fechaAlta)}
+                                numTarjeta={userData.numTarjeta}
+                            />
+                            <div className="buttonContainerCredit">
+                                <IonButton
+                                    size="large"
+                                    expand="full"
+                                    shape="round"
+                                    className="cardButton1"
+                                    onClick={handleGenerarQR}
+                                >
+                                    <IonIcon slot="start" icon={qrCodeOutline}></IonIcon>
+                                    <span className="buttonTextCredit">Generar código QR</span>
+                                </IonButton>
+
+                                <IonButton
+                                    size="large"
+                                    expand="full"
+                                    shape="round"
+                                    className="cardButton2"
+                                    onClick={handleVolver}
+                                >
+                                    <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
+                                    <span className="buttonTextCredit">Volver</span>
+                                </IonButton>
+                            </div>
+                        </div>
+                        <IonModal isOpen={Open}>
+                            <IonContent className="ion-padding">
+                                <div className="modalContent">
+                                    <div className="tittleContainerModal">
+                                        <IonIcon size="large" slot="start" icon={qrCodeOutline}></IonIcon>
+                                        <span className="modalText">
+                                            Escanear este código para la verificar la tarjeta del asegurado.
+                                        </span>
+                                    </div>
+
+                                    <QRCodeSVG value={userData.numTarjeta} size={250} />
+                                    <IonButton expand="full" shape="round" className="cardButton2" onClick={() => setIsOpen(false)}>Cerrar</IonButton>
+                                </div>
+                            </IonContent>
+                        </IonModal>
+                    </IonContent>
+                ) : (
+                    <IonContent fullscreen className="contentTA">
+                        <div className="contentTACentralTC">
+                            <div className="spinnerContainerTC">
+                                <IonSpinner className="spinner" name="circular"></IonSpinner>
+                                <span className="textSpinner">Cargando su información. Un momento, por favor...</span>
+                            </div>
+                            <div className="buttonContainerCredit">
+                                <IonButton
+                                    size="large"
+                                    expand="full"
+                                    shape="round"
+                                    className="cardButton2"
+                                    onClick={handleVolver}
+                                >
+                                    <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
+                                    <span className="buttonTextCredit">Volver</span>
+                                </IonButton>
+                            </div>
+                        </div>
+                    </IonContent>
+                )}
                 <MainFooter />
             </IonPage>
         </>

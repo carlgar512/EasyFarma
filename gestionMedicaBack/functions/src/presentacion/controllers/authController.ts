@@ -1,5 +1,5 @@
 
-import { bajaUserService, checkVerificationCodeService, generateVerificationCodeService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
+import { bajaUserService, checkVerificationCodeService, generateVerificationCodeService, getCurrentUserLastAltaClienteService, getCurrentUserService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
@@ -10,7 +10,7 @@ export const getEmailByDniHandler = onRequest(async (req, res) => {
     if (!dni || typeof dni !== "string") {
       throw new Error("DNI no válido");
     }
-    console.log(dni);
+
     const userEmail = await getEmailFromDNIService(dni);
     res.status(200).json({ success: true, email: userEmail });
   } catch (error: any) {
@@ -65,10 +65,10 @@ export const recoveryRequestHandler = onRequest(async (req, res) => {
 });
 
 export const checkCodeHandler = onRequest(async (req, res) => {
-  try{
+  try {
     const { dni, code } = req.body;
 
-    const correcto= await checkVerificationCodeService(dni,code);
+    const correcto = await checkVerificationCodeService(dni, code);
 
     res.status(200).json({
       success: correcto,
@@ -82,10 +82,10 @@ export const checkCodeHandler = onRequest(async (req, res) => {
 
 
 export const passwordResetHandler = onRequest(async (req, res) => {
-  try{
+  try {
     const { dni, password } = req.body;
 
-    const correcto= await passwordResetService(dni,password);
+    const correcto = await passwordResetService(dni, password);
 
     res.status(200).json({
       success: correcto,
@@ -98,7 +98,7 @@ export const passwordResetHandler = onRequest(async (req, res) => {
 });
 
 export const bajaUsuarioHandler = onRequest(async (req, res) => {
-  try{
+  try {
     const { idUsuario } = req.body;
     const correcto = await bajaUserService(idUsuario);
     res.status(200).json({
@@ -108,5 +108,26 @@ export const bajaUsuarioHandler = onRequest(async (req, res) => {
   } catch (error) {
     console.error("Error en bajaUsuarioHandler:", error);
     res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
+
+
+export const getUserInfoHandler = onRequest(async (req, res) => {
+  try {
+    const { idUsuario } = req.query;
+    if (!idUsuario || typeof idUsuario !== "string") {
+      throw new Error("idUsuario no válido");
+    }
+
+    const userData = await getCurrentUserService(idUsuario);
+    const altaCliente = await getCurrentUserLastAltaClienteService(idUsuario);
+    res.status(200).json({
+      success: true, data: {
+        userData,
+        altaCliente
+      }
+    });
+  } catch (error: any) {
+    res.status(401).json({ success: false, error: error.message });
   }
 });
