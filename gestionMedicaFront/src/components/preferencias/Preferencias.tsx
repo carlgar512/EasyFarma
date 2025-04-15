@@ -145,8 +145,8 @@ const Preferencias: React.FC = () => {
                         </div>
 
                     </IonContent>
-                )
-                } {(loading || !userData) &&
+                )}
+                {(loading || !userData) &&
                     <IonContent fullscreen className="contentTA">
                         <div className="contentTACentralP">
                             <div className="spinnerContainerP">
