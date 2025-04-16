@@ -46,6 +46,15 @@ const ModificaPerfil: React.FC = () => {
               }
         }
 
+        else if (campo === "password") {
+            try {
+                await backendService.passwordReset(userData.dni, nuevoValor);
+              } catch (error) {
+                console.error("❌ Error al actualizar la contraseña:", error);
+                return false;
+              }
+        }
+
         try {
             const response = await updateUserInfo(usuarioActualizado);
             if (response.success) {
