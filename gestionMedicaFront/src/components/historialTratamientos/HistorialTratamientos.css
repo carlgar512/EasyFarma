@@ -13,8 +13,8 @@
     width: 100%;
     height: auto;
     min-height: 90%;
-    margin-top: 30px;
-    margin-top: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     justify-content: space-between;
     align-items: center;
 }
@@ -29,13 +29,31 @@
     margin: 30px;
 }
 
+.buttonTextTratamientosArchivados{
+   font-weight:  bold;
+   display: flex;
+   justify-content: center;
+   width: 80%;
+}
+
+.buttonArchivadosTratamientos{
+    --background: var(--ion-color-customYellow);
+    color: black;
+    width: 90%;
+    max-width: 1000px;
+}
+
 .buttonVolverTratamientos {
     width: 90%;
     max-width: 1000px;
     --background: var(--ion-color-customRed);
 }
 
-.buttonVolverTratamientos:hover {
+.buttonVolverTratamientos:hover,
+.buttonArchivadosTratamientos:hover,
+.archiveButton:hover,
+.detalleButton:hover
+{
     transform: scale(1.02);
     transition: 0.3s ease-in-out;
 }
@@ -187,7 +205,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    width: 50%;
+    width: 40%;
 }
 .especialidadContainer{
     display: flex;
@@ -198,10 +216,12 @@
 
 .iconoTratamiento{
     color: var(--ion-color-customDark);
+    min-width: 32px;
 }
 
 .tratamientoText{
     color: var(--ion-color-customDark);
+text-align: flex-start;
 }
 
 .fechasContainer{
@@ -213,7 +233,7 @@
 
 .detalleButton{
     display: flex;
-    min-width: 120px;
+    min-width: 100px;
     width: 70%;
     gap: 10px;
     --background: var(--ion-color-customDark);

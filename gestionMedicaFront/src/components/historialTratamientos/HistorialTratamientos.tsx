@@ -200,6 +200,10 @@ const HistorialTratamientos: React.FC = () => {
         window.history.back();
     };
 
+    const handleArchivados = () => {
+        
+    }
+
 
     return (
         <>
@@ -209,9 +213,21 @@ const HistorialTratamientos: React.FC = () => {
                 {!userData ? (
                     <IonContent fullscreen className="contentTratamientos">
                         <div className="contentCentralTratamientos">
+                        <div className="buttonContainerTratamientos">
+                                <IonButton
+                                    size="large"
+                                    expand="full"
+                                    shape="round"
+                                    className="buttonArchivadosTratamientos"
+                                    onClick={handleArchivados}
+                                >
+                                    <IonIcon slot="start" size="large" icon={archiveOutline}></IonIcon>
+                                    <span className="buttonTextTratamientosArchivados">Archivados</span>
+                                </IonButton>
+                            </div>
                             <div className="TratamientosContainer">
                                 {mockTratamientos.map((tratamiento, index) => (
-                                    <TratamientoCard key={index} tratamiento={tratamiento} index={index + 1}/>
+                                    <TratamientoCard key={index} tratamiento={tratamiento} index={index +1}/>
                                 ))}
                             </div>
                             <div className="buttonContainerTratamientos">
