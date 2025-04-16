@@ -155,6 +155,7 @@
     margin-top: 8px;
     margin-bottom: 12px;
     white-space: pre-wrap;
+    text-align: justify;
     /* Permite saltos de línea */
 }
 

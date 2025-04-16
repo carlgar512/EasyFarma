@@ -1,4 +1,4 @@
-export interface Alergia {
+export interface AlergiaDTO {
     titulo: string
     descripcion: string
     tipoAlergeno: TipoAlergeno,
@@ -23,6 +23,6 @@ export enum GradoSeveridad {
 }
 
 export interface AlergiaCardProps {
-    alergia: Alergia
+    alergia: AlergiaDTO
 }
 

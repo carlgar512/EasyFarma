@@ -55,7 +55,8 @@ import TarjetaSeguro from './components/tarjetaSeguro/TarjetaSeguro';
 import 'leaflet/dist/leaflet.css';
 import { AuthProvider } from './context/AuthContext'; // Ajustá el path si es necesario
 import { UserProvider } from './context/UserContext';
-import MisAlergias from './components/misAlergias/MisAlergias';
+import Alergias from './components/misAlergias/Alergias';
+import HistorialTratamientos from './components/historialTratamientos/HistorialTratamientos';
 
 
 
@@ -101,7 +102,12 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/my-allergies">
             <UserProvider>
-              <MisAlergias />
+              <Alergias/>
+            </UserProvider>
+          </Route>
+          <Route exact path="/treatment-history">
+            <UserProvider>
+              <HistorialTratamientos/>
             </UserProvider>
           </Route>
 

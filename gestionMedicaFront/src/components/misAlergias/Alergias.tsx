@@ -4,15 +4,15 @@ import MainFooter from "../mainFooter/MainFooter";
 import { IonButton, IonContent, IonIcon, IonImg, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import { useUser } from "../../context/UserContext";
-import { alertCircleOutline, arrowBackOutline, bugOutline, flaskOutline, helpCircleOutline, leafOutline, medicalOutline, pawOutline, restaurantOutline } from "ionicons/icons";
-import './MisAlergias.css'
-import { Alergia, AlergiaCardProps, GradoSeveridad, TipoAlergeno } from "./MisAlergiasInterfaces";
+import { arrowBackOutline, bugOutline, flaskOutline, helpCircleOutline, leafOutline, medicalOutline, pawOutline, restaurantOutline } from "ionicons/icons";
+import './Alergias.css'
+import { AlergiaDTO, AlergiaCardProps, GradoSeveridad, TipoAlergeno } from "./AlergiasInterfaces";
 
-const MisAlergias: React.FC = () => {
+const Alergias: React.FC = () => {
 
     const { userData } = useUser();
     //const misAlergias: Alergia[] = [];
-    const misAlergias: Alergia[] = [
+    const misAlergias: AlergiaDTO[] = [
         {
             titulo: "Polen de gramíneas",
             descripcion: "Reacción alérgica estacional con exposición al polen.",
@@ -67,6 +67,8 @@ const MisAlergias: React.FC = () => {
     const handleVolver = () => {
         window.history.back();
     };
+
+    //TODO Cambiar condicio userData
     return (
         <>
             <SideMenu />
@@ -135,7 +137,7 @@ const MisAlergias: React.FC = () => {
             </IonPage>
         </>
     );
-}
+};
 
 const AlergiaCard: React.FC<AlergiaCardProps> = ({ alergia }) => {
     const iconoPorTipo: Record<TipoAlergeno, string> = {
@@ -183,4 +185,4 @@ const AlergiaCard: React.FC<AlergiaCardProps> = ({ alergia }) => {
         </div>
     );
 }
-export default MisAlergias;
+export default Alergias;
