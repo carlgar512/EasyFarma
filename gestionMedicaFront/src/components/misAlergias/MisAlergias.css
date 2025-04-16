@@ -1,0 +1,280 @@
+.contentAlergias {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
+
+.contentAlergiasCentral {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    min-height: 90%;
+    margin-top: 30px;
+    margin-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.buttonContainerAlergias {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 30px;
+}
+
+.buttonVolverAlergias {
+    width: 90%;
+    max-width: 1000px;
+    --background: var(--ion-color-customRed);
+}
+
+.buttonVolverAlergias:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+.buttonTextAlergias {
+    font-weight: bold;
+    width: 80%;
+}
+
+.spinnerContainerAlergias {
+    background: var(--ion-color-customUltraLight);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+    border-radius: 26px;
+    width: 80%;
+    gap: 10px;
+    max-width: 1000px;
+}
+
+.textSpinnerAlergias {
+    font-size: 1.1rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    text-align: center;
+}
+
+.contentAlergiasCentralSpinner {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+
+}
+
+/*###### ALERGIACARD */
+.alergiasContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.alergiaCardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.alergiaCardTop {
+    width: 90%;
+    display: flex;
+    padding-top: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alergiCardTittle {
+    font-size: 1.2rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+}
+
+.badgeSeverityAlergia {
+    padding: 4px 12px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: inline-block;
+    text-align: center;
+}
+
+.badgeSeverityAlergia.leve {
+    background-color: var(--ion-color-lightGreen);
+}
+
+.badgeSeverityAlergia.moderada {
+    background-color: var(--ion-color-customYellow);
+}
+
+.badgeSeverityAlergia.grave {
+    background-color: var(--ion-color-customRed);
+}
+
+.bodyAlergiaContainer {
+    width: 90%;
+    display: flex;
+    padding-top: 20px;
+    gap: 15px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alergiaTextContainer {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.alergiaDescripcionText {
+    color: var(--ion-color-customDark);
+    font-size: 1rem;
+    line-height: 1.1;
+    font-weight: 400;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    white-space: pre-wrap;
+    /* Permite saltos de línea */
+}
+
+.alergenoContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* Espacio entre icono y texto */
+    background-color: var(--ion-color-Beige);
+    padding: 8px 12px;
+    border-radius: 12px;
+    min-width: 20%;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: var(--ion-color-customDark);
+    margin-top: 10px;
+}
+
+.iconoAlergeno {
+    font-size: 1.2rem;
+    color: var(--ion-color-customDark);
+    /* O cualquier otro color que se distinga */
+}
+
+.alergenoText {
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+}
+
+
+.sintomasContainer {
+    display: flex;
+    width: 90%;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    flex-direction: column;
+}
+
+.sintomasContainerBadges {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+.sintoma-item {
+    background: var(--ion-color-customUltraLight);
+    width: fit-content;
+    color: var(--ion-color-customDark);
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    /* 🔒 Evita que se corte en varias líneas */
+}
+
+.sintomasTitulo {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.sintomasLinea {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, var(--ion-color-customDark), transparent);
+    width: 100%;
+}
+
+/*###### ALERGIA CARD */
+
+.noAlergiasContainerGrid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+
+}
+
+.noAlergiasContainer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    max-height: 500px;
+    max-width: 1000px;
+    background: var(--ion-color-customUltraLight);
+    border-radius: 36px;
+}
+
+.noAlergiasText {
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    padding: 30px;
+}
+
+.imgContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+
+}
+
+.imgNoData {
+    width: 50%;
+    max-width: 400px;
+}

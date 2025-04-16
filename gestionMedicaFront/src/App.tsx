@@ -55,6 +55,8 @@ import TarjetaSeguro from './components/tarjetaSeguro/TarjetaSeguro';
 import 'leaflet/dist/leaflet.css';
 import { AuthProvider } from './context/AuthContext'; // Ajustá el path si es necesario
 import { UserProvider } from './context/UserContext';
+import MisAlergias from './components/misAlergias/MisAlergias';
+
 
 
 setupIonicReact();
@@ -95,6 +97,11 @@ const App: React.FC = () => (
           <Route exact path="/insured-card">
             <UserProvider>
               <TarjetaSeguro />
+            </UserProvider>
+          </Route>
+          <Route exact path="/my-allergies">
+            <UserProvider>
+              <MisAlergias />
             </UserProvider>
           </Route>
 
