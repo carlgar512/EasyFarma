@@ -11,7 +11,7 @@ import NotificationToast from "../notification/NotificationToast";
 import MapComponent from "../mapComponent/MapComponent";
 import { useUser } from "../../context/UserContext";
 import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
-import { backendService, updateUserInfo } from "../../services/backendService";
+import { backendService } from "../../services/backendService";
 
 const ModificaPerfil: React.FC = () => {
 
@@ -56,7 +56,7 @@ const ModificaPerfil: React.FC = () => {
         }
 
         try {
-            const response = await updateUserInfo(usuarioActualizado);
+            const response = await backendService.updateUserInfo(usuarioActualizado);
             if (response.success) {
                 setUserData(usuarioActualizado);
                 return true; // ✅ Todo bien

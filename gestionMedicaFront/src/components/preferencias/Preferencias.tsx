@@ -6,9 +6,9 @@ import MainFooter from "../mainFooter/MainFooter";
 import { alertCircleOutline, arrowBackOutline, checkmarkOutline, constructOutline, folderOutline } from "ionicons/icons";
 import './Preferencias.css'
 import { useUser } from "../../context/UserContext";
-import { updateUserInfo } from "../../services/backendService";
 import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
 import NotificationToast from "../notification/NotificationToast";
+import { backendService } from "../../services/backendService";
 
 const Preferencias: React.FC = () => {
     const [valorOriginal, setValorOriginal] = useState(false);
@@ -50,7 +50,7 @@ const Preferencias: React.FC = () => {
             };
 
             try {
-                const response = await updateUserInfo(usuarioActualizado);
+                const response = await backendService.updateUserInfo(usuarioActualizado);
                 if (response.success) {
                     setUserData(usuarioActualizado); // 👈 actualizar el contexto
                     setValorOriginal(accesibilidad); // ✅ sincronizar con el nuevo valor

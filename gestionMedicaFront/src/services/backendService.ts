@@ -1,7 +1,7 @@
 // src/services/backendService.ts
 
 import { InfoUserDTO, LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
-import { signInWithEmailAndPassword,  updateEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, updateEmail } from "firebase/auth";
 import { auth } from "./firebaseConfig"; // Asegúrate de que este path es correcto
 
 const BASE_URL = "http://localhost:5001/easyfarma-5ead7/us-central1";
@@ -148,7 +148,7 @@ const deactivateUser = async (idUsuario: string) => {
     return data;
 };
 
-export const getUserInfo = async (idUsuario: string) => {
+const getUserInfo = async (idUsuario: string) => {
     try {
         const res = await fetch(`${BASE_URL}/getUserInfo?idUsuario=${idUsuario}`, {
             method: "GET",
@@ -179,7 +179,7 @@ export const getUserInfo = async (idUsuario: string) => {
     }
 };
 
-export const updateUserInfo = async (updatedUser: InfoUserDTO) => {
+const updateUserInfo = async (updatedUser: InfoUserDTO) => {
     try {
         const res = await fetch(`${BASE_URL}/updateUserInfo`, {
             method: "PATCH", // sigue siendo PATCH, porque es una actualización
@@ -207,21 +207,39 @@ export const updateUserInfo = async (updatedUser: InfoUserDTO) => {
     }
 };
 
-export const updateEmailFirebaseAuth = async (newEmail: string): Promise<void> => {
+const updateEmailFirebaseAuth = async (newEmail: string): Promise<void> => {
     const user = auth.currentUser;
 
     if (!user) {
-      throw new Error("No hay usuario autenticado.");
+        throw new Error("No hay usuario autenticado.");
     }
 
     try {
-      await updateEmail(user, newEmail);
-      console.log("✅ Email actualizado correctamente.");
+        await updateEmail(user, newEmail);
+        console.log("✅ Email actualizado correctamente.");
     } catch (error: any) {
-      console.error("❌ Error al actualizar email:", error.message || error);
-      throw new Error(error.message || "No se pudo actualizar el correo electrónico.");
+        console.error("❌ Error al actualizar email:", error.message || error);
+        throw new Error(error.message || "No se pudo actualizar el correo electrónico.");
     }
-  };
+};
+
+
+const getAlergias = async (idUsuario: string) => {
+    const response = await fetch(`${BASE_URL}/getAlergias?idUsuario=${idUsuario}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al obtener alergias");
+    }
+
+    return data.alergias; // devolvemos directamente la lista
+};
 
 
 
@@ -234,5 +252,6 @@ export const backendService = {
     deactivateUser,
     getUserInfo,
     updateUserInfo,
-    updateEmailFirebaseAuth
+    updateEmailFirebaseAuth,
+    getAlergias
 };

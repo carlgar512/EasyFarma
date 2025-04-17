@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SideMenu from "../sideMenu/SideMenu";
 import MainFooter from "../mainFooter/MainFooter";
 import { IonButton, IonContent, IonIcon, IonImg, IonPage, IonSpinner } from "@ionic/react";
@@ -6,78 +6,55 @@ import MainHeader from "../mainHeader/MainHeader";
 import { useUser } from "../../context/UserContext";
 import { arrowBackOutline, bugOutline, flaskOutline, helpCircleOutline, leafOutline, medicalOutline, pawOutline, restaurantOutline } from "ionicons/icons";
 import './Alergias.css'
-import { AlergiaDTO, AlergiaCardProps, GradoSeveridad, TipoAlergeno } from "./AlergiasInterfaces";
+import { AlergiaCardProps, GradoSeveridad, TipoAlergeno } from "./AlergiasInterfaces";
+import { backendService } from "../../services/backendService";
 
 const Alergias: React.FC = () => {
+    const [alergias, setAlergias] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const { userData } = useUser();
-    //const misAlergias: Alergia[] = [];
-    const misAlergias: AlergiaDTO[] = [
-        {
-            titulo: "Polen de gramíneas",
-            descripcion: "Reacción alérgica estacional con exposición al polen.",
-            tipoAlergeno: TipoAlergeno.AMBIENTALES,
-            gradoSeveridad: GradoSeveridad.MODERADA,
-            sintomas: ["Estornudos", "Picor nasal", "Lagrimeo", "Congestión"]
-        },
-        {
-            titulo: "Penicilina",
-            descripcion: "Reacción alérgica al tomar antibióticos del grupo de la penicilina.",
-            tipoAlergeno: TipoAlergeno.FARMACOS,
-            gradoSeveridad: GradoSeveridad.GRAVE,
-            sintomas: ["Erupción cutánea", "Dificultad para respirar", "Hinchazón facial"]
-        },
-        {
-            titulo: "Marisco",
-            descripcion: "Alergia alimentaria desencadenada por mariscos como gambas o langostinos.",
-            tipoAlergeno: TipoAlergeno.ALIMENTOS,
-            gradoSeveridad: GradoSeveridad.LEVE,
-            sintomas: ["Picor en la boca", "Hinchazón leve de labios", "Urticaria"]
-        },
-        {
-            titulo: "Caspa de gato",
-            descripcion: "Reacción alérgica provocada por proteínas presentes en la piel y saliva de gatos.",
-            tipoAlergeno: TipoAlergeno.ANIMALES,
-            gradoSeveridad: GradoSeveridad.MODERADA,
-            sintomas: ["Ojos llorosos", "Estornudos", "Congestión nasal"]
-        },
-        {
-            titulo: "Picadura de avispa",
-            descripcion: "Reacción aguda ante la picadura de una avispa.",
-            tipoAlergeno: TipoAlergeno.INSECTOS,
-            gradoSeveridad: GradoSeveridad.GRAVE,
-            sintomas: ["Dolor intenso", "Hinchazón rápida", "Dificultad respiratoria"]
-        },
-        {
-            titulo: "Látex",
-            descripcion: "Alergia por contacto con guantes u objetos que contienen látex.",
-            tipoAlergeno: TipoAlergeno.QUIMICOS,
-            gradoSeveridad: GradoSeveridad.LEVE,
-            sintomas: ["Irritación", "Picor en la piel", "Erupción"]
-        },
-        {
-            titulo: "Alergia inespecífica",
-            descripcion: "Síntomas repetidos sin causa alérgica concreta identificada.",
-            tipoAlergeno: TipoAlergeno.OTROS,
-            gradoSeveridad: GradoSeveridad.MODERADA,
-            sintomas: ["Urticaria", "Cansancio", "Reacciones variables"]
-        }
-    ];
 
+    useEffect(() => {
+        const fetchAlergias = async () => {
+            if (!userData?.uid) return;
+
+            setLoading(true); // ← Empezamos cargando
+
+            try {
+                const data = await backendService.getAlergias(userData.uid);
+
+                const alergiasMapeadas = data.map((alergia: any) => ({
+                    ...alergia,
+                    tipoAlergeno: mapTipoAlergeno(alergia.tipoAlergeno),
+                    gradoSeveridad: mapGradoSeveridad(alergia.gradoSeveridad),
+                }));
+
+                setAlergias(alergiasMapeadas);
+            } catch (err: any) {
+                console.error("❌ Error al obtener alergias:", err.message || err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAlergias();
+    }, [userData?.uid]);
+
+    
     const handleVolver = () => {
         window.history.back();
     };
 
-    //TODO Cambiar condicio userData
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Mis alergias" />
-                {userData ? (
+                {!loading ? (
                     <IonContent fullscreen className="contentAlergias">
                         <div className="contentAlergiasCentral">
-                            {misAlergias.length === 0 ? (
+                            {alergias.length === 0 ? (
                                 <div className="noAlergiasContainerGrid">
                                     <div className="noAlergiasContainer">
                                         <div className="imgContainer">
@@ -90,7 +67,7 @@ const Alergias: React.FC = () => {
                                 </div>
                             ) : (
                                 <div className="alergiasContainer">
-                                    {misAlergias.map((alergia, index) => (
+                                    {alergias.map((alergia, index) => (
                                         <AlergiaCard alergia={alergia} key={index} />
                                     ))}
                                 </div>
@@ -185,4 +162,40 @@ const AlergiaCard: React.FC<AlergiaCardProps> = ({ alergia }) => {
         </div>
     );
 }
+
+
+export const mapTipoAlergeno = (tipo: string): TipoAlergeno => {
+    switch (tipo.toUpperCase()) {
+        case "ALIMENTOS":
+            return TipoAlergeno.ALIMENTOS;
+        case "FARMACOS":
+            return TipoAlergeno.FARMACOS;
+        case "AMBIENTALES":
+            return TipoAlergeno.AMBIENTALES;
+        case "ANIMALES":
+            return TipoAlergeno.ANIMALES;
+        case "INSECTOS":
+            return TipoAlergeno.INSECTOS;
+        case "QUIMICOS":
+            return TipoAlergeno.QUIMICOS;
+        case "OTROS":
+        case "OTROS / DESCONOCIDOS":
+            return TipoAlergeno.OTROS;
+        default:
+            return TipoAlergeno.OTROS;
+    }
+};
+
+export const mapGradoSeveridad = (grado: string): GradoSeveridad => {
+    switch (grado.toUpperCase()) {
+        case "LEVE":
+            return GradoSeveridad.LEVE;
+        case "MODERADA":
+            return GradoSeveridad.MODERADA;
+        case "GRAVE":
+            return GradoSeveridad.GRAVE;
+        default:
+            return GradoSeveridad.LEVE;
+    }
+};
 export default Alergias;
