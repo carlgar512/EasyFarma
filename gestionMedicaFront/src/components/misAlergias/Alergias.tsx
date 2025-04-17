@@ -74,7 +74,7 @@ const Alergias: React.FC = () => {
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Mis alergias" />
-                {!userData ? (
+                {userData ? (
                     <IonContent fullscreen className="contentAlergias">
                         <div className="contentAlergiasCentral">
                             {misAlergias.length === 0 ? (

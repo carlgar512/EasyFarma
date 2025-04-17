@@ -7,8 +7,23 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { bajaUsuarioHandler, checkCodeHandler, getEmailByDniHandler, getUserInfoHandler, passwordResetHandler, recoveryRequestHandler, registerHandler, updateUserInfoHandler } from "./presentacion/controllers/authController";
+import {
+    bajaUsuarioHandler,
+    checkCodeHandler,
+    getEmailByDniHandler,
+    getUserInfoHandler,
+    passwordResetHandler,
+    recoveryRequestHandler,
+    registerHandler,
+    updateUserInfoHandler
+  } from "./presentacion/controllers/authController";
 import "./negocio/services/ListenerService";
+import {
+    getAlergiasHandler,
+    saveAlergiasHandler,
+    deleteAlergiasByUsuarioHandler,
+    deleteAlergiaByIdHandler
+} from "./presentacion/controllers/alergiaController";
 
 // import {onRequest} from "firebase-functions/v2/https";
 // import * as logger from "firebase-functions/logger";
@@ -21,11 +36,18 @@ import "./negocio/services/ListenerService";
 //   response.send("Hello from Firebase!");
 // });
 
+// Exportación de funciones Auth
 export const getEmailByDni = getEmailByDniHandler;
 export const register = registerHandler;
-export const recoveryRequest= recoveryRequestHandler;
+export const recoveryRequest = recoveryRequestHandler;
 export const checkCode = checkCodeHandler;
 export const passwordReset = passwordResetHandler;
-export const bajaUsuario= bajaUsuarioHandler;
+export const bajaUsuario = bajaUsuarioHandler;
 export const getUserInfo = getUserInfoHandler;
-export const updateUserInfo= updateUserInfoHandler;
+export const updateUserInfo = updateUserInfoHandler;
+
+// Exportación de funciones Alergia
+export const getAlergias = getAlergiasHandler;
+export const saveAlergias = saveAlergiasHandler;
+export const deleteAlergiasByUsuario = deleteAlergiasByUsuarioHandler;
+export const deleteAlergiaById = deleteAlergiaByIdHandler;

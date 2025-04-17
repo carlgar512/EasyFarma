@@ -13,6 +13,38 @@ const HistorialTratamientos: React.FC = () => {
 
     const { userData } = useUser();
 
+    //TODO state para archivados
+    const parseFecha = (fechaStr: string): Date => {
+        const [dia, mes, anio] = fechaStr.split("/").map(Number);
+        return new Date(anio, mes - 1, dia); // mes - 1 porque en JS enero = 0
+      };
+      
+      const ordenarTratamientos = (tratamientos: TratamientoDTO[]): TratamientoDTO[] => {
+        return tratamientos.slice().sort((a, b) => {
+          // 1️⃣ Activos primero
+          if (a.estado !== b.estado) {
+            return a.estado ? -1 : 1;
+          }
+      
+          // 2️⃣ Si ambos son activos → por fechaInicio más reciente primero
+          if (a.estado && b.estado) {
+            const fechaA = parseFecha(a.fechaInicio);
+            const fechaB = parseFecha(b.fechaInicio);
+            return fechaB.getTime() - fechaA.getTime(); // Más reciente arriba
+          }
+      
+          // 3️⃣ Si ambos son finalizados → por fechaFin más reciente primero
+          if (!a.estado && !b.estado && a.fechaFin && b.fechaFin) {
+            const fechaA = parseFecha(a.fechaFin);
+            const fechaB = parseFecha(b.fechaFin);
+            return fechaB.getTime() - fechaA.getTime();
+          }
+      
+          return 0;
+        });
+      };
+      
+
     const mockTratamientos: TratamientoDTO[] = [
         {
             uid: "t001",
@@ -201,7 +233,7 @@ const HistorialTratamientos: React.FC = () => {
     };
 
     const handleArchivados = () => {
-        
+
     }
 
 
@@ -210,7 +242,7 @@ const HistorialTratamientos: React.FC = () => {
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Mis Tratamientos" />
-                {!userData ? (
+                {userData ? (
                     <IonContent fullscreen className="contentTratamientos">
                         <div className="contentCentralTratamientos">
                         <div className="buttonContainerTratamientos">
@@ -226,7 +258,7 @@ const HistorialTratamientos: React.FC = () => {
                                 </IonButton>
                             </div>
                             <div className="TratamientosContainer">
-                                {mockTratamientos.map((tratamiento, index) => (
+                                {ordenarTratamientos(mockTratamientos).map((tratamiento, index) => (
                                     <TratamientoCard key={index} tratamiento={tratamiento} index={index +1}/>
                                 ))}
                             </div>

@@ -1,7 +1,7 @@
 
-import { bajaUserService, checkVerificationCodeService, generateVerificationCodeService, getCurrentUserLastAltaClienteService, getCurrentUserService, getEmailFromDNIService, maskEmailService, passwordResetService, registerUserService, saveCodeForUserService, searchUserByDNIService, updateUserService } from "../../negocio/services/authService";
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
+import { AuthService } from "../../negocio/services/authService";
 
 
 export const getEmailByDniHandler = onRequest(async (req, res) => {
@@ -11,7 +11,7 @@ export const getEmailByDniHandler = onRequest(async (req, res) => {
       throw new Error("DNI no válido");
     }
 
-    const userEmail = await getEmailFromDNIService(dni);
+    const userEmail = await AuthService.getEmailFromDNI(dni);
     res.status(200).json({ success: true, email: userEmail });
   } catch (error: any) {
     res.status(401).json({ success: false, error: error.message });
@@ -23,7 +23,7 @@ export const registerHandler = onRequest(async (req, res) => {
   try {
 
     const data: JSON & { password: string } = req.body;
-    const newUser = await registerUserService(data);
+    const newUser = await AuthService.registerUser(data);
 
     res.status(201).json({
       success: true,
@@ -43,15 +43,15 @@ export const recoveryRequestHandler = onRequest(async (req, res) => {
 
   try {
     const { dni } = req.body;
-    const userEmail = await searchUserByDNIService(dni);
+    const userEmail = await AuthService.searchUserByDNI(dni);
     if (!userEmail) {
       res.status(404).json({ success: false, message: "Usuario no encontrado." });
     }
 
-    const code = generateVerificationCodeService(); // ejemplo: 1234
-    await saveCodeForUserService(dni, code);
+    const code = AuthService.generateVerificationCode(); // ejemplo: 1234
+    await AuthService.saveCodeForUser(dni, code);
     eventBus.emit('send.verification.code', { email: userEmail, code });
-    const maskedEmail = maskEmailService(userEmail); // ej: j***@gmail.com
+    const maskedEmail = AuthService.maskEmail(userEmail); // ej: j***@gmail.com
 
     res.status(201).json({
       success: true,
@@ -68,7 +68,7 @@ export const checkCodeHandler = onRequest(async (req, res) => {
   try {
     const { dni, code } = req.body;
 
-    const correcto = await checkVerificationCodeService(dni, code);
+    const correcto = await AuthService.checkVerificationCode(dni, code);
 
     res.status(200).json({
       success: correcto,
@@ -85,7 +85,7 @@ export const passwordResetHandler = onRequest(async (req, res) => {
   try {
     const { dni, password } = req.body;
 
-    const correcto = await passwordResetService(dni, password);
+    const correcto = await AuthService.passwordReset(dni, password);
 
     res.status(200).json({
       success: correcto,
@@ -100,7 +100,7 @@ export const passwordResetHandler = onRequest(async (req, res) => {
 export const bajaUsuarioHandler = onRequest(async (req, res) => {
   try {
     const { idUsuario } = req.body;
-    const correcto = await bajaUserService(idUsuario);
+    const correcto = await AuthService.bajaUsuario(idUsuario);
     res.status(200).json({
       success: correcto,
     });
@@ -119,8 +119,8 @@ export const getUserInfoHandler = onRequest(async (req, res) => {
       throw new Error("idUsuario no válido");
     }
 
-    const userData = await getCurrentUserService(idUsuario);
-    const altaCliente = await getCurrentUserLastAltaClienteService(idUsuario);
+    const userData = await AuthService.getCurrentUser(idUsuario);
+    const altaCliente = await AuthService.getCurrentUserLastAlta(idUsuario);
     res.status(200).json({
       success: true, data: {
         userData,
@@ -143,7 +143,7 @@ export const updateUserInfoHandler = onRequest(async (req, res) => {
       });
     }
 
-    await updateUserService(userData);
+    await AuthService.updateUser(userData);
 
     res.status(200).json({
       success: true,

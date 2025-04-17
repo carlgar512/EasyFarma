@@ -8,275 +8,280 @@ import { AltaCliente } from "../modelos/AltaCliente";
 import { CodigoExpiracion } from "../modelos/CodigoExpiracion";
 import { Usuario } from "../modelos/Usuario";
 
-/**
- * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore
- */
-export const registerUserService = async (userData: any & { password: string }) => {
-  try {
-    logger.info(`➡️ Registrando usuario: ${userData.email}`);
-
-    const userRecord = await createUserInAuth(userData.email, userData.password);
-    const tarjeta = await generarTarjetaConContador();
-
-    logger.info?.(`✅ Usuario creado en Firebase Auth: ${userRecord.uid}`); // usa logger.info si no tienes logger.success
-    const user: Usuario = new Usuario(
-      userData.dni,
-      userData.email,
-      userData.name,
-      userData.lastName,
-      userData.dateNac,
-      userData.tlf,
-      tarjeta
-    );
-    user.setIdUsuario(userRecord.uid);
-
-    logger.info(`📝 Guardando en Firestore: ${user.getIdUsuario()}`);
-    await saveUserToFirestore(user);
-
-    const alta = new AltaCliente(user.getIdUsuario(), new Date());
-    logger.info(`📁 Creando alta de cliente para el usuario: ${user.getIdUsuario()}`);
-    await saveAltaClienteToFirestore(alta.toFirestoreObject());
-    logger.info(`✅ Alta de cliente registrada correctamente.`);
-
-    logger.info(`✅ Usuario guardado en Firestore: ${user.getIdUsuario()}`);
-    return user;
-  } catch (error: any) {
-    logger.error(`❌ Error en registerUser: ${error.message}`);
-    throw error;
-  }
-};
 
 
-/**
- * Busca un usuario por DNI y devuelve su información desde Firebase Auth
- */
-export const getEmailFromDNIService = async (dni: string): Promise<string> => {
-  logger.info(`🔍 Buscando email asociado al DNI: ${dni}`);
+export class AuthService {
+  /**
+   * Registra un nuevo usuario en Firebase Authentication y lo guarda en Firestore
+   */
+  static async registerUser(userData: any & { password: string }) {
+    try {
+      logger.info(`➡️ Registrando usuario: ${userData.email}`);
 
-  const email = await getEmailByDNI(dni);
+      const userRecord = await createUserInAuth(userData.email, userData.password);
+      const tarjeta = await generarTarjetaConContador();
 
-  if (!email) {
-    logger.warn(`⚠️ No se encontró ningún email para el DNI: ${dni}`);
-    throw new Error("DNI no encontrado");
-  }
-  // Obtener UID
-  const uid = await getUIDByDNI(dni);
-  if (!uid) {
-    logger.error(`❌ No se encontró UID para el DNI: ${dni}`);
-    throw new Error("Usuario no encontrado en el sistema");
-  }
+      logger.info?.(`✅ Usuario creado en Firebase Auth: ${userRecord.uid}`); // usa logger.info si no tienes logger.success
+      const user: Usuario = new Usuario(
+        userData.dni,
+        userData.email,
+        userData.name,
+        userData.lastName,
+        userData.dateNac,
+        userData.tlf,
+        tarjeta
+      );
+      user.setIdUsuario(userRecord.uid);
 
-  const altaActiva = await getAltaActivaFromFirestore(uid);
-  if (!altaActiva) {
-    logger.warn(`⛔ El usuario con DNI ${dni} está dado de baja`);
-    throw new Error("El usuario actualmente está dado de baja");
-  }
+      logger.info(`📝 Guardando en Firestore: ${user.getIdUsuario()}`);
+      await saveUserToFirestore(user);
 
+      const alta = new AltaCliente(user.getIdUsuario(), new Date());
+      logger.info(`📁 Creando alta de cliente para el usuario: ${user.getIdUsuario()}`);
+      await saveAltaClienteToFirestore(alta.toFirestoreObject());
+      logger.info(`✅ Alta de cliente registrada correctamente.`);
 
-  logger.info(`✅ Email encontrado: ${email}`);
-  return email;
-};
-
-
-/**
- * Logout no se gestiona desde backend (solo cliente)
- */
-export const logoutUserService = async () => {
-  logger.warn("🚫 Logout intentado desde backend. Esta acción debe gestionarse en el cliente.");
-  throw new Error("Logout debe ser gestionado desde el cliente");
-};
-
-/**
- * Obtiene la información del usuario desde Firestore
- */
-export const getCurrentUserService = async (userId: string) => {
-  try {
-    logger.debug(`🔍 Obteniendo datos de usuario: ${userId}`);
-    const user = await getUserById(userId);
-    if (!user) {
-      logger.warn(`⚠ Usuario no encontrado: ${userId}`);
-      throw new Error("Usuario no encontrado");
+      logger.info(`✅ Usuario guardado en Firestore: ${user.getIdUsuario()}`);
+      return user;
+    } catch (error: any) {
+      logger.error(`❌ Error en registerUser: ${error.message}`);
+      throw error;
     }
-    return user;
-  } catch (error: any) {
-    logger.error("❌ Error al obtener usuario:", error.message);
-    throw new Error("Error al obtener usuario");
-  }
-};
+  };
 
 
-export const searchUserByDNIService = async (dni: string) => {
-  try {
-    logger.debug(`🔍 Buscando usuario por DNI: ${dni}`);
+  /**
+   * Busca un usuario por DNI y devuelve su información desde Firebase Auth
+   */
+  static async getEmailFromDNI(dni: string): Promise<string> {
+    logger.info(`🔍 Buscando email asociado al DNI: ${dni}`);
 
-    const userEmail = await getEmailByDNI(dni);
+    const email = await getEmailByDNI(dni);
 
-    if (!userEmail) {
-      logger.warn(`⚠ Usuario no encontrado con DNI: ${dni}`);
-      throw new Error("Usuario no encontrado");
+    if (!email) {
+      logger.warn(`⚠️ No se encontró ningún email para el DNI: ${dni}`);
+      throw new Error("DNI no encontrado");
     }
-    return userEmail;
-  } catch (error: any) {
-    logger.error(`❌ Error al buscar usuario por DNI: ${error.message}`);
-    throw new Error("Error al buscar usuario por DNI");
-  }
-};
-
-// Genera codigo verificación
-export const generateVerificationCodeService = (): string => {
-  return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
-}
-
-
-
-export const saveCodeForUserService = async (dni: string, code: string): Promise<void> => {
-  try {
-    logger.info(`Iniciando el proceso de guardado para el DNI: ${dni}`);
-
-    const existeCode = await getExpirationCode(dni);
-    if (existeCode) {
-      await deleteExpirationCode(dni);
-    }
-    // Crear la fecha de expiración (5 minutos)
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);  // Expira en 5 minutos
-
-    // Crear el código de expiración
-    const expirationCode: CodigoExpiracion = new CodigoExpiracion(dni, code, expiresAt);
-
-    // Llamar a la función para guardar el código en Firestore
-    await saveExpirationCodeToFirestore(expirationCode);
-
-    eventBus.emit('schedule.deletion', { dni, expiresAt });
-    logger.info(`Código de expiración guardado correctamente en Firestore para el DNI: ${dni}`);
-  } catch (error) {
-    // Si algo falla
-    logger.error(`❌ Error al guardar el código de expiración para el DNI: ${dni}`, error);
-  }
-};
-
-export const maskEmailService = (email: string): string => {
-  const [localPart, domain] = email.split('@'); // Divide el email en la parte local y el dominio
-
-  // Enmascara la parte local, dejando la primera letra visible y 5 asteriscos
-  const maskedLocalPart = localPart[0] + '*'.repeat(5);  // 5 asteriscos después de la primera letra
-
-  // Enmascara la parte del dominio (todo lo que está después de `@` queda igual)
-  const [domainName, tld] = domain.split('.');  // Divide el dominio en el nombre y el TLD (ej. "example" y "com")
-  const maskedDomainName = domainName;
-
-  // Devuelve el email con la parte local y el dominio enmascarados
-  return `${maskedLocalPart}@${maskedDomainName}.${tld}`;
-};
-
-
-export const checkVerificationCodeService = async (dni: string, code: string): Promise<boolean> => {
-  try {
-    // Buscar el código de expiración para el DNI
-    const existeCode = await getExpirationCode(dni);
-
-    // Verificar si el código de expiración existe
-    if (existeCode) {
-      // Convertir el objeto de Firestore a la clase CodigoExpiracion
-      const codigoExpiracion: CodigoExpiracion = CodigoExpiracion.fromFirestoreObject(existeCode);
-
-      // Comparar el código almacenado con el proporcionado
-      if (codigoExpiracion.getCode() === code) {
-        logger.info(`✅ El código de verificación para el DNI: ${dni} es válido.`);
-        return true; // El código coincide
-      } else {
-        logger.info(`⚠️ El código de verificación para el DNI: ${dni} es incorrecto.`);
-        return false; // El código no coincide
-      }
-    }
-    logger.info(`✅ No se encontró un código de expiración para el DNI: ${dni}.`);
-    return false; // No existe el código de expiración
-  } catch (error: any) {
-    logger.error(`❌ Error al verificar el código de expiración para el DNI: ${dni}. ${error.message}`);
-    return false; // En caso de error, retornamos `false`
-  }
-};
-
-
-// Servicio para restablecer la contraseña
-export const passwordResetService = async (dni: string, password: string): Promise<boolean> => {
-  try {
-    // Recuperar el correo electrónico del usuario usando el método `getEmailByDNI`
+    // Obtener UID
     const uid = await getUIDByDNI(dni);
-
-    // Si no se encuentra el correo asociado al DNI, lanzamos un error
     if (!uid) {
-      throw new Error(`No se encontró un usuario con el DNI: ${dni}`);
+      logger.error(`❌ No se encontró UID para el DNI: ${dni}`);
+      throw new Error("Usuario no encontrado en el sistema");
     }
 
-    // Actualizar la contraseña del usuario en Firebase Authentication
-    await updateUserPassword(uid, password);
-
-    return true; // Contraseña actualizada con éxito
-  } catch (error: any) {
-    console.error("❌ Error al restablecer la contraseña:", error.message);
-    throw error; // Lanza el error para que el controlador lo maneje
-  }
-};
-
-
-
-export const bajaUserService = async (idUsuario: string): Promise<boolean> => {
-  try {
-    // 1. Obtener el alta activa
-    const altaActiva = await getAltaActivaFromFirestore(idUsuario);
-
+    const altaActiva = await getAltaActivaFromFirestore(uid);
     if (!altaActiva) {
-      logger.warn(`⚠️ No se encontró alta activa para el usuario con ID: ${idUsuario}`);
-      throw new Error("No hay alta activa para este usuario");
+      logger.warn(`⛔ El usuario con DNI ${dni} está dado de baja`);
+      throw new Error("El usuario actualmente está dado de baja");
     }
-    const { id, ...datosAlta } = altaActiva;
-
-    const altaUsuario = AltaCliente.fromFirestoreObject(datosAlta);
-    // 2. Preparar la actualización con fecha de baja
-    altaUsuario.setFechaBaja(new Date());
-
-    // 3. Actualizar el documento en Firestore
-    await updateAltaCliente(id, altaUsuario.toFirestoreObject());
-
-    logger.info(`✅ Usuario con ID ${idUsuario} dado de baja correctamente en alta ID ${altaActiva.id}`);
-    return true;
-
-  } catch (error: any) {
-    logger.error(`❌ Error en bajaUserService para ID ${idUsuario}: ${error.message}`);
-    throw error;
-  }
-};
 
 
-export const getCurrentUserLastAltaClienteService = async (userId: string) => {
-  try {
-    logger.debug(`🔍 Obteniendo datos de la alta de cliente del usuario: ${userId}`);
-    const userAlta = await getAltaActivaFromFirestore(userId);
-    if (!userAlta) {
-      logger.warn(`⚠ Alta de cliente no encontrada: ${userId}`);
-      throw new Error("Alta de cliente no encontrada");
+    logger.info(`✅ Email encontrado: ${email}`);
+    return email;
+  };
+
+
+  /**
+   * Logout no se gestiona desde backend (solo cliente)
+   */
+  static async logoutUser(): Promise<void> {
+    logger.warn("🚫 Logout intentado desde backend. Esta acción debe gestionarse en el cliente.");
+    throw new Error("Logout debe ser gestionado desde el cliente");
+  };
+
+  /**
+   * Obtiene la información del usuario desde Firestore
+   */
+  static async getCurrentUser(userId: string) {
+    try {
+      logger.debug(`🔍 Obteniendo datos de usuario: ${userId}`);
+      const user = await getUserById(userId);
+      if (!user) {
+        logger.warn(`⚠ Usuario no encontrado: ${userId}`);
+        throw new Error("Usuario no encontrado");
+      }
+      return user;
+    } catch (error: any) {
+      logger.error("❌ Error al obtener usuario:", error.message);
+      throw new Error("Error al obtener usuario");
     }
-    const alta = AltaCliente.fromFirestoreObject(userAlta);
-    return alta.toFrontendObject();
-  } catch (error: any) {
-    logger.error("❌ Error al obtener alta de usuario:", error.message);
-    throw new Error("Error al obtener alta de usuario");
+  };
+
+
+  static async searchUserByDNI(dni: string): Promise<string> {
+    try {
+      logger.debug(`🔍 Buscando usuario por DNI: ${dni}`);
+
+      const userEmail = await getEmailByDNI(dni);
+
+      if (!userEmail) {
+        logger.warn(`⚠ Usuario no encontrado con DNI: ${dni}`);
+        throw new Error("Usuario no encontrado");
+      }
+      return userEmail;
+    } catch (error: any) {
+      logger.error(`❌ Error al buscar usuario por DNI: ${error.message}`);
+      throw new Error("Error al buscar usuario por DNI");
+    }
+  };
+
+  // Genera codigo verificación
+  static generateVerificationCode(): string {
+    return Math.floor(Math.random() * 10000).toString().padStart(4, "0");
   }
-};
 
 
-export const updateUserService = async (userData:any) => {
-  try {
-    logger.debug(`✏️ Actualizando usuario UID: ${userData.uid}`);
 
-    await updateUserInFirestore(userData.uid, userData);
+  static async saveCodeForUser(dni: string, code: string): Promise<void> {
+    try {
+      logger.info(`Iniciando el proceso de guardado para el DNI: ${dni}`);
 
-    logger.info(`✅ Usuario ${userData.uid} actualizado correctamente.`);
+      const existeCode = await getExpirationCode(dni);
+      if (existeCode) {
+        await deleteExpirationCode(dni);
+      }
+      // Crear la fecha de expiración (5 minutos)
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000);  // Expira en 5 minutos
 
-    return;
+      // Crear el código de expiración
+      const expirationCode: CodigoExpiracion = new CodigoExpiracion(dni, code, expiresAt);
 
-  } catch (error: any) {
-    logger.error(`❌ Error al actualizar usuario ${userData.uid}:`, error.message);
-    throw new Error("Error al actualizar los datos del usuario.");
-  }
-};
+      // Llamar a la función para guardar el código en Firestore
+      await saveExpirationCodeToFirestore(expirationCode);
+
+      eventBus.emit('schedule.deletion', { dni, expiresAt });
+      logger.info(`Código de expiración guardado correctamente en Firestore para el DNI: ${dni}`);
+    } catch (error) {
+      // Si algo falla
+      logger.error(`❌ Error al guardar el código de expiración para el DNI: ${dni}`, error);
+    }
+  };
+
+  static maskEmail(email: string): string {
+    const [localPart, domain] = email.split('@'); // Divide el email en la parte local y el dominio
+
+    // Enmascara la parte local, dejando la primera letra visible y 5 asteriscos
+    const maskedLocalPart = localPart[0] + '*'.repeat(5);  // 5 asteriscos después de la primera letra
+
+    // Enmascara la parte del dominio (todo lo que está después de `@` queda igual)
+    const [domainName, tld] = domain.split('.');  // Divide el dominio en el nombre y el TLD (ej. "example" y "com")
+    const maskedDomainName = domainName;
+
+    // Devuelve el email con la parte local y el dominio enmascarados
+    return `${maskedLocalPart}@${maskedDomainName}.${tld}`;
+  };
+
+
+  static async checkVerificationCode(dni: string, code: string): Promise<boolean> {
+    try {
+      // Buscar el código de expiración para el DNI
+      const existeCode = await getExpirationCode(dni);
+
+      // Verificar si el código de expiración existe
+      if (existeCode) {
+        // Convertir el objeto de Firestore a la clase CodigoExpiracion
+        const codigoExpiracion: CodigoExpiracion = CodigoExpiracion.fromFirestoreObject(existeCode);
+
+        // Comparar el código almacenado con el proporcionado
+        if (codigoExpiracion.getCode() === code) {
+          logger.info(`✅ El código de verificación para el DNI: ${dni} es válido.`);
+          return true; // El código coincide
+        } else {
+          logger.info(`⚠️ El código de verificación para el DNI: ${dni} es incorrecto.`);
+          return false; // El código no coincide
+        }
+      }
+      logger.info(`✅ No se encontró un código de expiración para el DNI: ${dni}.`);
+      return false; // No existe el código de expiración
+    } catch (error: any) {
+      logger.error(`❌ Error al verificar el código de expiración para el DNI: ${dni}. ${error.message}`);
+      return false; // En caso de error, retornamos `false`
+    }
+  };
+
+
+  // Servicio para restablecer la contraseña
+  static async passwordReset(dni: string, password: string): Promise<boolean> {
+    try {
+      // Recuperar el correo electrónico del usuario usando el método `getEmailByDNI`
+      const uid = await getUIDByDNI(dni);
+
+      // Si no se encuentra el correo asociado al DNI, lanzamos un error
+      if (!uid) {
+        throw new Error(`No se encontró un usuario con el DNI: ${dni}`);
+      }
+
+      // Actualizar la contraseña del usuario en Firebase Authentication
+      await updateUserPassword(uid, password);
+
+      return true; // Contraseña actualizada con éxito
+    } catch (error: any) {
+      console.error("❌ Error al restablecer la contraseña:", error.message);
+      throw error; // Lanza el error para que el controlador lo maneje
+    }
+  };
+
+
+
+  static async bajaUsuario(idUsuario: string): Promise<boolean> {
+    try {
+      // 1. Obtener el alta activa
+      const altaActiva = await getAltaActivaFromFirestore(idUsuario);
+
+      if (!altaActiva) {
+        logger.warn(`⚠️ No se encontró alta activa para el usuario con ID: ${idUsuario}`);
+        throw new Error("No hay alta activa para este usuario");
+      }
+      const { id, ...datosAlta } = altaActiva;
+
+      const altaUsuario = AltaCliente.fromFirestoreObject(datosAlta);
+      // 2. Preparar la actualización con fecha de baja
+      altaUsuario.setFechaBaja(new Date());
+
+      // 3. Actualizar el documento en Firestore
+      await updateAltaCliente(id, altaUsuario.toFirestoreObject());
+
+      logger.info(`✅ Usuario con ID ${idUsuario} dado de baja correctamente en alta ID ${altaActiva.id}`);
+      return true;
+
+    } catch (error: any) {
+      logger.error(`❌ Error en bajaUserService para ID ${idUsuario}: ${error.message}`);
+      throw error;
+    }
+  };
+
+
+  static async getCurrentUserLastAlta(userId: string) {
+    try {
+      logger.debug(`🔍 Obteniendo datos de la alta de cliente del usuario: ${userId}`);
+      const userAlta = await getAltaActivaFromFirestore(userId);
+      if (!userAlta) {
+        logger.warn(`⚠ Alta de cliente no encontrada: ${userId}`);
+        throw new Error("Alta de cliente no encontrada");
+      }
+      const alta = AltaCliente.fromFirestoreObject(userAlta);
+      return alta.toFrontendObject();
+    } catch (error: any) {
+      logger.error("❌ Error al obtener alta de usuario:", error.message);
+      throw new Error("Error al obtener alta de usuario");
+    }
+  };
+
+
+  static async updateUser(userData: any) {
+    try {
+      logger.debug(`✏️ Actualizando usuario UID: ${userData.uid}`);
+
+      await updateUserInFirestore(userData.uid, userData);
+
+      logger.info(`✅ Usuario ${userData.uid} actualizado correctamente.`);
+
+      return;
+
+    } catch (error: any) {
+      logger.error(`❌ Error al actualizar usuario ${userData.uid}:`, error.message);
+      throw new Error("Error al actualizar los datos del usuario.");
+    }
+  };
+
+}
