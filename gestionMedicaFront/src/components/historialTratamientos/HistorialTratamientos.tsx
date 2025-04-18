@@ -227,6 +227,7 @@ const HistorialTratamientos: React.FC = () => {
 };
 
 const TratamientoCard: React.FC<TratamientoCardProps> = ({ tratamiento, index, onActualizar }) => {
+    const history = useHistory();
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -318,6 +319,13 @@ const TratamientoCard: React.FC<TratamientoCardProps> = ({ tratamiento, index, o
         });
     };
 
+    const handleVerDetalle = () => {
+        history.push({
+          pathname: "/treatment-detail",
+          state: { tratamiento }, // 👈 aquí mandamos el tratamiento
+        });
+      };
+
 
     return (
         <>
@@ -377,7 +385,7 @@ const TratamientoCard: React.FC<TratamientoCardProps> = ({ tratamiento, index, o
                             </div>
                         </div>
                         <div className="rightSide">
-                            <IonButton className="detalleButton" shape="round">
+                            <IonButton className="detalleButton" shape="round" onClick={() => handleVerDetalle()}>
                                 <IonIcon icon={documentTextOutline} slot="icon-only" size="large" />
                                 <span className="buttonTextDetalle"> Detalle del tratamiento</span>
                             </IonButton>

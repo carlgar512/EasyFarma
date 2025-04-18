@@ -57,6 +57,7 @@ import { AuthProvider } from './context/AuthContext'; // Ajustá el path si es n
 import { UserProvider } from './context/UserContext';
 import Alergias from './components/misAlergias/Alergias';
 import HistorialTratamientos from './components/historialTratamientos/HistorialTratamientos';
+import DetalleTratamientoWrapper from './components/detalleTratamiento/DetalleTratamiento';
 
 
 
@@ -64,62 +65,67 @@ setupIonicReact();
 
 const App: React.FC = () => (
   <AuthProvider>
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          {/* Rutas sin contexto de usuario */}
-          <Route exact path="/register" component={Registro} />
-          <Route exact path="/lobby" component={Lobby} />
-          <Route exact path="/signIn" component={IniciarSesion} />
-          <Route exact path="/passwordReset" component={RecuperaPassword} />
+    <IonApp>
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            {/* Rutas sin contexto de usuario */}
+            <Route exact path="/register" component={Registro} />
+            <Route exact path="/lobby" component={Lobby} />
+            <Route exact path="/signIn" component={IniciarSesion} />
+            <Route exact path="/passwordReset" component={RecuperaPassword} />
 
-          {/* Rutas con contexto de usuario */}
-          <Route exact path="/principal">
-            <UserProvider>
-              <PaginaPrincipal />
-            </UserProvider>
-          </Route>
-          <Route exact path="/profile">
-            <UserProvider>
-              <PerfilYPreferencias />
-            </UserProvider>
-          </Route>
-          <Route exact path="/editProfile">
-            <UserProvider>
-              <ModificaPerfil />
-            </UserProvider>
-          </Route>
-          <Route exact path="/preferences">
-            <UserProvider>
-              <Preferencias />
-            </UserProvider>
-          </Route>
-          <Route exact path="/insured-card">
-            <UserProvider>
-              <TarjetaSeguro />
-            </UserProvider>
-          </Route>
-          <Route exact path="/my-allergies">
-            <UserProvider>
-              <Alergias/>
-            </UserProvider>
-          </Route>
-          <Route exact path="/treatment-history">
-            <UserProvider>
-              <HistorialTratamientos/>
-            </UserProvider>
-          </Route>
+            {/* Rutas con contexto de usuario */}
+            <Route exact path="/principal">
+              <UserProvider>
+                <PaginaPrincipal />
+              </UserProvider>
+            </Route>
+            <Route exact path="/profile">
+              <UserProvider>
+                <PerfilYPreferencias />
+              </UserProvider>
+            </Route>
+            <Route exact path="/editProfile">
+              <UserProvider>
+                <ModificaPerfil />
+              </UserProvider>
+            </Route>
+            <Route exact path="/preferences">
+              <UserProvider>
+                <Preferencias />
+              </UserProvider>
+            </Route>
+            <Route exact path="/insured-card">
+              <UserProvider>
+                <TarjetaSeguro />
+              </UserProvider>
+            </Route>
+            <Route exact path="/my-allergies">
+              <UserProvider>
+                <Alergias />
+              </UserProvider>
+            </Route>
+            <Route exact path="/treatment-history">
+              <UserProvider>
+                <HistorialTratamientos />
+              </UserProvider>
+            </Route>
+            <Route exact path="/treatment-detail">
+              <UserProvider>
+                <DetalleTratamientoWrapper />
+              </UserProvider>
+            </Route>
 
-          {/* Redirección por defecto */}
-          <Route exact path="/">
-            <Redirect to="/lobby" />
-          </Route>
-        </IonRouterOutlet>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
-</AuthProvider>
+            {/* Redirección por defecto */}
+            <Route exact path="/">
+              <Redirect to="/lobby" />
+            </Route>
+          </IonRouterOutlet>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  </AuthProvider>
 
 );
 
