@@ -251,3 +251,39 @@ text-align: flex-start;
   
 
 /*######### TratamientoCard*******/
+
+.noTratamientosContainerGrid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+
+}
+
+.noTratamientosContainer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 80%;
+    max-height: 500px;
+    max-width: 1000px;
+    background: var(--ion-color-customUltraLight);
+    border-radius: 36px;
+}
+
+.noTratamientosText {
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    padding: 30px;
+}
+
+.imgContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+
+}

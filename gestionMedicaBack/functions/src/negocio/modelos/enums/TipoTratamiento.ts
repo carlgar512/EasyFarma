@@ -1,16 +1,4 @@
-export interface TratamientoDTO {
-    uid: string;
-    fechaInicio: string;     // Formato legible: "15/04/2025"
-    fechaFin: string | null; // null si no ha terminado
-    estado: boolean;         // true = activo, false = finalizado
-    archivado: boolean;
-    idUsuario: string;
-    idMedico: string;
-    tipoTratamiento: TipoTratamiento;
-    descripcion: string;
-  }
-
-  export enum TipoTratamiento {
+export enum TipoTratamiento {
     GENERAL = "General",
     CARDIOLOGIA = "Cardiología",
     DERMATOLOGIA = "Dermatología",
@@ -30,9 +18,4 @@ export interface TratamientoDTO {
     REHABILITACION = "Rehabilitación",
     OTROS = "Otros"
   }
-
-export interface  TratamientoCardProps{
-    tratamiento: TratamientoDTO,
-    index: number
-    onActualizar: () => void;
-}
+  

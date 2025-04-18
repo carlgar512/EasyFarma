@@ -25,6 +25,16 @@ import {
     deleteAlergiaByIdHandler
 } from "./presentacion/controllers/alergiaController";
 
+import {
+    saveTratamientoHandler,
+    getTratamientosArchivadosHandler,
+    getTratamientosActivosHandler,
+    deleteTratamientosByUsuarioHandler,
+    deleteTratamientoByIdHandler,
+    updateArchivadoTratamientoHandler,
+    getTratamientosActualesHandler
+  } from "./presentacion/controllers/tratamientoController";
+
 // import {onRequest} from "firebase-functions/v2/https";
 // import * as logger from "firebase-functions/logger";
 
@@ -51,3 +61,12 @@ export const getAlergias = getAlergiasHandler;
 export const saveAlergias = saveAlergiasHandler;
 export const deleteAlergiasByUsuario = deleteAlergiasByUsuarioHandler;
 export const deleteAlergiaById = deleteAlergiaByIdHandler;
+
+// Exportación de funciones Tratamiento
+export const saveTratamiento = saveTratamientoHandler;
+export const getTratamientosArchivados = getTratamientosArchivadosHandler;
+export const getTratamientosActivos = getTratamientosActivosHandler;
+export const deleteTratamientosByUsuario = deleteTratamientosByUsuarioHandler;
+export const deleteTratamientoById = deleteTratamientoByIdHandler;
+export const updateArchivadoTratamiento = updateArchivadoTratamientoHandler;
+export const getTratamientosActuales = getTratamientosActualesHandler;

@@ -241,6 +241,75 @@ const getAlergias = async (idUsuario: string) => {
     return data.alergias; // devolvemos directamente la lista
 };
 
+const getTratamientosArchivados = async (idUsuario: string) => {
+    const response = await fetch(`${BASE_URL}/getTratamientosArchivados?idUsuario=${idUsuario}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al obtener tratamientos archivados");
+    }
+
+    return data.tratamientos;
+};
+
+const getTratamientosActivos = async (idUsuario: string) => {
+    const response = await fetch(`${BASE_URL}/getTratamientosActivos?idUsuario=${idUsuario}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al obtener tratamientos activos");
+    }
+
+    return data.tratamientos;
+};
+
+const getTratamientosActuales = async (idUsuario: string) => {
+    const response = await fetch(`${BASE_URL}/getTratamientosActuales?idUsuario=${idUsuario}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al obtener tratamientos actuales");
+    }
+
+    return data.tratamientos;
+};
+
+const updateArchivadoTratamiento = async (idTratamiento: string, nuevoEstado: boolean) => {
+    const response = await fetch(`${BASE_URL}/updateArchivadoTratamiento`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idTratamiento, nuevoEstado }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Error al actualizar estado de archivado");
+    }
+
+    return data;
+};
+
 
 
 export const backendService = {
@@ -253,5 +322,9 @@ export const backendService = {
     getUserInfo,
     updateUserInfo,
     updateEmailFirebaseAuth,
-    getAlergias
+    getAlergias,
+    getTratamientosArchivados,
+    getTratamientosActivos,
+    getTratamientosActuales,
+    updateArchivadoTratamiento
 };
