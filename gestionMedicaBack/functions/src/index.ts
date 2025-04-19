@@ -16,7 +16,7 @@ import {
     recoveryRequestHandler,
     registerHandler,
     updateUserInfoHandler
-  } from "./presentacion/controllers/authController";
+} from "./presentacion/controllers/authController";
 import "./negocio/services/ListenerService";
 import {
     getAlergiasHandler,
@@ -33,7 +33,17 @@ import {
     deleteTratamientoByIdHandler,
     updateArchivadoTratamientoHandler,
     getTratamientosActualesHandler
-  } from "./presentacion/controllers/tratamientoController";
+} from "./presentacion/controllers/tratamientoController";
+import {
+    guardarEspecialidadesHandler,
+    obtenerEspecialidadesHandler
+} from "./presentacion/controllers/especialidadController";
+import {
+    guardarCentrosHandler,
+    obtenerCentrosHandler
+} from "./presentacion/controllers/centroController";
+
+
 
 // import {onRequest} from "firebase-functions/v2/https";
 // import * as logger from "firebase-functions/logger";
@@ -70,3 +80,11 @@ export const deleteTratamientosByUsuario = deleteTratamientosByUsuarioHandler;
 export const deleteTratamientoById = deleteTratamientoByIdHandler;
 export const updateArchivadoTratamiento = updateArchivadoTratamientoHandler;
 export const getTratamientosActuales = getTratamientosActualesHandler;
+
+// Exportación de funciones Especialidad
+export const guardarEspecialidades = guardarEspecialidadesHandler;
+export const obtenerEspecialidades = obtenerEspecialidadesHandler;
+
+// Exportación de funciones Centro
+export const guardarCentros = guardarCentrosHandler;
+export const obtenerCentros = obtenerCentrosHandler;

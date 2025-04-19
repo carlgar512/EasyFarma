@@ -9,7 +9,7 @@ export class Tratamiento {
   private idUsuario: string;
   private idMedico: string;
   private tipoTratamiento: TipoTratamiento;
-  private descripcion: string; // 🔹 NUEVO CAMPO
+  private descripcion: string;
 
   constructor(
     fechaInicio: string,
@@ -19,7 +19,7 @@ export class Tratamiento {
     idUsuario: string,
     idMedico: string,
     tipoTratamiento: TipoTratamiento,
-    descripcion: string // 🔹 NUEVO PARÁMETRO
+    descripcion: string 
   ) {
     this.fechaInicio = fechaInicio;
     this.fechaFin = fechaFin;
@@ -28,7 +28,7 @@ export class Tratamiento {
     this.idUsuario = idUsuario;
     this.idMedico = idMedico;
     this.tipoTratamiento = tipoTratamiento;
-    this.descripcion = descripcion; // 🔹 NUEVA ASIGNACIÓN
+    this.descripcion = descripcion;
   }
 
   // 🔸 Getters

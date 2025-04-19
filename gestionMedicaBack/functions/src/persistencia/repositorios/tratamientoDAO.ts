@@ -86,3 +86,25 @@ export const saveTratamientoToFirestore = async (tratamientoData: any) => {
       throw error;
     }
   };
+
+
+  // 🔹 6. Obtener un tratamiento por ID
+export const getTratamientoByIdFromFirestore = async (idTratamiento: string) => {
+    try {
+      const doc = await db.collection(TRATAMIENTO_COLLECTION).doc(idTratamiento).get();
+  
+      if (!doc.exists) {
+        console.log(`🔍 [DAO Tratamiento] No se encontró tratamiento con ID ${idTratamiento}.`);
+        return null;
+      }
+  
+      console.log(`✅ [DAO Tratamiento] Tratamiento con ID ${idTratamiento} encontrado.`);
+      return {
+        id: doc.id,
+        ...doc.data(),
+      };
+    } catch (error: any) {
+      console.error("❌ [DAO Tratamiento] Error al obtener tratamiento:", error.message);
+      throw error;
+    }
+  };
