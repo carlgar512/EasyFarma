@@ -32,7 +32,8 @@ import {
     deleteTratamientosByUsuarioHandler,
     deleteTratamientoByIdHandler,
     updateArchivadoTratamientoHandler,
-    getTratamientosActualesHandler
+    getTratamientosActualesHandler,
+    obtenerTratamientoCompletoHandler
 } from "./presentacion/controllers/tratamientoController";
 import {
     guardarEspecialidadesHandler,
@@ -42,6 +43,22 @@ import {
     guardarCentrosHandler,
     obtenerCentrosHandler
 } from "./presentacion/controllers/centroController";
+import {
+    guardarMedicamentosHandler,
+    obtenerMedicamentoPorIdHandler,
+    obtenerMedicamentosHandler
+} from "./presentacion/controllers/medicamentoController";
+import {
+    guardarMedicosHandler,
+    obtenerMedicoPorIdHandler,
+    obtenerMedicosHandler
+} from "./presentacion/controllers/medicoController";
+import {
+    guardarLineasTratamientoHandler,
+    obtenerLineasPorIdTratamientoHandler,
+    obtenerLineaTratamientoPorIdHandler,
+    obtenerTodasLasLineasHandler
+} from "./presentacion/controllers/lineaTratamientoController";
 
 
 
@@ -80,6 +97,7 @@ export const deleteTratamientosByUsuario = deleteTratamientosByUsuarioHandler;
 export const deleteTratamientoById = deleteTratamientoByIdHandler;
 export const updateArchivadoTratamiento = updateArchivadoTratamientoHandler;
 export const getTratamientosActuales = getTratamientosActualesHandler;
+export const obtenerTratamientoCompleto = obtenerTratamientoCompletoHandler;
 
 // Exportación de funciones Especialidad
 export const guardarEspecialidades = guardarEspecialidadesHandler;
@@ -88,3 +106,20 @@ export const obtenerEspecialidades = obtenerEspecialidadesHandler;
 // Exportación de funciones Centro
 export const guardarCentros = guardarCentrosHandler;
 export const obtenerCentros = obtenerCentrosHandler;
+
+// Exportación de funciones Medicamento
+export const guardarMedicamentos = guardarMedicamentosHandler;
+export const obtenerMedicamentos = obtenerMedicamentosHandler;
+export const obtenerMedicamentoPorId = obtenerMedicamentoPorIdHandler;
+
+// Exportación de funciones Medico
+export const guardarMedicos = guardarMedicosHandler;
+export const obtenerMedicos = obtenerMedicosHandler;
+export const obtenerMedicoPorId = obtenerMedicoPorIdHandler;
+
+// Exportación de funciones LineaTratamiento
+export const guardarLineasTratamiento = guardarLineasTratamientoHandler;
+export const obtenerTodasLasLineasTratamiento = obtenerTodasLasLineasHandler;
+export const obtenerLineaTratamientoPorId = obtenerLineaTratamientoPorIdHandler;
+export const obtenerLineasPorIdTratamiento = obtenerLineasPorIdTratamientoHandler;
+

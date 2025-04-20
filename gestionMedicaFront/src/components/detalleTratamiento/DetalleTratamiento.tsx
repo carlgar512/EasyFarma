@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { DetalleTratamientoProps, LineaTratamientoDTO, MedicoCardProps } from "./DetalleTratamientoInterfaces";
+import React, { useEffect, useState } from "react";
+import { DetalleTratamientoProps, LineaConMedicamento, LineaTratamientoDTO, MedicoCardProps, MedicoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
 import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { IonButton, IonContent, IonIcon, IonPage } from "@ionic/react";
 import MainFooter from "../mainFooter/MainFooter";
@@ -26,80 +26,36 @@ const DetalleTratamientoWrapper: React.FC = () => {
 
 const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) => {
 
-    const lineasTratamientoMock: LineaTratamientoDTO[] = [
-        {
-            medicamento: "Paracetamol",
-            cantidad: "1",
-            dosis: "500",
-            unidad: "mg",
-            frecuencia: "Cada 8 horas",
-            duracion: "5 días",
-            descripcion: "Tomar después de las comidas para evitar molestias estomacales.",
-        },
-        {
-            medicamento: "Ibuprofeno",
-            cantidad: "1",
-            dosis: "400",
-            unidad: "mg",
-            frecuencia: "Cada 12 horas",
-            duracion: "7 días",
-            descripcion: "Indicado para dolor leve a moderado con inflamación.",
-        },
-        {
-            medicamento: "Omeprazol",
-            cantidad: "1",
-            dosis: "20",
-            unidad: "mg",
-            frecuencia: "Antes del desayuno",
-            duracion: "14 días",
-            descripcion: "",
-        },
-        {
-            medicamento: "Amoxicilina",
-            cantidad: "2",
-            dosis: "500",
-            unidad: "mg",
-            frecuencia: "Cada 8 horas",
-            duracion: "10 días",
-            descripcion: "Completar el tratamiento aunque los síntomas desaparezcan.",
-        },
-        {
-            medicamento: "Salbutamol",
-            cantidad: "2",
-            dosis: "100",
-            unidad: "mcg",
-            frecuencia: "Cada 6 horas si hay dificultad respiratoria",
-            duracion: "Según necesidad",
-            descripcion: "Usar en caso de crisis asmática. Inhalar profundamente.",
-        },
-        {
-            medicamento: "Ácido fólico",
-            cantidad: "1",
-            dosis: "5",
-            unidad: "mg",
-            frecuencia: "Una vez al día",
-            duracion: "Durante todo el embarazo",
-            descripcion: "Previene defectos congénitos. Suplemento esencial prenatal.",
-        },
-        {
-            medicamento: "Loratadina",
-            cantidad: "1",
-            dosis: "10",
-            unidad: "mg",
-            frecuencia: "Una vez al día",
-            duracion: "Mientras persistan los síntomas",
-            descripcion: "Puede producir somnolencia. No conducir maquinaria pesada.",
-        },
-        {
-            medicamento: "Metformina",
-            cantidad: "1",
-            dosis: "850",
-            unidad: "mg",
-            frecuencia: "Con desayuno y cena",
-            duracion: "Tratamiento continuo",
-            descripcion: "Para controlar glucosa en sangre en pacientes con diabetes tipo 2.",
-        },
-    ];
+    const [tratamientoCompleto, setTratamiento] = useState<TratamientoDTO | null>(null);
+    const [lineas, setLineas] = useState<LineaConMedicamento[]>([]);
+    const [medico, setMedico] = useState<MedicoDTO | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchTratamientoCompleto = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const data: TratamientoCompletoResponse = await backendService.getTratamientoCompleto(tratamiento.uid);
+
+                setTratamiento(data.tratamiento);
+                setLineas(data.lineas);
+                setMedico(data.medico);
+            } catch (err: any) {
+                setError(err.message || "Error al obtener el tratamiento completo");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (tratamiento.uid) {
+            fetchTratamientoCompleto();
+        }
+    }, [tratamiento.uid]);
+
+
 
     const history = useHistory();
     const [toast, setToast] = useState({
@@ -196,13 +152,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
         window.history.back();
     };
 
-    const medicoMock = {
-        nombre: "Laura",
-        apellidos: "Gómez Martínez",
-        especialidad: "Cardiología",
-        centro: "Hospital Universitario La Paz"
-    };
-
     return (
         <>
             <SideMenu />
@@ -278,12 +227,17 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                                 Médico asociado
                             </span>
                             <hr className="lineaSep" />
-                            <MedicoCard
-                                nombre={medicoMock.nombre}
-                                apellidos={medicoMock.apellidos}
-                                especialidad={medicoMock.especialidad}
-                                centro={medicoMock.centro}
-                            />
+                            {medico ? (
+                                <MedicoCard
+                                    nombre={medico.nombreMedico}
+                                    apellidos={medico.apellidosMedico}
+                                    especialidad={medico.especialidad?.nombre || "Especialidad no disponible"}
+                                    centro={medico.centro?.nombreCentro || "Centro no disponible"}
+                                />
+                            ) : (
+                                <span className="text-notFoundInfo">No existe un médico asignado</span>
+                            )}
+
                             <hr className="lineaSep" />
                         </div>
                         <div className="infoDT">
@@ -292,24 +246,28 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                             </span>
                             <hr className="lineaSep" />
                             <div className="infoContentDT">
+                                {lineas && lineas.length > 0 ? (
+                                    lineas.map((linea, index) => (
+                                        <div key={index} className="lineaTratamientoCard">
+                                            <h3>{linea.medicamento?.nombre || "Medicamento no disponible"}</h3>
+                                            <p><IonIcon icon={cubeOutline} /> <strong>Cantidad:</strong> {linea.linea.cantidad}</p>
+                                            <p><IonIcon icon={medkitOutline} /> <strong>Dosis:</strong> {linea.linea.unidad} {linea.linea.medida}</p>
+                                            <p><IonIcon icon={stopwatchOutline} /> <strong>Frecuencia:</strong> {linea.linea.frecuencia}</p>
+                                            <p><IonIcon icon={calendarOutline} /> <strong>Duración:</strong> {linea.linea.duracion}</p>
+                                            <p>
+                                                <IonIcon icon={documentTextOutline} />
+                                                <strong> Descripción:</strong>{" "}
+                                                {linea.linea.descripcion?.trim()
+                                                    ? linea.linea.descripcion
+                                                    : "Este medicamento no tiene descripción."}
+                                            </p>
+                                            <hr />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <span className="text-notFoundInfo">No hay líneas de tratamiento asignadas</span>
+                                )}
 
-                                {lineasTratamientoMock.map((linea, index) => (
-                                    <div key={index} className="lineaTratamientoCard">
-                                        <h3>{linea.medicamento}</h3>
-                                        <p><IonIcon icon={cubeOutline} /> <strong>Cantidad:</strong> {linea.cantidad}</p>
-                                        <p><IonIcon icon={medkitOutline} /> <strong>Dosis:</strong> {linea.dosis} {linea.unidad}</p>
-                                        <p><IonIcon icon={stopwatchOutline} /> <strong>Frecuencia:</strong> {linea.frecuencia}</p>
-                                        <p><IonIcon icon={calendarOutline} /> <strong>Duración:</strong> {linea.duracion}</p>
-                                        <p>
-                                            <IonIcon icon={documentTextOutline} />
-                                            <strong> Descripción:</strong>{" "}
-                                            {linea.descripcion?.trim()
-                                                ? linea.descripcion
-                                                : "Este medicamento no tiene descripción."}
-                                        </p>
-                                        <hr />
-                                    </div>
-                                ))}
                             </div>
                             <hr className="lineaSep" />
 

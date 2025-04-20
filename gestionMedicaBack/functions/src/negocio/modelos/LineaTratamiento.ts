@@ -1,27 +1,30 @@
 export class LineaTratamiento {
-    private uid: string;
+    private uid: string | null = null;
     private cantidad: number;
     private unidad: number;
     private medida: string;
+    private frecuencia: string;
     private duracion: string;
     private descripcion: string;
     private idTratamiento: string;
     private idMedicamento: string;
 
     constructor(
-        uid: string,
+        uid: string | null,
         cantidad: number,
         unidad: number,
         medida: string,
+        frecuencia: string,
         duracion: string,
         descripcion: string,
         idTratamiento: string,
         idMedicamento: string
     ) {
-        this.uid = uid;
+        this.uid = uid
         this.cantidad = cantidad;
         this.unidad = unidad;
         this.medida = medida;
+        this.frecuencia = frecuencia;
         this.duracion = duracion;
         this.descripcion = descripcion;
         this.idTratamiento = idTratamiento;
@@ -29,7 +32,7 @@ export class LineaTratamiento {
     }
 
     // 🔸 Getters
-    public getUid(): string {
+    public getUid(): string | null {
         return this.uid;
     }
 
@@ -43,6 +46,10 @@ export class LineaTratamiento {
 
     public getMedida(): string {
         return this.medida;
+    }
+
+    public getFrecuencia(): string {
+        return this.frecuencia;
     }
 
     public getDuracion(): string {
@@ -78,6 +85,10 @@ export class LineaTratamiento {
         this.medida = value;
     }
 
+    public setFrecuencia(value: string): void {
+        this.frecuencia = value;
+    }
+
     public setDuracion(value: string): void {
         this.duracion = value;
     }
@@ -95,17 +106,20 @@ export class LineaTratamiento {
     }
 
     // 🔸 Método estático para reconstruir desde Firestore
-    public static fromFirestore(uid: string, data: any): LineaTratamiento {
-        return new LineaTratamiento(
+    public static fromFirestore(uid:string ,data: any): LineaTratamiento {
+        const linea = new LineaTratamiento(
             uid,
             data.cantidad,
             data.unidad,
             data.medida,
+            data.frecuencia,
             data.duracion,
             data.descripcion,
             data.idTratamiento,
-            data.idMedicamento
+            data.idMedicamento,
         );
+        linea.setUid(uid);
+        return linea;
     }
 
     // 🔸 Convertir a objeto Firestore
@@ -114,6 +128,7 @@ export class LineaTratamiento {
             cantidad: this.getCantidad(),
             unidad: this.getUnidad(),
             medida: this.getMedida(),
+            frecuencia: this.getFrecuencia(),
             duracion: this.getDuracion(),
             descripcion: this.getDescripcion(),
             idTratamiento: this.getIdTratamiento(),
@@ -128,6 +143,7 @@ export class LineaTratamiento {
             cantidad: String(this.getCantidad()),
             unidad: String(this.getUnidad()),
             medida: String(this.getMedida()),
+            frecuencia: String(this.getFrecuencia()),
             duracion: String(this.getDuracion()),
             descripcion: String(this.getDescripcion()),
             idTratamiento: String(this.getIdTratamiento()),

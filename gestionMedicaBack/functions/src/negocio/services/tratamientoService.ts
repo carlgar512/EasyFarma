@@ -1,5 +1,15 @@
-import { deleteTratamientoByIdFromFirestore, deleteTratamientosFromFirestore, getTratamientosFromFirestore, saveTratamientoToFirestore, toggleArchivadoTratamiento } from "../../persistencia/repositorios/tratamientoDAO";
+import { getCentroByIdFromFirestore } from "../../persistencia/repositorios/centroDAO";
+import { getEspecialidadByIdFromFirestore } from "../../persistencia/repositorios/especialidadDAO";
+import { getLineasByTratamientoFromFirestore } from "../../persistencia/repositorios/lineaTratamientoDAO";
+import { getMedicamentoByIdFromFirestore } from "../../persistencia/repositorios/medicamentoDAO";
+import { getMedicoByIdFromFirestore } from "../../persistencia/repositorios/medicoDAO";
+import { deleteTratamientoByIdFromFirestore, deleteTratamientosFromFirestore, getTratamientoByIdFromFirestore, getTratamientosFromFirestore, saveTratamientoToFirestore, toggleArchivadoTratamiento } from "../../persistencia/repositorios/tratamientoDAO";
 import { logger } from "../../presentacion/config/logger";
+import { Centro } from "../modelos/Centro";
+import { Especialidad } from "../modelos/Especialidad";
+import { LineaTratamiento } from "../modelos/LineaTratamiento";
+import { Medicamento } from "../modelos/Medicamento";
+import { Medico } from "../modelos/Medico";
 import { Tratamiento } from "../modelos/Tratamiento";
 
 export class TratamientoService {
@@ -102,4 +112,49 @@ export class TratamientoService {
         logger.info(`✅ Se encontraron ${actuales.length} tratamientos actuales`);
         return actuales;
     }
+
+
+    static async obtenerTratamientoCompleto(idTratamiento: string): Promise<any> {
+        logger.info(`🔍 Obteniendo tratamiento completo con ID: ${idTratamiento}`);
+      
+        // 1. Tratamiento
+        const tratamientoDoc = await getTratamientoByIdFromFirestore(idTratamiento);
+        if (!tratamientoDoc) throw new Error("Tratamiento no encontrado");
+        const tratamiento = Tratamiento.fromFirestore( tratamientoDoc);
+      
+        // 2. Líneas y medicamentos
+        const lineasRaw = await getLineasByTratamientoFromFirestore(idTratamiento);
+        const lineas = await Promise.all(
+          lineasRaw.map(async (lineaDoc: any) => {
+            const medicamentoDoc = await getMedicamentoByIdFromFirestore(lineaDoc.idMedicamento);
+            return {
+              linea: LineaTratamiento.fromFirestore(lineaDoc.id, lineaDoc).toFrontDTO(),
+              medicamento: medicamentoDoc
+                ? Medicamento.fromFirestore(medicamentoDoc.id, medicamentoDoc).toFrontDTO()
+                : null
+            };
+          })
+        );
+      
+        // 3. Médico, centro y especialidad
+        const medicoDoc = await getMedicoByIdFromFirestore(tratamiento.getIdMedico());
+        if (!medicoDoc) throw new Error("Médico no encontrado");
+      
+        const medico = Medico.fromFirestore(medicoDoc.id, medicoDoc);
+        const centroDoc = await getCentroByIdFromFirestore(medico.getIdCentro());
+        const especialidadDoc = await getEspecialidadByIdFromFirestore(medico.getIdEspecialidad());
+      
+        return {
+          tratamiento: tratamiento.toFrontDTO(tratamientoDoc.id),
+          lineas,
+          medico: {
+            ...medico.toFrontDTO(),
+            centro: centroDoc ? Centro.fromFirestore(centroDoc.id, centroDoc).toFrontDTO() : null,
+            especialidad: especialidadDoc
+              ? Especialidad.fromFirestore(especialidadDoc.id, especialidadDoc).toFrontDTO()
+              : null
+          }
+        };
+      }
+      
 }

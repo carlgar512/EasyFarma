@@ -157,3 +157,29 @@ export const getTratamientosActualesHandler = onRequest(async (req, res) => {
     }
   });
   
+  /**
+ * 🔹 Obtener un tratamiento completo (tratamiento + líneas + medicamentos + médico + centro + especialidad)
+ */
+export const obtenerTratamientoCompletoHandler = onRequest(async (req, res) => {
+  try {
+    const { idTratamiento } = req.query;
+
+    if (!idTratamiento || typeof idTratamiento !== "string") {
+      throw new Error("idTratamiento no válido");
+    }
+
+    const resultado = await TratamientoService.obtenerTratamientoCompleto(idTratamiento);
+
+    res.status(200).json({
+      success: true,
+      tratamientoCompleto: resultado
+    });
+  } catch (error: any) {
+    console.error("❌ Error en obtenerTratamientoCompletoHandler:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+

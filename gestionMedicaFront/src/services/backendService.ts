@@ -310,6 +310,24 @@ const updateArchivadoTratamiento = async (idTratamiento: string, nuevoEstado: bo
     return data;
 };
 
+const getTratamientoCompleto = async (idTratamiento: string) => {
+    const response = await fetch(`${BASE_URL}/obtenerTratamientoCompleto?idTratamiento=${idTratamiento}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Error al obtener tratamiento completo");
+    }
+
+    return data.tratamientoCompleto;
+};
+
+
 
 
 export const backendService = {
@@ -326,5 +344,6 @@ export const backendService = {
     getTratamientosArchivados,
     getTratamientosActivos,
     getTratamientosActuales,
-    updateArchivadoTratamiento
+    updateArchivadoTratamiento,
+    getTratamientoCompleto
 };
