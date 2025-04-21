@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { DetalleTratamientoProps, LineaConMedicamento, LineaTratamientoDTO, MedicoCardProps, MedicoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
-import { Redirect, useHistory, useLocation } from "react-router-dom";
-import { IonButton, IonContent, IonIcon, IonPage } from "@ionic/react";
+import { DetalleTratamientoProps, LineaConMedicamento, MedicoCardProps, MedicoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
+import { Redirect,  useLocation } from "react-router-dom";
+import { IonButton, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import MainFooter from "../mainFooter/MainFooter";
 import MainHeader from "../mainHeader/MainHeader";
 import SideMenu from "../sideMenu/SideMenu";
 import './DetalleTratamiento.css'
-import { alertCircleOutline, archiveOutline, arrowBack, calendarNumberOutline, calendarOutline, checkmarkOutline, cubeOutline, documentTextOutline, eyeOutline, folderOpenOutline, locationOutline, medkitOutline, printOutline, star, starOutline, stopwatchOutline } from "ionicons/icons";
+import { alertCircleOutline, archiveOutline, arrowBack, arrowBackOutline, calendarNumberOutline, calendarOutline, checkmarkOutline, cubeOutline, documentTextOutline, eyeOutline, folderOpenOutline, locationOutline, medkitOutline, printOutline, star, starOutline, stopwatchOutline } from "ionicons/icons";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+
 
 
 const DetalleTratamientoWrapper: React.FC = () => {
@@ -30,13 +31,19 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
     const [lineas, setLineas] = useState<LineaConMedicamento[]>([]);
     const [medico, setMedico] = useState<MedicoDTO | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+
+   
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
 
     useEffect(() => {
         const fetchTratamientoCompleto = async () => {
             try {
                 setLoading(true);
-                setError(null);
 
                 const data: TratamientoCompletoResponse = await backendService.getTratamientoCompleto(tratamiento.uid);
 
@@ -44,7 +51,14 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                 setLineas(data.lineas);
                 setMedico(data.medico);
             } catch (err: any) {
-                setError(err.message || "Error al obtener el tratamiento completo");
+                setToast(
+                    {
+                        show: true,
+                        message: "Error al encontrar el detalle de este tratamiento.",
+                        color: "danger",
+                        icon: alertCircleOutline,
+                    }
+                );
             } finally {
                 setLoading(false);
             }
@@ -55,15 +69,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
         }
     }, [tratamiento.uid]);
 
-
-
-    const history = useHistory();
-    const [toast, setToast] = useState({
-        show: false,
-        message: "",
-        color: "success",
-        icon: checkmarkOutline,
-    });
 
     const cerrarDialogo = () => {
         setDialogState({
@@ -88,7 +93,7 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
             await backendService.updateArchivadoTratamiento(tratamiento.uid, true);
             setToast({
                 show: true,
-                message: "El tratamiento se ha activado correctamente.",
+                message: "El tratamiento se ha archivado correctamente.",
                 color: "success",
                 icon: checkmarkOutline,
             });
@@ -157,144 +162,167 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle={"Detalle de tratamiento"} />
-                <IonContent fullscreen className="ion-padding contentDetalleTratamiento">
-                    <div className="contenedorDeTratamiento">
-                        <div className="cabeceraDT">
-                            <span className="tituloDT">
-                                Tratamiento 1
-                            </span>
-                            {!tratamiento.estado && !tratamiento.archivado && (
-                                <IonButton
-                                    shape="round"
-                                    size="large"
-                                    className="archiveButtonDT"
-                                    onClick={() => solicitarConfirmacionArchivado()}
-                                >
-                                    <IonIcon icon={archiveOutline} slot="icon-only" size="large" />
-                                </IonButton>
-                            )}
-
-                            {tratamiento.archivado && (
-                                <IonButton
-                                    shape="round"
-                                    size="large"
-                                    className="archiveButtonDT"
-                                    onClick={() => solicitarConfirmacionDesArchivado()}
-                                >
-                                    <IonIcon icon={folderOpenOutline} slot="icon-only" size="large" />
-                                </IonButton>
-                            )}
-                        </div>
-                        <div className="descyFechDT">
-                            <div className="descyFechTop">
-                                <span className="detalleContainerText">Detalle</span>
-                                <div
-                                    className={`badgeEstado ${tratamiento.estado ? "activo" : "finalizado"}`}
-                                >
-                                    <span>
-                                        {tratamiento.estado ? "Activo" : "Finalizado"}
-                                    </span>
-                                </div>
-                            </div>
-                            <hr className="lineaSep" />
-
-                            <div className="fechasContainerDT">
-                                <div className="fechaContentCont">
-                                    <IonIcon icon={calendarNumberOutline} slot="icon-only" size="large" />
-                                    <span className="fechaText">{`Inicio: ${tratamiento.fechaInicio}`}</span>
-                                </div>
-                                {
-                                    !tratamiento.estado &&
-                                    <div className="fechaContentCont">
-                                        <IonIcon icon={calendarNumberOutline} slot="icon-only" size="large" />
-                                        <span className="fechaText">{`Fin: ${tratamiento.fechaFin}`}</span>
-                                    </div>
-                                }
-                            </div>
-                            <div className="descContainer">
-
-                                <span className="descTittle">
-                                    Descripción:
+                {!loading ? (
+                    <IonContent fullscreen className="ion-padding contentDetalleTratamiento">
+                        <div className="contenedorDeTratamiento">
+                            <div className="cabeceraDT">
+                                <span className="tituloDT">
+                                    Tratamiento 1
                                 </span>
-                                <span className="descText">
-                                    {tratamiento.descripcion}
-                                </span>
-                            </div>
-                            <hr className="lineaSep" />
-                        </div>
-                        <div className="medicoAsociadoDT">
-                            <span className="TextTittle">
-                                Médico asociado
-                            </span>
-                            <hr className="lineaSep" />
-                            {medico ? (
-                                <MedicoCard
-                                    nombre={medico.nombreMedico}
-                                    apellidos={medico.apellidosMedico}
-                                    especialidad={medico.especialidad?.nombre || "Especialidad no disponible"}
-                                    centro={medico.centro?.nombreCentro || "Centro no disponible"}
-                                />
-                            ) : (
-                                <span className="text-notFoundInfo">No existe un médico asignado</span>
-                            )}
-
-                            <hr className="lineaSep" />
-                        </div>
-                        <div className="infoDT">
-                            <span className="TextTittle">
-                                Información
-                            </span>
-                            <hr className="lineaSep" />
-                            <div className="infoContentDT">
-                                {lineas && lineas.length > 0 ? (
-                                    lineas.map((linea, index) => (
-                                        <div key={index} className="lineaTratamientoCard">
-                                            <h3>{linea.medicamento?.nombre || "Medicamento no disponible"}</h3>
-                                            <p><IonIcon icon={cubeOutline} /> <strong>Cantidad:</strong> {linea.linea.cantidad}</p>
-                                            <p><IonIcon icon={medkitOutline} /> <strong>Dosis:</strong> {linea.linea.unidad} {linea.linea.medida}</p>
-                                            <p><IonIcon icon={stopwatchOutline} /> <strong>Frecuencia:</strong> {linea.linea.frecuencia}</p>
-                                            <p><IonIcon icon={calendarOutline} /> <strong>Duración:</strong> {linea.linea.duracion}</p>
-                                            <p>
-                                                <IonIcon icon={documentTextOutline} />
-                                                <strong> Descripción:</strong>{" "}
-                                                {linea.linea.descripcion?.trim()
-                                                    ? linea.linea.descripcion
-                                                    : "Este medicamento no tiene descripción."}
-                                            </p>
-                                            <hr />
-                                        </div>
-                                    ))
-                                ) : (
-                                    <span className="text-notFoundInfo">No hay líneas de tratamiento asignadas</span>
+                                {!tratamiento.estado && !tratamiento.archivado && (
+                                    <IonButton
+                                        shape="round"
+                                        size="large"
+                                        className="archiveButtonDT"
+                                        onClick={() => solicitarConfirmacionArchivado()}
+                                    >
+                                        <IonIcon icon={archiveOutline} slot="icon-only" size="large" />
+                                    </IonButton>
                                 )}
 
+                                {tratamiento.archivado && (
+                                    <IonButton
+                                        shape="round"
+                                        size="large"
+                                        className="archiveButtonDT"
+                                        onClick={() => solicitarConfirmacionDesArchivado()}
+                                    >
+                                        <IonIcon icon={folderOpenOutline} slot="icon-only" size="large" />
+                                    </IonButton>
+                                )}
                             </div>
-                            <hr className="lineaSep" />
+                            <div className="descyFechDT">
+                                <div className="descyFechTop">
+                                    <span className="detalleContainerText">Detalle</span>
+                                    <div
+                                        className={`badgeEstado ${tratamiento.estado ? "activo" : "finalizado"}`}
+                                    >
+                                        <span>
+                                            {tratamiento.estado ? "Activo" : "Finalizado"}
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr className="lineaSep" />
 
-                        </div>
-                        <div className="buttonsContainerDT">
-                            <IonButton
-                                shape="round"
-                                size="large"
-                                className="exportButtonDT"
-                                onClick={() => solicitarConfirmacionDesArchivado()}
-                            >
-                                <IonIcon icon={printOutline} size="large" />
-                                <span className="buttonTextDT">Exportar a formato PDF</span>
-                            </IonButton>
-                            <IonButton
-                                shape="round"
-                                size="large"
-                                className="volverButtonDT"
-                                onClick={() => handleVolver()}
-                            >
-                                <IonIcon icon={arrowBack} size="large" />
-                                <span className="buttonTextDT">Volver</span>
-                            </IonButton>
-                        </div>
-                    </div>
+                                <div className="fechasContainerDT">
+                                    <div className="fechaContentCont">
+                                        <IonIcon icon={calendarNumberOutline} slot="icon-only" size="large" />
+                                        <span className="fechaText">{`Inicio: ${tratamiento.fechaInicio}`}</span>
+                                    </div>
+                                    {
+                                        !tratamiento.estado &&
+                                        <div className="fechaContentCont">
+                                            <IonIcon icon={calendarNumberOutline} slot="icon-only" size="large" />
+                                            <span className="fechaText">{`Fin: ${tratamiento.fechaFin}`}</span>
+                                        </div>
+                                    }
+                                </div>
+                                <div className="descContainer">
 
-                </IonContent>
+                                    <span className="descTittle">
+                                        Descripción:
+                                    </span>
+                                    <span className="descText">
+                                        {tratamiento.descripcion}
+                                    </span>
+                                </div>
+                                <hr className="lineaSep" />
+                            </div>
+                            <div className="medicoAsociadoDT">
+                                <span className="TextTittle">
+                                    Médico asociado
+                                </span>
+                                <hr className="lineaSep" />
+                                {medico ? (
+                                    <MedicoCard
+                                        nombre={medico.nombreMedico}
+                                        apellidos={medico.apellidosMedico}
+                                        especialidad={medico.especialidad?.nombre || "Especialidad no disponible"}
+                                        centro={medico.centro?.nombreCentro || "Centro no disponible"}
+                                    />
+                                ) : (
+                                    <span className="text-notFoundInfo">No existe un médico asignado</span>
+                                )}
+
+                                <hr className="lineaSep" />
+                            </div>
+                            <div className="infoDT">
+                                <span className="TextTittle">
+                                    Información
+                                </span>
+                                <hr className="lineaSep" />
+                                <div className="infoContentDT">
+                                    {lineas && lineas.length > 0 ? (
+                                        lineas.map((linea, index) => (
+                                            <div key={index} className="lineaTratamientoCard">
+                                                <h3>{linea.medicamento?.nombre || "Medicamento no disponible"}</h3>
+                                                <p><IonIcon icon={cubeOutline} /> <strong>Cantidad:</strong> {linea.linea.cantidad}</p>
+                                                <p><IonIcon icon={medkitOutline} /> <strong>Dosis:</strong> {linea.linea.unidad} {linea.linea.medida}</p>
+                                                <p><IonIcon icon={stopwatchOutline} /> <strong>Frecuencia:</strong> {linea.linea.frecuencia}</p>
+                                                <p><IonIcon icon={calendarOutline} /> <strong>Duración:</strong> {linea.linea.duracion}</p>
+                                                <p>
+                                                    <IonIcon icon={documentTextOutline} />
+                                                    <strong> Descripción:</strong>{" "}
+                                                    {linea.linea.descripcion?.trim()
+                                                        ? linea.linea.descripcion
+                                                        : "Este medicamento no tiene descripción."}
+                                                </p>
+                                                <hr />
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <span className="text-notFoundInfo">No hay líneas de tratamiento asignadas</span>
+                                    )}
+
+                                </div>
+                                <hr className="lineaSep" />
+
+                            </div>
+                            <div className="buttonsContainerDT">
+                                <IonButton
+                                    shape="round"
+                                    size="large"
+                                    className="exportButtonDT"
+                                    onClick={() => solicitarConfirmacionDesArchivado()}
+                                >
+                                    <IonIcon icon={printOutline} size="large" />
+                                    <span className="buttonTextDT">Exportar a formato PDF</span>
+                                </IonButton>
+                                <IonButton
+                                    shape="round"
+                                    size="large"
+                                    className="volverButtonDT"
+                                    onClick={() => handleVolver()}
+                                >
+                                    <IonIcon icon={arrowBack} size="large" />
+                                    <span className="buttonTextDT">Volver</span>
+                                </IonButton>
+                            </div>
+                        </div>
+
+                    </IonContent>
+                ) : (
+                    <IonContent fullscreen className="contentDetalleTratamiento">
+                        <div className="contenedorDeTratamientoSpinner">
+                            <div className="spinnerContainerDT">
+                                <IonSpinner className="spinner" name="circular"></IonSpinner>
+                                <span className="textSpinnerTratamientos">Cargando su información. Un momento, por favor...</span>
+                            </div>
+                            <div className="buttonContainerTratamientos">
+                                <IonButton
+                                    size="large"
+                                    expand="full"
+                                    shape="round"
+                                    className="buttonVolverTratamientos"
+                                    onClick={handleVolver}
+                                >
+                                    <IonIcon slot="start" icon={arrowBackOutline}></IonIcon>
+                                    <span className="buttonTextTratamientos">Volver</span>
+                                </IonButton>
+                            </div>
+                        </div>
+                    </IonContent>
+                )}
                 <MainFooter />
             </IonPage>
 

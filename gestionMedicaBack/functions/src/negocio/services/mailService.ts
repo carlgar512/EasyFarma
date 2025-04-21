@@ -60,3 +60,55 @@ export const sendCodeToEmailService = async (email: string, code: string): Promi
     });
     console.log("📨 Código enviado:", info.messageId);
 };
+
+
+export const sendPdfToEmailService = async (email: string, pdfAbsolutePath: string): Promise<void> => {
+  const logoPath = path.resolve(process.cwd(), "assets/imgs/Logo.png");
+
+  const info = await transporter.sendMail({
+    from: `"EasyFarma Seguros" <${env.EMAIL_USER}>`,
+    to: email,
+    subject: "📄 Tu documento de tratamiento",
+    text: "Adjunto encontrarás tu PDF generado por EasyFarma.",
+    html: `
+      <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9fafb;">
+        <div style="max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center;">
+          
+          <img src="cid:logo-easyfarma" alt="EasyFarma Logo" style="max-width: 160px; margin-bottom: 25px;" />
+          
+          <h2 style="color: #375534;">¡Hola!</h2>
+          
+          <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+            Te enviamos adjunto el documento de tratamiento generado desde <strong>EasyFarma Seguros</strong>.
+          </p>
+
+          <p style="font-size: 15px; color: #555; margin-top: 30px;">
+            Este documento está protegido y puede contener información confidencial.
+          </p>
+          
+          <p style="margin-top: 30px; font-size: 14px; color: #888;">
+            Si tienes alguna duda, no dudes en contactarnos.
+          </p>
+
+          <p style="font-size: 14px; color: #aaa; margin-top: 40px;">
+            Saludos,<br/>El equipo de EasyFarma
+          </p>
+        </div>
+      </div>
+    `,
+    attachments: [
+      {
+        filename: "Tratamiento.pdf",
+        path: pdfAbsolutePath,
+        contentType: "application/pdf"
+      },
+      {
+        filename: 'logo.png',
+        path: logoPath,
+        cid: 'logo-easyfarma'
+      }
+    ]
+  });
+
+  console.log("📨 PDF enviado:", info.messageId);
+};

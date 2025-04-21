@@ -1,5 +1,8 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { TratamientoService } from "../../negocio/services/tratamientoService";
+import { generarPdfCifrado } from "../../negocio/services/pdfService";
+import { AuthService } from "../../negocio/services/authService";
+import { eventBus } from "../../serviciosComunes/event/event-emiter";
 
 
 /**
@@ -183,3 +186,42 @@ export const obtenerTratamientoCompletoHandler = onRequest(async (req, res) => {
   }
 });
 
+
+export const generarPdfCifradoTratamientoHandler = onRequest(async (req, res) => {
+  try {
+    const { dni, idTratamiento } = req.body;
+
+    if (!dni || typeof dni !== "string") {
+      throw new Error("DNI no válido");
+    }
+
+    if (!idTratamiento || typeof idTratamiento !== "string") {
+      throw new Error("idTratamiento no válido");
+    }
+
+    // Obtener los datos del tratamiento
+    const resultado = await TratamientoService.obtenerTratamientoCompleto(idTratamiento);
+
+    // Generar PDF cifrado
+    const pdfPath = await generarPdfCifrado(dni, resultado);
+
+    // Obtener el email del usuario por DNI
+    const email = await AuthService.getEmailFromDNI(dni);
+
+    // Emitir evento para enviar el PDF
+    eventBus.emit("send.tratamiento.pdf", { email, pdfPath });
+
+    // Confirmar en la respuesta
+    res.status(200).json({
+      success: true,
+      message: `PDF generado y en proceso de envío a ${email}`
+    });
+
+  } catch (error: any) {
+    console.error("❌ Error en generarPdfCifradoTratamientoHandler:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});

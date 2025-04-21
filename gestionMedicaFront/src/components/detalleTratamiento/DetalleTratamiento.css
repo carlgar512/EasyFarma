@@ -352,3 +352,16 @@
     border-radius: 0.5rem;
   }
   
+  .contenedorDeTratamientoSpinner{
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  .spinnerContainerDT{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }

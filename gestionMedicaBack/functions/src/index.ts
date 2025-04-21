@@ -33,7 +33,8 @@ import {
     deleteTratamientoByIdHandler,
     updateArchivadoTratamientoHandler,
     getTratamientosActualesHandler,
-    obtenerTratamientoCompletoHandler
+    obtenerTratamientoCompletoHandler,
+    generarPdfCifradoTratamientoHandler
 } from "./presentacion/controllers/tratamientoController";
 import {
     guardarEspecialidadesHandler,
@@ -98,6 +99,8 @@ export const deleteTratamientoById = deleteTratamientoByIdHandler;
 export const updateArchivadoTratamiento = updateArchivadoTratamientoHandler;
 export const getTratamientosActuales = getTratamientosActualesHandler;
 export const obtenerTratamientoCompleto = obtenerTratamientoCompletoHandler;
+export const generarPdfCifradoTratamiento = generarPdfCifradoTratamientoHandler;
+
 
 // Exportación de funciones Especialidad
 export const guardarEspecialidades = guardarEspecialidadesHandler;

@@ -1,6 +1,7 @@
 import { deleteExpirationCode } from "../../persistencia/repositorios/expirationCodeDAO";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
-import { sendCodeToEmailService } from "./mailService";
+import { sendCodeToEmailService, sendPdfToEmailService } from "./mailService";
+import fs from "fs";
 
 
 
@@ -34,3 +35,17 @@ eventBus.on('schedule.deletion', async (data: { dni: string, expiresAt: Date }) 
   }
 });
 
+eventBus.on("send.tratamiento.pdf", async ({ email, pdfPath }: { email: string; pdfPath: string }) => {
+  try {
+    await sendPdfToEmailService(email, pdfPath);
+    console.log(`📧 PDF de tratamiento enviado a ${email}`);
+
+    // Borrar el archivo temporal después del envío
+    if (fs.existsSync(pdfPath)) {
+      fs.unlinkSync(pdfPath);
+      console.log(`🗑️ Archivo temporal eliminado: ${pdfPath}`);
+    }
+  } catch (err) {
+    console.error(`❌ Error enviando el PDF a ${email}:`, err);
+  }
+});
