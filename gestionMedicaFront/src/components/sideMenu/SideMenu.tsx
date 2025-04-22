@@ -7,8 +7,10 @@ import { operations } from "../../shared/operations";
 import './SideMenu.css'
 import { useAuth } from "../../context/AuthContext";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import { useHistory } from 'react-router-dom';
 
 const SideMenu: React.FC = () => {
+    
     const [isDoubleConfOpen, setDoubleConfOpen] = useState(false);
     const { logout } = useAuth();
     const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
@@ -17,6 +19,10 @@ const SideMenu: React.FC = () => {
         logout();
         window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
     };
+    const history = useHistory();
+    const handleOperation = (url: string) => {
+        history.push(url);
+    }
 
     return (
         <>
@@ -49,7 +55,7 @@ const SideMenu: React.FC = () => {
                                 }
 
                                 {/* Renderización de la operación */}
-                                <IonItem button>
+                                <IonItem button onClick={() => handleOperation(operation.url)}>
                                     <IonIcon
                                         color="success"
                                         slot="start"

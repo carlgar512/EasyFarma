@@ -327,6 +327,29 @@ const getTratamientoCompleto = async (idTratamiento: string) => {
     return data.tratamientoCompleto;
 };
 
+const generarPdfCifradoTratamiento = async (dni: string, idTratamiento: string) => {
+    const response = await fetch(`${BASE_URL}/generarPdfCifradoTratamiento`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            dni,
+            idTratamiento,
+        }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Error al generar y enviar el PDF cifrado del tratamiento");
+    }
+
+    // Puedes retornar el mensaje para mostrarlo en una notificación
+    return data;
+};
+
+
 
 
 
@@ -345,5 +368,6 @@ export const backendService = {
     getTratamientosActivos,
     getTratamientosActuales,
     updateArchivadoTratamiento,
-    getTratamientoCompleto
+    getTratamientoCompleto,
+    generarPdfCifradoTratamiento
 };

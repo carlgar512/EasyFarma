@@ -17,9 +17,11 @@ import { checkmarkOutline } from "ionicons/icons";
 
 
 
+
 const PerfilYPreferencias: React.FC = () => {
+    const history = useHistory();
     const handleVolver = () => {
-        window.history.back();
+        history.replace('/principal');
     };
 
    

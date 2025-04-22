@@ -6,7 +6,8 @@ import * as icons from 'ionicons/icons';
 import "./MainHeader.css";
 import { MainHeaderProps } from "./MainHeaderInterfaces";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
+import { useHistory } from 'react-router-dom'; 
 
 
 const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
@@ -34,12 +35,17 @@ const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
 };
 
 const UserMenu: React.FC = () => {
+    const history = useHistory();
     const [showConfirm, setShowConfirm] = useState(false);
     const {logout} = useAuth();
     const logOut = () => {
         logout();
         window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
     };
+
+    const handleOperation = (url: string) => {
+        history.push(url);
+    }
     
 
     const perfilOperations = operations.filter(op => op.type === "Perfil");
@@ -50,7 +56,7 @@ const UserMenu: React.FC = () => {
                 <IonContent>
                     <IonList>
                         {perfilOperations.map((operation, index) => (
-                            <IonItem button={true} detail={false} key={index}>
+                            <IonItem button={true} detail={false} key={index} onClick={()=> handleOperation(operation.url)}>
                                 <IonLabel>{operation.title}</IonLabel>
                                 <IonIcon color="success" aria-hidden={true} slot="end" icon={(icons as Record<string, string>)[operation.icon]}></IonIcon>
                             </IonItem>

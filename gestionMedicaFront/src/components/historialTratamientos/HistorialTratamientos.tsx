@@ -14,6 +14,7 @@ import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 
 const HistorialTratamientos: React.FC = () => {
 
+
     const { userData } = useUser();
 
     const location = useLocation();
@@ -67,6 +68,16 @@ const HistorialTratamientos: React.FC = () => {
             return 0;
         });
     };
+
+    const [paginaActual, setPaginaActual] = useState(1);
+    const tratamientosPorPagina = 5;
+
+    const totalPaginas = Math.ceil(tratamientos.length / tratamientosPorPagina);
+
+    const tratamientosPaginados = ordenarTratamientos(tratamientos).slice(
+        (paginaActual - 1) * tratamientosPorPagina,
+        paginaActual * tratamientosPorPagina
+    );
 
     // 👇 La definimos arriba del useEffect
     const fetchTratamientos = async () => {
@@ -178,10 +189,90 @@ const HistorialTratamientos: React.FC = () => {
                                 </div>
                             ) : (
                                 <div className="TratamientosContainer">
-                                    {ordenarTratamientos(tratamientos).map((tratamiento, index) => (
-                                        <TratamientoCard key={index} tratamiento={tratamiento} index={index + 1} onActualizar={fetchTratamientos} />
+                                    {tratamientosPaginados.map((tratamiento, index) => (
+                                        <TratamientoCard
+                                            key={index}
+                                            tratamiento={tratamiento}
+                                            index={(paginaActual - 1) * tratamientosPorPagina + index + 1}
+                                            onActualizar={fetchTratamientos}
+                                        />
                                     ))}
+                                    {totalPaginas > 1 && (
+                                        <div className="paginationWrapper">
+                                            <span className="paginationLabel">Páginas del historial:</span>
+                                            <div className="bigContainer">
+ {/* Anterior */}
+ <button
+                                                    className="paginationButton nav"
+                                                    disabled={paginaActual === 1}
+                                                    onClick={() => setPaginaActual(paginaActual - 1)}
+                                                >
+                                                    «
+                                                </button>
+                                            <div className="paginationContainer">
+
+                                               
+
+                                                {/* Página 1 */}
+                                                <button
+                                                    className={`paginationButton ${paginaActual === 1 ? "active" : ""}`}
+                                                    onClick={() => setPaginaActual(1)}
+                                                >
+                                                    1
+                                                </button>
+
+                                                {/* ... */}
+                                                {paginaActual > 4 && <span className="paginationEllipsis">...</span>}
+
+                                                {/* Páginas centrales */}
+                                                {Array.from({ length: totalPaginas }, (_, i) => i + 1)
+                                                    .filter(
+                                                        (num) =>
+                                                            num !== 1 &&
+                                                            num !== totalPaginas &&
+                                                            Math.abs(num - paginaActual) <= 2
+                                                    )
+                                                    .map((num) => (
+                                                        <button
+                                                            key={num}
+                                                            className={`paginationButton ${paginaActual === num ? "active" : ""}`}
+                                                            onClick={() => setPaginaActual(num)}
+                                                        >
+                                                            {num}
+                                                        </button>
+                                                    ))}
+
+                                                {/* ... */}
+                                                {paginaActual < totalPaginas - 3 && <span className="paginationEllipsis">...</span>}
+
+                                                {/* Última página */}
+                                                {totalPaginas > 1 && (
+                                                    <button
+                                                        className={`paginationButton ${paginaActual === totalPaginas ? "active" : ""}`}
+                                                        onClick={() => setPaginaActual(totalPaginas)}
+                                                    >
+                                                        {totalPaginas}
+                                                    </button>
+                                                )}
+
+                                                {/* Siguiente */}
+                                               
+                                            </div>
+                                            <button
+                                                    className="paginationButton nav"
+                                                    disabled={paginaActual === totalPaginas}
+                                                    onClick={() => setPaginaActual(paginaActual + 1)}
+                                                >
+                                                    »
+                                                </button>
+                                            </div>
+                                            
+                                        </div>
+                                    )}
+
                                 </div>
+
+
                             )}
                             <div className="buttonContainerTratamientos">
                                 <IonButton
@@ -321,10 +412,10 @@ const TratamientoCard: React.FC<TratamientoCardProps> = ({ tratamiento, index, o
 
     const handleVerDetalle = () => {
         history.push({
-          pathname: "/treatment-detail",
-          state: { tratamiento }, // 👈 aquí mandamos el tratamiento
+            pathname: "/treatment-detail",
+            state: { tratamiento }, // 👈 aquí mandamos el tratamiento
         });
-      };
+    };
 
 
     return (
@@ -337,6 +428,11 @@ const TratamientoCard: React.FC<TratamientoCardProps> = ({ tratamiento, index, o
                         </div>
 
                         <div className="topSectRight">
+                            {tratamiento.archivado && (
+                                <div className="badgeEstado archivado">
+                                    <span>Archivado</span>
+                                </div>
+                            )}
                             <div
                                 className={`badgeEstado ${tratamiento.estado ? "activo" : "finalizado"}`}
                             >

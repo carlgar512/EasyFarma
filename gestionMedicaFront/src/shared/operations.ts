@@ -52,7 +52,7 @@ export const operations: Operation[] = [
         description: "Sigue tu tratamiento en tiempo real y accede a toda la información relevante sobre tu progreso y próximos pasos.",
         type: "Tratamientos",
         icon: "fitnessOutline",
-        url: "/current-treatment",
+        url: "/treatment-history?tipo=actuales",
         img: "miTratamiento.svg"
     },
     {
@@ -70,7 +70,7 @@ export const operations: Operation[] = [
         description: "Accede a un registro completo de todos tus tratamientos médicos pasados. Consulta medicamentos recetados, fechas y duración de cada tratamiento para un mejor seguimiento de tu salud.",
         type: "Tratamientos",
         icon: "fileTrayFullOutline",
-        url: "/treatment-history",
+        url: "/treatment-history?tipo=todos",
         img: "miHistorial.svg"
     },
     {

@@ -2,6 +2,7 @@
 
  export interface DetalleTratamientoProps {
     tratamiento:TratamientoDTO;
+
  }
 
  export interface TratamientoDTO {
