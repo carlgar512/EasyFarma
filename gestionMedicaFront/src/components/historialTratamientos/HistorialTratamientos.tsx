@@ -11,6 +11,7 @@ import NotificationToast from "../notification/NotificationToast";
 import { backendService } from "../../services/backendService";
 import { useHistory, useLocation } from "react-router-dom";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import Paginacion from "../paginacion/Paginacion";
 
 const HistorialTratamientos: React.FC = () => {
 
@@ -197,77 +198,13 @@ const HistorialTratamientos: React.FC = () => {
                                             onActualizar={fetchTratamientos}
                                         />
                                     ))}
+
                                     {totalPaginas > 1 && (
-                                        <div className="paginationWrapper">
-                                            <span className="paginationLabel">Páginas del historial:</span>
-                                            <div className="bigContainer">
- {/* Anterior */}
- <button
-                                                    className="paginationButton nav"
-                                                    disabled={paginaActual === 1}
-                                                    onClick={() => setPaginaActual(paginaActual - 1)}
-                                                >
-                                                    «
-                                                </button>
-                                            <div className="paginationContainer">
-
-                                               
-
-                                                {/* Página 1 */}
-                                                <button
-                                                    className={`paginationButton ${paginaActual === 1 ? "active" : ""}`}
-                                                    onClick={() => setPaginaActual(1)}
-                                                >
-                                                    1
-                                                </button>
-
-                                                {/* ... */}
-                                                {paginaActual > 4 && <span className="paginationEllipsis">...</span>}
-
-                                                {/* Páginas centrales */}
-                                                {Array.from({ length: totalPaginas }, (_, i) => i + 1)
-                                                    .filter(
-                                                        (num) =>
-                                                            num !== 1 &&
-                                                            num !== totalPaginas &&
-                                                            Math.abs(num - paginaActual) <= 2
-                                                    )
-                                                    .map((num) => (
-                                                        <button
-                                                            key={num}
-                                                            className={`paginationButton ${paginaActual === num ? "active" : ""}`}
-                                                            onClick={() => setPaginaActual(num)}
-                                                        >
-                                                            {num}
-                                                        </button>
-                                                    ))}
-
-                                                {/* ... */}
-                                                {paginaActual < totalPaginas - 3 && <span className="paginationEllipsis">...</span>}
-
-                                                {/* Última página */}
-                                                {totalPaginas > 1 && (
-                                                    <button
-                                                        className={`paginationButton ${paginaActual === totalPaginas ? "active" : ""}`}
-                                                        onClick={() => setPaginaActual(totalPaginas)}
-                                                    >
-                                                        {totalPaginas}
-                                                    </button>
-                                                )}
-
-                                                {/* Siguiente */}
-                                               
-                                            </div>
-                                            <button
-                                                    className="paginationButton nav"
-                                                    disabled={paginaActual === totalPaginas}
-                                                    onClick={() => setPaginaActual(paginaActual + 1)}
-                                                >
-                                                    »
-                                                </button>
-                                            </div>
-                                            
-                                        </div>
+                                        <Paginacion
+                                            paginaActual={paginaActual}
+                                            totalPaginas={totalPaginas}
+                                            onPageChange={setPaginaActual}
+                                        />
                                     )}
 
                                 </div>

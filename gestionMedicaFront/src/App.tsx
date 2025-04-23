@@ -58,6 +58,7 @@ import { UserProvider } from './context/UserContext';
 import Alergias from './components/misAlergias/Alergias';
 import HistorialTratamientos from './components/historialTratamientos/HistorialTratamientos';
 import DetalleTratamientoWrapper from './components/detalleTratamiento/DetalleTratamiento';
+import BuscaMedico from './components/buscaMedico/BuscaMedico';
 
 
 
@@ -114,6 +115,11 @@ const App: React.FC = () => (
             <Route exact path="/treatment-detail">
               <UserProvider>
                 <DetalleTratamientoWrapper />
+              </UserProvider>
+            </Route>
+            <Route exact path="/search-doctor">
+              <UserProvider>
+                <BuscaMedico />
               </UserProvider>
             </Route>
 

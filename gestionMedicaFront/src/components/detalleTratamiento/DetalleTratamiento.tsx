@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { DetalleTratamientoProps, LineaConMedicamento, MedicoCardProps, MedicoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
+import { DetalleTratamientoProps, LineaConMedicamento, MedicoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
 import { Redirect, useLocation } from "react-router-dom";
 import { IonButton, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import MainFooter from "../mainFooter/MainFooter";
 import MainHeader from "../mainHeader/MainHeader";
 import SideMenu from "../sideMenu/SideMenu";
 import './DetalleTratamiento.css'
-import { alertCircleOutline, archiveOutline, arrowBack, arrowBackOutline, calendarNumberOutline, calendarOutline, checkmarkOutline, cubeOutline, documentTextOutline, eyeOutline, folderOpenOutline, locationOutline, medkitOutline, printOutline, star, starOutline, stopwatchOutline } from "ionicons/icons";
+import { alertCircleOutline, archiveOutline, arrowBack, arrowBackOutline, calendarNumberOutline, calendarOutline, checkmarkOutline, cubeOutline, documentTextOutline, folderOpenOutline, medkitOutline, printOutline, stopwatchOutline } from "ionicons/icons";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useUser } from "../../context/UserContext";
+import MedicoCard from "../medicoCard/MedicoCard";
 
 
 
@@ -409,68 +410,5 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
 
     );
 };
-
-
-const MedicoCard: React.FC<MedicoCardProps> = ({
-    nombre,
-    apellidos,
-    especialidad,
-    centro,
-    esFavorito = false,
-}) => {
-    const onFavoritoClick = () => {
-    };
-
-    const onVerDetalleClick = () => {
-
-    };
-
-
-    return (
-        <div className="medico-card">
-            <div className="card-header">
-                <div className="header-left">
-                    <div className="avatarMedico">
-                        <span className="letrasAvatar">
-                            {nombre.charAt(0)}
-                            {apellidos.charAt(0)}
-                        </span>
-                    </div>
-
-                    <div>
-                        <h3>{nombre} {apellidos}</h3>
-                        <p className="especialidad">{especialidad}</p>
-                        <hr className="separadorMedico" />
-                        <IonIcon icon={locationOutline} slot="start" />
-                        <span className="centro">{centro}</span>
-                    </div>
-                </div>
-
-                <IonButton
-                    fill="clear"
-                    size="small"
-                    onClick={onFavoritoClick}
-                    className="favorito-boton"
-                >
-                    <IonIcon icon={esFavorito ? star : starOutline} />
-                </IonButton>
-            </div>
-
-            <div className="card-footer">
-                <IonButton
-                    shape="round"
-                    fill="outline"
-                    color={"success"}
-                    onClick={onVerDetalleClick}
-                    className="ver-detalle-boton"
-                >
-                    <IonIcon icon={eyeOutline} slot="start" />
-                    <span>Ver detalle</span>
-                </IonButton>
-            </div>
-        </div>
-    );
-};
-
 
 export default DetalleTratamientoWrapper;
