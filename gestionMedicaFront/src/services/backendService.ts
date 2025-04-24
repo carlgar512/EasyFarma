@@ -3,6 +3,7 @@
 import { InfoUserDTO, LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
 import { signInWithEmailAndPassword, updateEmail } from "firebase/auth";
 import { auth } from "./firebaseConfig"; // Asegúrate de que este path es correcto
+import { MapaFiltrosResponse } from "../components/buscaMedico/BuscaMedicoInterfaces";
 
 const BASE_URL = "http://localhost:5001/easyfarma-5ead7/us-central1";
 
@@ -349,8 +350,23 @@ const generarPdfCifradoTratamiento = async (dni: string, idTratamiento: string) 
     return data;
 };
 
-
-
+const obtenerMapaFiltros = async () :Promise<MapaFiltrosResponse> => {
+    const response = await fetch(`${BASE_URL}/mapaFiltros`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener el mapa de filtros");
+    }
+  
+    return data.data; // contiene { mapa, medicos, centros, especialidades }
+  };
+  
 
 
 export const backendService = {
@@ -369,5 +385,6 @@ export const backendService = {
     getTratamientosActuales,
     updateArchivadoTratamiento,
     getTratamientoCompleto,
-    generarPdfCifradoTratamiento
+    generarPdfCifradoTratamiento,
+    obtenerMapaFiltros
 };

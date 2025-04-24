@@ -45,6 +45,7 @@
     nombreCentro: string;
     ubicacion: string | null;
     telefono: string | null;
+    provincia: string|null;
   }
   
   export interface EspecialidadDTO {

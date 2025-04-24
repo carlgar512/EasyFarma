@@ -126,28 +126,28 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-  
-  .filtrosTittle {
+}
+
+.filtrosTittle {
     display: flex;
     align-items: center;
     gap: 12px;
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--ion-color-customDark);
-  }
-  
-  
-  .filtrosActuales {
+}
+
+
+.filtrosActuales {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     padding-top: 10px;
     padding-bottom: 10px;
     gap: 10px;
-  }
-  
-  .badgeFiltro {
+}
+
+.badgeFiltro {
     --background: var(--ion-color-customMedium);
     --color: white;
     font-size: 0.95rem;
@@ -156,32 +156,120 @@
     display: flex;
     align-items: center;
 
-  }
-  
-  .sinFiltros {
+}
+
+.sinFiltros {
     font-style: italic;
     color: var(--ion-color-customDark);
     font-size: 0.95rem;
-  }
-  
+}
 
-  .filtroButtonSD{
+
+.filtroButtonSD {
     --background: var(--ion-color-customDark);
+}
+
+@keyframes fadeOutScale {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.badgeFiltro.fade-out {
+    animation: fadeOutScale 300ms ease forwards;
+}
+
+/* #############################    FILTROS Modal */
+
+.modalFiltrosContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.headerContent {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    color: var(--ion-color-customDark);
+    padding: 10px;
+}
+
+.modalFiltTitle {
+    font-size: 1.4rem;
+    font-weight: bolder;
+}
+
+.modalFiltroItem {
+    margin-bottom: 12px;
+}
+
+.modalBotones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.modalSpinnerContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.spinnerTextModal {
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+    text-align: center;
+    width: 90%;
+}
+
+
+.buttonDescartar {
+    --background: var(--ion-color-customRed);
+}
+
+.buttonBuscar {
+    --background: var(--ion-color-customDark);
+}
+
+.buttonModalText{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+.inputBusqueda {
+    margin-bottom: 8px;
+    --padding-start: 12px;
+    font-size: 0.9rem;
   }
 
-  @keyframes fadeOutScale {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0.8);
-    }
+  .filaInputSelect {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
   }
   
-  .badgeFiltro.fade-out {
-    animation: fadeOutScale 300ms ease forwards;
+  .filtrosContainer{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
   }
-
-  /* #############################    FILTROS */

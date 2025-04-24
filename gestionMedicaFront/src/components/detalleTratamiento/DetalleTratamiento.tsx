@@ -304,6 +304,7 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                                         apellidos={medico.apellidosMedico}
                                         especialidad={medico.especialidad?.nombre || "Especialidad no disponible"}
                                         centro={medico.centro?.nombreCentro || "Centro no disponible"}
+                                        provincia ={medico.centro?.provincia || "Provincia no disponible"}
                                     />
                                 ) : (
                                     <span className="text-notFoundInfo">No existe un médico asignado</span>

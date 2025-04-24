@@ -4,5 +4,6 @@ export interface MedicoCardProps {
     apellidos: string;
     especialidad: string;
     centro: string;
+    provincia:string;
     esFavorito?: boolean;
   }

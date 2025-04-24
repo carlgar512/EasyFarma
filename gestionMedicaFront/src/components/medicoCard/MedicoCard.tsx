@@ -9,6 +9,7 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
     apellidos,
     especialidad,
     centro,
+    provincia,
     esFavorito = false,
 }) => {
     const onFavoritoClick = () => {
@@ -36,6 +37,7 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
                         <hr className="separadorMedico" />
                         <IonIcon icon={locationOutline} slot="start" />
                         <span className="centro">{centro}</span>
+                        <p className="provincia">({provincia})</p> 
                     </div>
                 </div>
 

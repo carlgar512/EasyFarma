@@ -17,7 +17,8 @@ import {
         const centro = new Centro(
           data.nombreCentro,
           data.ubicacion ?? null,
-          data.telefono ?? null
+          data.telefono ?? null,
+          data.provincia ?? null,
         );
   
         await saveCentroToFirestore(centro.toFirestoreObject());
