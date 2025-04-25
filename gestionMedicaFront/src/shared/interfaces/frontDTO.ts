@@ -43,3 +43,24 @@ export type GetUserInfoResponse = {
   };
   error?: string;
 };
+
+export interface MedicoDTO {
+  uid: string;
+  nombreMedico: string;
+  apellidosMedico: string;
+  idEspecialidad: string;
+  idCentro: string;
+}
+
+export interface CentroDTO {
+  uid: string;
+  nombreCentro: string;
+  ubicacion: string | null;
+  telefono: string | null;
+  provincia: string; // Nombre de la provincia
+}
+
+export interface EspecialidadDTO {
+  uid: string;
+  nombre: string;
+}

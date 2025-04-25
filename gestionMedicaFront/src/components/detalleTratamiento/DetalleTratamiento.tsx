@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DetalleTratamientoProps, LineaConMedicamento, MedicoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
+import { DetalleTratamientoProps, LineaConMedicamento, MedicoCompletoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
 import { Redirect, useLocation } from "react-router-dom";
 import { IonButton, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import MainFooter from "../mainFooter/MainFooter";
@@ -12,6 +12,7 @@ import NotificationToast from "../notification/NotificationToast";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useUser } from "../../context/UserContext";
 import MedicoCard from "../medicoCard/MedicoCard";
+import { CentroDTO, EspecialidadDTO } from "../../shared/interfaces/frontDTO";
 
 
 
@@ -32,7 +33,9 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
 
     const [tratamientoCompleto, setTratamiento] = useState<TratamientoDTO | null>(null);
     const [lineas, setLineas] = useState<LineaConMedicamento[]>([]);
-    const [medico, setMedico] = useState<MedicoDTO | null>(null);
+    const [medico, setMedico] = useState<MedicoCompletoDTO | null>(null);
+    const [centro, setCentro] = useState<CentroDTO | null>(null);
+    const [especialidad, setEspecialidad] = useState<EspecialidadDTO | null>(null);
     const [loading, setLoading] = useState(true);
     const [reloadTrigger, setReloadTrigger] = useState(0);
 
@@ -298,13 +301,12 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                                     Médico asociado
                                 </span>
                                 <hr className="lineaSep" />
-                                {medico ? (
+                                {medico && medico.especialidad && medico.centro ? (
                                     <MedicoCard
-                                        nombre={medico.nombreMedico}
-                                        apellidos={medico.apellidosMedico}
-                                        especialidad={medico.especialidad?.nombre || "Especialidad no disponible"}
-                                        centro={medico.centro?.nombreCentro || "Centro no disponible"}
-                                        provincia ={medico.centro?.provincia || "Provincia no disponible"}
+                                        medico={medico}
+                                        especialidad={medico.especialidad}
+                                        centro={medico.centro}
+                                        provincia={medico.centro.provincia || "Provincia no disponible"}
                                     />
                                 ) : (
                                     <span className="text-notFoundInfo">No existe un médico asignado</span>

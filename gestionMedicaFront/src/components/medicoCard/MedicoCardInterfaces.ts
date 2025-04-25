@@ -1,9 +1,10 @@
+import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
+
 
 export interface MedicoCardProps {
-    nombre: string;
-    apellidos: string;
-    especialidad: string;
-    centro: string;
+    medico: MedicoDTO;
+    especialidad: EspecialidadDTO;
+    centro: CentroDTO;
     provincia:string;
     esFavorito?: boolean;
   }

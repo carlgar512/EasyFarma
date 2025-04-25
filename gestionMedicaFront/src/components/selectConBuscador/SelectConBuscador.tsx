@@ -3,6 +3,7 @@ import React from "react";
 import { useRef, useState } from "react";
 import './SelectConBuscador.css'
 import { closeCircleOutline } from "ionicons/icons";
+import { SelectConBuscadorProps } from "./SelectConBuscadorInterfaces";
 
 
 const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
@@ -36,15 +37,28 @@ const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
         <>
             <IonItem button onClick={() => modal.current?.present()} className="select-item">
                 <label className="labelTittleSCB">{label}</label>
-                <div slot="end" className="select-value">
-                    {seleccionada?.label || placeholder || "Selecciona..."}
+                <div slot="end" className="select-end-wrapper">
+                    <div className="select-value">
+                        {seleccionada?.label || placeholder || "Selecciona..."}
+                    </div>
+                    {value && (
+                        <IonIcon
+                            icon={closeCircleOutline}
+                            size="large"
+                            className="icono-borrar-seleccion"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Evita que se abra el modal
+                                onChange(""); // Vacía el valor
+                            }}
+                        />
+                    )}
                 </div>
             </IonItem>
 
             <IonModal ref={modal}>
                 <IonHeader className="select-modal-header">
                     <div className="topSectionSCBHeader">
-                    <IonTitle className="select-modal-title">{label}</IonTitle>
+                        <IonTitle className="select-modal-title">{label}</IonTitle>
                         <IonButton
                             className="select-close-button"
                             onClick={() => modal.current?.dismiss()}
@@ -53,14 +67,14 @@ const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
                         </IonButton>
                     </div>
                     <div className="bottomSectionSCBHeader">
-                    <IonSearchbar
-                        className="select-searchbar"
-                        placeholder="Buscar..."
-                        value={busqueda}
-                        onIonInput={(e) => setBusqueda(e.detail.value!)}
-                    />
+                        <IonSearchbar
+                            className="select-searchbar"
+                            placeholder="Buscar..."
+                            value={busqueda}
+                            onIonInput={(e) => setBusqueda(e.detail.value!)}
+                        />
                     </div>
-                  
+
                 </IonHeader>
 
                 <IonContent>

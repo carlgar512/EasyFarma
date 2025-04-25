@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useUser } from "../../context/UserContext";
 import { alertCircleOutline, arrowBackOutline, checkmarkOutline, close, listOutline, removeCircleOutline, searchOutline, trashOutline } from "ionicons/icons";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonBadge, IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonSearchbar, IonSelect, IonSelectOption, IonSpinner, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBadge, IonButton, IonContent, IonHeader, IonIcon,IonModal, IonPage, IonSpinner  } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import React from "react";
 import MainFooter from "../mainFooter/MainFooter";
@@ -11,9 +11,10 @@ import './BuscaMedico.css'
 import { useHistory } from "react-router-dom";
 import MedicoCard from "../medicoCard/MedicoCard";
 import Paginacion from "../paginacion/Paginacion";
-import { CentroDTO, EspecialidadDTO, MapaProvincias, MedicoDTO, ModalFiltrosProps, ProvinciaMapa } from "./BuscaMedicoInterfaces";
+import {  MapaProvincias, ModalFiltrosProps, ProvinciaMapa } from "./BuscaMedicoInterfaces";
 import { backendService } from "../../services/backendService";
 import SelectConBuscador from "../selectConBuscador/SelectConBuscador";
+import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 
 const BuscaMedico: React.FC = () => {
     const history = useHistory();
@@ -27,10 +28,10 @@ const BuscaMedico: React.FC = () => {
     });
 
     const [filtrosAplicados, setFiltrosAplicados] = useState({
-        provincia: "EY",
-        especialidad: "jose",
-        centro: "pepe",
-        nombre: "luis"
+        provincia: "",
+        especialidad: "",
+        centro: "",
+        nombre: ""
     });
 
     const [modalAbierto, setModalAbierto] = useState(false);
@@ -76,21 +77,32 @@ const BuscaMedico: React.FC = () => {
     const [paginaActual, setPaginaActual] = useState(1);
     const medicosPorPagina = 5;
 
-    const totalPaginas = Math.ceil(medicos.length / medicosPorPagina);
-    const medicosPaginados = medicos.slice(
+    const medicosFiltrados = medicos.filter((medico) => {
+        const { provincia, especialidad, centro, nombre } = filtrosAplicados;
+
+        const cumpleProvincia = provincia === "" || (
+            centros.find(c => c.uid === medico.idCentro)?.provincia === provincias[provincia]
+        );
+
+        const cumpleEspecialidad = especialidad === "" || medico.idEspecialidad === especialidad;
+        const cumpleCentro = centro === "" || medico.idCentro === centro;
+        const cumpleNombre = nombre === "" || medico.uid === nombre;
+
+
+        return cumpleProvincia && cumpleEspecialidad && cumpleCentro && cumpleNombre;
+    });
+
+    const totalPaginas = Math.ceil(medicosFiltrados.length / medicosPorPagina);
+    const medicosPaginados = medicosFiltrados.slice(
         (paginaActual - 1) * medicosPorPagina,
         paginaActual * medicosPorPagina
     );
 
 
+
     const handleVolver = () => {
         history.replace("/principal");
     };
-
-    const aplicarFiltro = (clave, valor) => {
-        setFiltrosAplicados(prev => ({ ...prev, [clave]: valor }));
-    };
-
 
     const handleEliminarFiltro = (clave) => {
         const badge = document.getElementById(`filtro-${clave}`);
@@ -103,6 +115,43 @@ const BuscaMedico: React.FC = () => {
             setFiltrosAplicados(prev => ({ ...prev, [clave]: "" }));
         }
     };
+
+    const obtenerNombreFiltro = (clave: string, valor: string): string => {
+
+        switch (clave) {
+            case "provincia":
+                return provincias[valor] || valor;
+            case "especialidad":
+                const especialidad = especialidades.find((e) => e.uid === valor);
+                return especialidad?.nombre || valor;
+            case "centro":
+                const centro = centros.find((c) => c.uid === valor);
+                return centro?.nombreCentro || valor;
+            case "nombre":
+                const medico = medicos.find((c) => c.uid === valor);
+                return medico?.nombreMedico + " " + medico?.apellidosMedico || valor;
+
+            default:
+                return valor; // Capitaliza si no está en la lista
+        }
+    }
+
+    const obtenerNombreClave = (clave: string): string => {
+        switch (clave) {
+            case "provincia":
+                return "Provincia";
+            case "especialidad":
+                return "Especialidad";
+            case "centro":
+                return "Centro";
+            case "nombre":
+                return "Nombre del Médico";
+            default:
+                return clave.charAt(0).toUpperCase() + clave.slice(1); // Capitaliza si no está en la lista
+        }
+    };
+
+
 
     return (
         <>
@@ -129,7 +178,7 @@ const BuscaMedico: React.FC = () => {
                                                     key={clave}
                                                     className="badgeFiltro"
                                                 >
-                                                    {clave}: {valor}
+                                                    {obtenerNombreClave(clave)}: {obtenerNombreFiltro(clave, valor)}
                                                     <IonIcon
                                                         icon={close}
                                                         style={{ marginLeft: '8px', cursor: 'pointer' }}
@@ -147,23 +196,29 @@ const BuscaMedico: React.FC = () => {
                                 <hr />
                                 <h2>
                                     {medicos.length > 0
-                                        ? `${medicos.length} médico${medicos.length > 1 ? 's' : ''} encontrado${medicos.length > 1 ? 's' : ''}`
+                                        ? `${medicosFiltrados.length} médico${medicosFiltrados.length > 1 ? 's' : ''} encontrado${medicosFiltrados.length > 1 ? 's' : ''}`
                                         : "No se han encontrado médicos con estos filtros"}
                                 </h2>
                                 <hr />
                             </div>
                             <div className="resultadosSD">
                                 {medicosPaginados.map((medico, index) => {
-                                    const especialidadNombre = especialidades.find(e => e.uid === medico.idEspecialidad)?.nombre || "Especialidad no disponible";
+                                    const especialidad = especialidades.find(e => e.uid === medico.idEspecialidad);
                                     const centro = centros.find(e => e.uid === medico.idCentro);
+                                    if (!especialidad || !centro) {
+                                        return (
+                                            <div className="medico-card-error">
+                                                <p>⚠️ No se pudo mostrar este médico porque faltan datos de centro o especialidad.</p>
+                                            </div>
+                                        );
+                                    }
 
                                     return (
                                         <MedicoCard
                                             key={(paginaActual - 1) * medicosPorPagina + index}
-                                            nombre={medico.nombreMedico}
-                                            apellidos={medico.apellidosMedico}
-                                            especialidad={especialidadNombre}
-                                            centro={centro?.nombreCentro || "Centro no disponible"}
+                                            medico={medico}
+                                            especialidad={especialidad}
+                                            centro={centro}
                                             provincia={centro?.provincia || "Provincia no disponible"}
                                         />
                                     );
@@ -234,20 +289,18 @@ const BuscaMedico: React.FC = () => {
                 onClose={() => setModalAbierto(false)}
                 onAplicarFiltros={(filtros) => {
                     setFiltrosAplicados(filtros);
-                    console.log("Filtros aplicados:", filtros);
                 }}
                 provincias={provincias}
                 especialidades={especialidades}
                 centros={centros}
                 mapaFiltros={mapa}
                 medicos={medicos}
+                filtrosAplicados={filtrosAplicados}
             />
 
         </>
     );
 }
-
-
 
 const ModalFiltros: React.FC<ModalFiltrosProps> = ({
     isOpen,
@@ -257,12 +310,17 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
     especialidades,
     centros,
     mapaFiltros,
-    medicos
+    medicos,
+    filtrosAplicados
 }) => {
 
-    const [busquedaProvincia, setBusquedaProvincia] = useState("");
-    const [busquedaEspecialidad, setBusquedaEspecialidad] = useState("");
-    const [busquedaCentro, setBusquedaCentro] = useState("");
+    useEffect(() => {
+        setFiltrosLocales(filtrosAplicados);
+    }, [filtrosAplicados]);
+
+
+
+
     const [loading, setLoading] = useState(false);
     const [filtrosLocales, setFiltrosLocales] = useState({
         provincia: "",
@@ -271,9 +329,112 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         nombre: ""
     });
 
+
+    const provinciasDisponibles = useMemo(() => {
+        if (filtrosLocales.especialidad) {
+            // Solo provincias con esa especialidad
+            const provincias = new Set<string>();
+            Object.entries(mapaFiltros).forEach(([provId, provData]) => {
+                Object.values(provData.centros).forEach((centro: any) => {
+                    if (centro.especialidades?.[filtrosLocales.especialidad]) {
+                        provincias.add(provId);
+                    }
+                });
+            });
+            return Array.from(provincias);
+        }
+        return Object.keys(mapaFiltros);
+    }, [filtrosLocales.especialidad, mapaFiltros]);
+
+    const centrosDisponibles = useMemo(() => {
+        const ids = new Set<string>();
+
+        if (filtrosLocales.provincia && mapaFiltros[filtrosLocales.provincia]) {
+            Object.entries(mapaFiltros[filtrosLocales.provincia].centros).forEach(([centroId, centroData]: any) => {
+                if (!filtrosLocales.especialidad || centroData.especialidades?.[filtrosLocales.especialidad]) {
+                    ids.add(centroId);
+                }
+            });
+        } else if (filtrosLocales.especialidad) {
+            Object.values(mapaFiltros).forEach((provData: any) => {
+                Object.entries(provData.centros).forEach(([centroId, centroData]: any) => {
+                    if (centroData.especialidades?.[filtrosLocales.especialidad]) {
+                        ids.add(centroId);
+                    }
+                });
+            });
+        } else {
+            Object.values(mapaFiltros).forEach((provData: any) => {
+                Object.keys(provData.centros).forEach((centroId) => ids.add(centroId));
+            });
+        }
+
+        return centros.filter(c => ids.has(c.uid));
+    }, [filtrosLocales.provincia, filtrosLocales.especialidad, centros, mapaFiltros]);
+
+    const especialidadesDisponibles = useMemo(() => {
+        const ids = new Set<string>();
+
+        if (filtrosLocales.provincia && mapaFiltros[filtrosLocales.provincia]) {
+            Object.values(mapaFiltros[filtrosLocales.provincia].centros).forEach((centro: any) => {
+                Object.keys(centro.especialidades).forEach((espId) => {
+                    ids.add(espId);
+                });
+            });
+        } else if (filtrosLocales.centro) {
+            centros.forEach((c) => {
+                if (c.uid === filtrosLocales.centro) {
+                    const prov = Object.entries(mapaFiltros).find(([_, d]) => d.centros[filtrosLocales.centro]);
+                    if (prov) {
+                        const centroData = prov[1].centros[filtrosLocales.centro];
+                        Object.keys(centroData.especialidades).forEach((espId) => {
+                            ids.add(espId);
+                        });
+                    }
+                }
+            });
+        } else {
+            Object.values(mapaFiltros).forEach((provData: any) => {
+                Object.values(provData.centros).forEach((centro: any) => {
+                    Object.keys(centro.especialidades).forEach((espId) => ids.add(espId));
+                });
+            });
+        }
+
+        return especialidades.filter(e => ids.has(e.uid));
+    }, [filtrosLocales.provincia, filtrosLocales.centro, especialidades, mapaFiltros]);
+
+    const medicosDisponibles = useMemo(() => {
+        return medicos.filter(m => {
+            const cumpleProvincia = !filtrosLocales.provincia || (
+                centros.find(c => c.uid === m.idCentro)?.provincia &&
+                Object.keys(mapaFiltros[filtrosLocales.provincia]?.centros || {}).includes(m.idCentro)
+            );
+            const cumpleCentro = !filtrosLocales.centro || m.idCentro === filtrosLocales.centro;
+            const cumpleEspecialidad = !filtrosLocales.especialidad || m.idEspecialidad === filtrosLocales.especialidad;
+            return cumpleProvincia && cumpleCentro && cumpleEspecialidad;
+        });
+    }, [filtrosLocales, medicos, centros, mapaFiltros]);
+
+
     const handleChange = (key, value) => {
-        setFiltrosLocales(prev => ({ ...prev, [key]: value }));
+        setFiltrosLocales(prev => {
+            if (key === "centro") {
+                const provId = Object.entries(mapaFiltros).find(([_, data]) =>
+                    Object.keys(data.centros).includes(value)
+                )?.[0];
+
+                return {
+                    ...prev,
+                    centro: value,
+                    provincia: provId ?? prev.provincia
+                };
+            }
+
+            return { ...prev, [key]: value };
+        });
     };
+
 
     const handleBuscar = async () => {
         setLoading(true);
@@ -291,10 +452,6 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
             nombre: ""
         });
     };
-    const [busqueda, setBusqueda] = useState("");
-
-    const quitarAcentos = (str: string) =>
-        str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 
     return (
@@ -319,51 +476,47 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
                         <SelectConBuscador
                             label="Provincia"
                             placeholder="Selecciona una provincia"
-                            items={Object.entries(provincias).map(([id, nombre]) => ({
-                                value: nombre,
-                                label: nombre,
+                            items={provinciasDisponibles.map(id => ({
+                                value: id,
+                                label: provincias[id]
                             }))}
                             value={filtrosLocales.provincia}
                             onChange={(val) => handleChange("provincia", val)}
                         />
 
-                        {/* Especialidad */}
                         <SelectConBuscador
                             label="Especialidad"
                             placeholder="Selecciona una especialidad"
-                            items={especialidades.map((e) => ({
-                                value: e.nombre,
+                            items={especialidadesDisponibles.map((e) => ({
+                                value: e.uid,
                                 label: e.nombre,
                             }))}
                             value={filtrosLocales.especialidad}
                             onChange={(val) => handleChange("especialidad", val)}
                         />
 
-
-                        {/* Centro */}
-                         <SelectConBuscador
+                        <SelectConBuscador
                             label="Centro"
                             placeholder="Selecciona un centro"
-                            items={centros.map((e) => ({
-                                value: e.nombreCentro,
+                            items={centrosDisponibles.map((e) => ({
+                                value: e.uid,
                                 label: e.nombreCentro,
                             }))}
                             value={filtrosLocales.centro}
                             onChange={(val) => handleChange("centro", val)}
                         />
 
-
-                        {/* Nombre */}
                         <SelectConBuscador
                             label="Especialista"
                             placeholder="Selecciona un especialista"
-                            items={medicos.map((e) => ({
-                                value: e.nombreMedico + " " + e.apellidosMedico,
+                            items={medicosDisponibles.map((e) => ({
+                                value: e.uid,
                                 label: e.nombreMedico + " " + e.apellidosMedico,
                             }))}
                             value={filtrosLocales.nombre}
                             onChange={(val) => handleChange("nombre", val)}
                         />
+
 
 
                         {/* Botones */}

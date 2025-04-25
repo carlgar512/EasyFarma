@@ -1,3 +1,5 @@
+import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
+
 export interface ModalFiltrosProps {
     isOpen: boolean;
     onClose: () => void;
@@ -12,31 +14,15 @@ export interface ModalFiltrosProps {
     centros: CentroDTO[];
     mapaFiltros: MapaProvincias;
     medicos: MedicoDTO[];
+    filtrosAplicados: {
+      provincia: string;
+      especialidad: string;
+      centro: string;
+      nombre: string;
+  };
     
   }
-  
 
-  export interface MedicoDTO {
-    uid: string;
-    nombreMedico: string;
-    apellidosMedico: string;
-    idEspecialidad: string;
-    idCentro: string;
-  }
-  
-  export interface CentroDTO {
-    uid: string;
-    nombreCentro: string;
-    ubicacion: string | null;
-    telefono: string | null;
-    provincia: string; // Nombre de la provincia
-  }
-  
-  export interface EspecialidadDTO {
-    uid: string;
-    nombre: string;
-  }
-  
   export interface ProvinciaMapa {
     [provinciaId: string]: string; // Ej: { "28": "Madrid" }
   }

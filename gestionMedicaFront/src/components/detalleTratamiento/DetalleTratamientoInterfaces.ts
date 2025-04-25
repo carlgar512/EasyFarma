@@ -1,4 +1,4 @@
-
+import { CentroDTO, EspecialidadDTO } from "../../shared/interfaces/frontDTO";
 
  export interface DetalleTratamientoProps {
     tratamiento:TratamientoDTO;
@@ -40,20 +40,7 @@
     medicamento: MedicamentoDTO | null;
   }
   
-  export interface CentroDTO {
-    uid: string;
-    nombreCentro: string;
-    ubicacion: string | null;
-    telefono: string | null;
-    provincia: string|null;
-  }
-  
-  export interface EspecialidadDTO {
-    uid: string;
-    nombre: string;
-  }
-  
-  export interface MedicoDTO {
+  export interface MedicoCompletoDTO {
     uid: string;
     nombreMedico: string;
     apellidosMedico: string;
@@ -66,5 +53,5 @@
   export interface TratamientoCompletoResponse {
     tratamiento: TratamientoDTO;
     lineas: LineaConMedicamento[];
-    medico: MedicoDTO;
+    medico: MedicoCompletoDTO;
   }

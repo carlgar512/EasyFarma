@@ -2,21 +2,27 @@ import { IonButton, IonIcon } from "@ionic/react";
 import { eyeOutline, locationOutline, star, starOutline } from "ionicons/icons";
 import React from "react";
 import { MedicoCardProps } from "./MedicoCardInterfaces";
-import './MedicoCard.css'
+import './MedicoCard.css';
+import { useHistory } from "react-router-dom";
 
 const MedicoCard: React.FC<MedicoCardProps> = ({
-    nombre,
-    apellidos,
+    medico,
     especialidad,
     centro,
     provincia,
     esFavorito = false,
 }) => {
+
+    const history = useHistory();
     const onFavoritoClick = () => {
     };
 
     const onVerDetalleClick = () => {
-
+        history.push("/doctor-detail", {
+            medico,
+            centro,
+            especialidad
+        });
     };
 
 
@@ -26,17 +32,17 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
                 <div className="header-left">
                     <div className="avatarMedico">
                         <span className="letrasAvatar">
-                            {nombre.charAt(0)}
-                            {apellidos.charAt(0)}
+                            {medico.nombreMedico.charAt(0)}
+                            {medico.apellidosMedico.charAt(0)}
                         </span>
                     </div>
 
                     <div>
-                        <h3>{nombre} {apellidos}</h3>
-                        <p className="especialidad">{especialidad}</p>
+                        <h3>{medico.nombreMedico} {medico.apellidosMedico}</h3>
+                        <p className="especialidad">{especialidad.nombre}</p>
                         <hr className="separadorMedico" />
                         <IonIcon icon={locationOutline} slot="start" />
-                        <span className="centro">{centro}</span>
+                        <span className="centro">{centro.nombreCentro}</span>
                         <p className="provincia">({provincia})</p> 
                     </div>
                 </div>

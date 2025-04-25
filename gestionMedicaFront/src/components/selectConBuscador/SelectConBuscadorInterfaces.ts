@@ -1,4 +1,4 @@
-interface SelectConBuscadorProps {
+export interface SelectConBuscadorProps {
     label: string;
     placeholder?: string;
     items: any[];
