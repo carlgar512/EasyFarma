@@ -85,7 +85,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ direccionInicial, onSelect 
         <MapContainer
           center={mapCenter}
           zoom={13}
-          style={{ height: '300px', width: '100%', borderRadius: '12px' }}
+          style={{ height: '400px', width: '100%', borderRadius: '12px' }}
         >
           <TileLayer
             attribution='&copy; OpenStreetMap contributors'

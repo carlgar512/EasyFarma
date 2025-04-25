@@ -199,11 +199,12 @@ export const generarPdfCifradoTratamientoHandler = onRequest(async (req, res) =>
       throw new Error("idTratamiento no válido");
     }
 
+    const usuario = await AuthService.getUserDataByDNI(dni);
     // Obtener los datos del tratamiento
     const resultado = await TratamientoService.obtenerTratamientoCompleto(idTratamiento);
 
     // Generar PDF cifrado
-    const pdfPath = await generarPdfCifrado(dni, resultado);
+    const pdfPath = await generarPdfCifrado(dni, resultado, usuario);
 
     // Obtener el email del usuario por DNI
     const email = await AuthService.getEmailFromDNI(dni);

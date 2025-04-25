@@ -1,0 +1,199 @@
+.contentDetalleMedico {
+    --background: var(--ion-color-VerdePastel);
+}
+
+.centralDetalleMedico {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+}
+
+.buttonContainerMedico {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.buttonVolverMedico {
+    --background: var(--ion-color-customRed);
+    width: 100%;
+}
+
+.buttonTextMedico {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+.buttonNuevaCita {
+    --background: var(--ion-color-customDark);
+    width: 100%;
+}
+
+.buttonVolverMedico:hover,
+.buttonNuevaCita:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+.avatarMedico {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #d1fae5;
+    color: #065f46;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.letrasAvatar {
+    font-size: 1.3rem;
+}
+
+.topBarDetalleMedico {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.nameTitleDM {
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--ion-color-customDark);
+}
+
+.iconFavoriteDM {
+    --background: var(--ion-color-customYellow);
+}
+
+.contentDMDetalle {
+    width: 95%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+.detalleLineaTextContainerDM{
+    display: flex;
+    gap: 10px;
+}
+
+.detalleText {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.barraSeparacion {
+    border: none;
+    height: 1px;
+    width: 100%;
+    background: var(--ion-color-customDark);
+}
+
+.contentItemDM {
+    color: var(--ion-color-customDark);
+}
+
+.contentDMDetalle {
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contentItemDM {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 50px;
+
+}
+
+.campoTitle {
+    font-weight: bold;
+    color: var(--ion-color-lightGreen);
+}
+
+.detalleSectionContainer {
+    width: 100%;
+}
+
+.buttonActionDM {
+    margin-left: auto;
+    --border-radius: 12px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-size: 0.9rem;
+    --background: var(--ion-color-customMedium);
+    min-width: 40px;
+}
+
+.buttonTextDM {
+    width: 80%;
+    margin-left: 10px;
+}
+
+@media (max-width: 480px) {
+    .buttonTextDM {
+        display: none;
+    }
+}
+
+.modalUbicacionHeader {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.iconUbicacion {
+    margin-left: 8px;
+    color: var(--ion-color-customDark);
+}
+
+.titleUbicacion {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.contentModalMap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contentModalCentralMap{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+.botonCerrarModalMap{
+    width: 90%;
+}
+
+.mapContainerModal{
+    width: 100%;
+    height: 100%;
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DetalleTratamientoProps, LineaConMedicamento, MedicoCompletoDTO, TratamientoCompletoResponse, TratamientoDTO } from "./DetalleTratamientoInterfaces";
-import { Redirect, useLocation } from "react-router-dom";
+import { DetalleTratamientoProps, LineaConMedicamento, MedicoCompletoDTO, TratamientoDTO } from "./DetalleTratamientoInterfaces";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { IonButton, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import MainFooter from "../mainFooter/MainFooter";
 import MainHeader from "../mainHeader/MainHeader";
@@ -12,7 +12,7 @@ import NotificationToast from "../notification/NotificationToast";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useUser } from "../../context/UserContext";
 import MedicoCard from "../medicoCard/MedicoCard";
-import { CentroDTO, EspecialidadDTO } from "../../shared/interfaces/frontDTO";
+
 
 
 
@@ -34,8 +34,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
     const [tratamientoCompleto, setTratamiento] = useState<TratamientoDTO | null>(null);
     const [lineas, setLineas] = useState<LineaConMedicamento[]>([]);
     const [medico, setMedico] = useState<MedicoCompletoDTO | null>(null);
-    const [centro, setCentro] = useState<CentroDTO | null>(null);
-    const [especialidad, setEspecialidad] = useState<EspecialidadDTO | null>(null);
     const [loading, setLoading] = useState(true);
     const [reloadTrigger, setReloadTrigger] = useState(0);
 
@@ -51,11 +49,14 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
             try {
                 setLoading(true);
 
-                const data: TratamientoCompletoResponse = await backendService.getTratamientoCompleto(tratamiento.uid);
-
-                setTratamiento(data.tratamiento);
-                setLineas(data.lineas);
-                setMedico(data.medico);
+                const data = await backendService.getTratamientoCompleto(tratamiento.uid);
+               
+                if (data.success) {
+                    setTratamiento(data.tratamientoCompleto.tratamiento);
+                    setLineas(data.tratamientoCompleto.lineas);
+                    setMedico(data.tratamientoCompleto.medico);
+                }
+             
             } catch (err: any) {
                 setToast(
                     {
@@ -169,8 +170,9 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
         });
     };
 
+    const history = useHistory();
     const handleVolver = () => {
-        window.history.back();
+        history.replace("/treatment-history");
     };
 
     const handleGeneraPDFConfirmacion = () => {

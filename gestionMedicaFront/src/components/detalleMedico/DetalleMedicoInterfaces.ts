@@ -5,4 +5,11 @@ export interface DetalleMedicoProps {
     medico: MedicoDTO,
     centro: CentroDTO,
     especialidad: EspecialidadDTO,
+    isFavorito:boolean
 }
+
+export interface ModalUbicacionProps {
+    isOpen: boolean;
+    onClose: () => void;
+    ubicacion: string;
+  }

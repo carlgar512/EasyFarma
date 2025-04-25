@@ -125,6 +125,35 @@ export class AuthService {
     }
   };
 
+  static async getUserDataByDNI(dni: string): Promise<Usuario> {
+    try {
+      logger.debug(`🔍 Buscando usuario por DNI: ${dni}`);
+
+      const uid = await getUIDByDNI(dni);
+
+      if (!uid) {
+        logger.warn(`⚠ Usuario no encontrado con DNI: ${dni}`);
+        throw new Error("Usuario no encontrado");
+      }
+
+      const userData = await getUserById(uid);
+
+      if (!userData) {
+        logger.warn(`⚠ No se encontró información del usuario con UID: ${uid}`);
+        throw new Error("Datos del usuario no disponibles");
+      }
+
+      const usuario = Usuario.fromFirestore(userData);
+      usuario.setIdUsuario(uid); // 👈 Añadimos el UID al modelo
+
+      return usuario;
+    } catch (error: any) {
+      logger.error(`❌ Error al buscar usuario por DNI: ${error.message}`);
+      throw new Error("Error al buscar usuario por DNI");
+    }
+  }
+
+
   // Genera codigo verificación
   static generateVerificationCode(): string {
     return Math.floor(Math.random() * 10000).toString().padStart(4, "0");

@@ -113,7 +113,7 @@ const HistorialTratamientos: React.FC = () => {
         }
     };
 
-    // 🔁 Y el useEffect queda así de limpio
+
     useEffect(() => {
         fetchTratamientos();
     }, [tipoVista, userData?.uid]);

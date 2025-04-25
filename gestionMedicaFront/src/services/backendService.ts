@@ -321,11 +321,7 @@ const getTratamientoCompleto = async (idTratamiento: string) => {
 
     const data = await response.json();
 
-    if (!response.ok) {
-        throw new Error(data.message || "Error al obtener tratamiento completo");
-    }
-
-    return data.tratamientoCompleto;
+    return data;
 };
 
 const generarPdfCifradoTratamiento = async (dni: string, idTratamiento: string) => {

@@ -21,7 +21,8 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
         history.push("/doctor-detail", {
             medico,
             centro,
-            especialidad
+            especialidad,
+            esFavorito
         });
     };
 
