@@ -3,9 +3,9 @@ import { DetalleMedicoProps, ModalUbicacionProps } from "./DetalleMedicoInterfac
 import React, { useState } from "react";
 import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonBadge, IonButton, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonSpinner, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBadge, IonButton, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonModal, IonPage, IonSpinner, IonTitle, IonToolbar } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
-import { addCircleOutline, arrowBackOutline, businessOutline, callOutline, checkmarkOutline, closeOutline, locateOutline, locationOutline, mapOutline, pinOutline, schoolOutline, starOutline, warningOutline } from "ionicons/icons";
+import { addCircleOutline, arrowBackOutline, businessOutline, calendarNumberOutline, callOutline, checkmarkOutline, closeCircleOutline, closeOutline, locateOutline, locationOutline, mapOutline, pinOutline, schoolOutline, starOutline, warningOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
 import NotificationToast from "../notification/NotificationToast";
 import './DetalleMedico.css'
@@ -94,10 +94,10 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 <div className="detalleSectionContainer">
                                     <div className="detalleLineaTextContainerDM">
                                         <span className="detalleText">Detalle</span>
-                                        {isFavorito && 
-                                         <IonBadge color="warning" style={{ color: "#000", fontWeight: "bold" }}>
-                                         Favorito
-                                       </IonBadge>
+                                        {isFavorito &&
+                                            <IonBadge color="warning" style={{ color: "#000", fontWeight: "bold" }}>
+                                                Favorito
+                                            </IonBadge>
                                         }
                                     </div>
 
@@ -144,6 +144,7 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 </div>
 
                             </div>
+                            <AgendaCita />
                             <div className="buttonContainerMedico">
                                 <IonButton
                                     size="large"
@@ -234,5 +235,161 @@ const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
         </IonModal>
     );
 };
+
+
+const AgendaCita: React.FC = ({
+}) => {
+
+    const horariosDisponibles = [
+        "08:00 - 08:30",
+        "08:30 - 09:00",
+        "09:00 - 09:30",
+        "09:30 - 10:00",
+        "10:00 - 10:30",
+        "10:30 - 11:00",
+        "11:00 - 11:30",
+        "11:30 - 12:00",
+        "12:00 - 12:30",
+        "12:30 - 13:00",
+        "13:00 - 13:30",
+        "13:30 - 14:00",
+    ];
+
+    const [fechaCita, setFechaCita] = useState<string>("");
+    const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
+
+    const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
+
+    const handleChangeDate = (e: CustomEvent) => {
+        const selectedDate = e.detail.value;
+        if (selectedDate) {
+            setFechaCita(selectedDate);
+            setIsOpenCalendar(false); // Cierra el modal después de seleccionar fecha
+        }
+    };
+
+    const openCalendar = () => setIsOpenCalendar(true);
+    const closeCalendar = () => setIsOpenCalendar(false);
+
+    const agendarNuevaCita = () => {
+
+    }
+
+    const cancelarAgendarCita = () => {
+
+    }
+
+    return (
+        <div className="agendaCitaContainer">
+            <div className="titleContainerAC">
+                <h2 className="agendaCitaTitle">Agendar nueva cita</h2>
+                <hr className="barraSeparacionAC" />
+            </div>
+
+            <div className="form-itemAC">
+                <label className="form-labelAC">Fecha:</label>
+                <span
+                    className="inputFechaCita"
+                    onClick={openCalendar}
+                >
+                    {fechaCita !== "" ? fechaCita : "Seleccione una fecha disponible"}
+                </span>
+
+                <IonButton onClick={openCalendar} className="calendarButtonAC">
+                    <IonIcon icon={calendarNumberOutline} size="large" slot="icon-only" />
+                </IonButton>
+                <IonModal isOpen={isOpenCalendar} onDidDismiss={closeCalendar}>
+                    <IonHeader>
+                        <IonToolbar className="top-BarBackgroundAC">
+                            <div className="topBarModalAC">
+                                <div className="left-contentAC">
+                                    <IonIcon
+                                        icon={calendarNumberOutline}
+                                        size="large"
+                                        slot="icon-only"
+                                    />
+                                    <span className="modalTitleAC">Calendario</span>
+                                </div>
+                                <IonButton className="leaveCalendarButtonAC" onClick={closeCalendar}>
+                                    Cerrar
+                                </IonButton>
+                            </div>
+                        </IonToolbar>
+                    </IonHeader>
+                    <div className="contentAC">
+                        <IonDatetime
+                            size="fixed"
+                            name="fechaCita"
+                            presentation="date"
+                            color="success"
+                            value={fechaCita}
+                            onIonChange={handleChangeDate}
+                        >
+                            <span slot="title">Fecha de la Cita</span>
+                        </IonDatetime>
+                    </div>
+                </IonModal>
+            </div>
+
+            <div className="horariosDisponiblesContainerAC">
+                <div className="titleContainerAC">
+                    {/* Título */}
+                    <h3 className="agendaCitaTitleHorarios">Horarios disponibles</h3>
+                    <hr className="barraSeparacionACHorarios" />
+                </div>
+
+                {/* Contenido dinámico */}
+                {fechaCita === "" ? (
+                    <p className="seleccionaFechaAC">(Primero selecciona una fecha)</p>
+                ) : (
+                    <div className="horariosDisponiblesAC">
+                        {horariosDisponibles.map((horario, index) => (
+                            <button
+                                key={index}
+                                className={`horarioItemAC ${horarioSeleccionado === horario ? "selected" : ""}`}
+                                onClick={() => setHorarioSeleccionado(horario)}
+                            >
+                                {horario}
+                            </button>
+                        ))}
+                    </div>
+
+                )}
+                <div className="titleContainerAC">
+                    <hr className="barraSeparacionACHorarios" />
+                </div>
+
+                <div className="agendaCitaButtonsContainer">
+                    <IonButton
+                        expand="full"
+                        shape="round"
+                        className="buttonNuevaCita"
+                        onClick={() => agendarNuevaCita()}
+                    >
+                        <IonIcon slot="start" icon={addCircleOutline}></IonIcon>
+                        <span className="buttonTextMedico">Agendar cita</span>
+                    </IonButton>
+                    <IonButton
+  
+                        expand="full"
+                        shape="round"
+                        className="buttonVolverMedico"
+                        onClick={() => cancelarAgendarCita()}
+                    >
+                        <IonIcon slot="start" icon={closeCircleOutline}></IonIcon>
+                        <span className="buttonTextMedico">Cancelar</span>
+                    </IonButton>
+
+                </div>
+
+            </div>
+
+
+        </div >
+    );
+};
+
+
+
 
 export default DetalleMedicoWrapper;
