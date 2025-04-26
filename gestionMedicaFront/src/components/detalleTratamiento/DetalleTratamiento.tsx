@@ -226,7 +226,7 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle={"Detalle de tratamiento"} />
-                {!loading && tratamientoCompleto ? (
+                {!loading && tratamientoCompleto && userData ? (
                     <IonContent fullscreen className="ion-padding contentDetalleTratamiento">
                         <div className="contenedorDeTratamiento">
                             <div className="cabeceraDT">
@@ -308,8 +308,8 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                                         medico={medico}
                                         especialidad={medico.especialidad}
                                         centro={medico.centro}
-                                        provincia={medico.centro.provincia || "Provincia no disponible"}
-                                    />
+                                        provincia={medico.centro.provincia || "Provincia no disponible"} 
+                                        esFavorito={userData.medicosFavoritos.includes(medico.uid)}                                   />
                                 ) : (
                                     <span className="text-notFoundInfo">No existe un médico asignado</span>
                                 )}

@@ -62,6 +62,15 @@ import {
     obtenerTodasLasLineasHandler
 } from "./presentacion/controllers/lineaTratamientoController";
 
+import { 
+    getAgendasMedicoHandler, 
+    guardarAgendasHandler, 
+    eliminarAgendasMedicoHandler, 
+    eliminarAgendaPorIdHandler, 
+    eliminarAgendasAntiguasHandler, 
+    actualizarHorariosAgendaHandler
+  } from "./presentacion/controllers/agendaMedicaController";
+
 
 
 // import {onRequest} from "firebase-functions/v2/https";
@@ -127,4 +136,14 @@ export const guardarLineasTratamiento = guardarLineasTratamientoHandler;
 export const obtenerTodasLasLineasTratamiento = obtenerTodasLasLineasHandler;
 export const obtenerLineaTratamientoPorId = obtenerLineaTratamientoPorIdHandler;
 export const obtenerLineasPorIdTratamiento = obtenerLineasPorIdTratamientoHandler;
+
+export const getAgendasMedico = getAgendasMedicoHandler;
+export const guardarAgendas = guardarAgendasHandler;
+export const eliminarAgendasMedico = eliminarAgendasMedicoHandler;
+export const eliminarAgendaPorId = eliminarAgendaPorIdHandler;
+export const eliminarAgendasAntiguas = eliminarAgendasAntiguasHandler;
+export const actualizarHorariosAgenda = actualizarHorariosAgendaHandler;
+
+
+
 

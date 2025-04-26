@@ -16,6 +16,7 @@ import { backendService } from "../../services/backendService";
 import SelectConBuscador from "../selectConBuscador/SelectConBuscador";
 import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 
+
 const BuscaMedico: React.FC = () => {
     const history = useHistory();
     const { userData } = useUser();
@@ -41,38 +42,39 @@ const BuscaMedico: React.FC = () => {
     const [centros, setCentros] = useState<CentroDTO[]>([]);
     const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
     const [provincias, setProvincias] = useState<ProvinciaMapa>({});
+    
 
+    const cargarDatos = async () => {
+        try {
+            const data = await backendService.obtenerMapaFiltros();
 
+            setMapa(data.mapa);
+            setMedicos(data.medicos);
+            setCentros(data.centros);
+            setEspecialidades(data.especialidades);
+            setProvincias(data.provincias);
+            setToast({
+                show: true,
+                message: "Filtros cargados correctamente",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+        } catch (err: any) {
+            setToast({
+                show: true,
+                message: err.message || "Error inesperado al cargar los filtros",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+   
     useEffect(() => {
-        const cargarDatos = async () => {
-            try {
-                const data = await backendService.obtenerMapaFiltros();
-
-                setMapa(data.mapa);
-                setMedicos(data.medicos);
-                setCentros(data.centros);
-                setEspecialidades(data.especialidades);
-                setProvincias(data.provincias);
-                setToast({
-                    show: true,
-                    message: "Filtros cargados correctamente",
-                    color: "success",
-                    icon: checkmarkOutline,
-                });
-            } catch (err: any) {
-                setToast({
-                    show: true,
-                    message: err.message || "Error inesperado al cargar los filtros",
-                    color: "danger",
-                    icon: alertCircleOutline,
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-
         cargarDatos();
     }, []);
+
 
     const [paginaActual, setPaginaActual] = useState(1);
     const medicosPorPagina = 5;
@@ -219,7 +221,8 @@ const BuscaMedico: React.FC = () => {
                                             medico={medico}
                                             especialidad={especialidad}
                                             centro={centro}
-                                            provincia={centro?.provincia || "Provincia no disponible"}
+                                            provincia={centro?.provincia || "Provincia no disponible"} 
+                                            esFavorito={userData.medicosFavoritos.includes(medico.uid)}                                            
                                         />
                                     );
 

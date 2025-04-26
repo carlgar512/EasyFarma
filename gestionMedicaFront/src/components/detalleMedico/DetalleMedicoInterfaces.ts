@@ -5,7 +5,8 @@ export interface DetalleMedicoProps {
     medico: MedicoDTO,
     centro: CentroDTO,
     especialidad: EspecialidadDTO,
-    isFavorito:boolean
+    isFavorito:boolean,
+    seccionAgendarCita:boolean
 }
 
 export interface ModalUbicacionProps {
@@ -13,3 +14,7 @@ export interface ModalUbicacionProps {
     onClose: () => void;
     ubicacion: string;
   }
+
+export  interface AgendaCitaProps {
+    setSeccionAgendarCita: (value: boolean) => void;
+}

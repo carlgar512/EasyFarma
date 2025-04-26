@@ -103,3 +103,7 @@
       margin-top: 2px;
       margin-left: 24px; /* opcional, alinear con el icono de ubicación */
     }
+
+    .nuevaCitabBoton{
+      --background: var( --ion-color-customDark);
+    }

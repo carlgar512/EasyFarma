@@ -1,15 +1,18 @@
-import { Redirect, useLocation } from "react-router-dom";
-import { DetalleMedicoProps, ModalUbicacionProps } from "./DetalleMedicoInterfaces";
+import { useLocation } from "react-router-dom";
+import { AgendaCitaProps, DetalleMedicoProps, ModalUbicacionProps } from "./DetalleMedicoInterfaces";
 import React, { useState } from "react";
-import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
+import { CentroDTO, EspecialidadDTO, InfoUserDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonBadge, IonButton, IonContent, IonDatetime, IonHeader, IonIcon, IonInput, IonItem, IonModal, IonPage, IonSpinner, IonTitle, IonToolbar } from "@ionic/react";
+import { IonBadge, IonButton, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage, IonSpinner, IonTitle } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
-import { addCircleOutline, arrowBackOutline, businessOutline, calendarNumberOutline, callOutline, checkmarkOutline, closeCircleOutline, closeOutline, locateOutline, locationOutline, mapOutline, pinOutline, schoolOutline, starOutline, warningOutline } from "ionicons/icons";
+import { addCircleOutline, alertCircleOutline, arrowBackOutline, businessOutline, calendarNumberOutline, callOutline, checkmarkOutline, closeCircleOutline, closeOutline, locateOutline, locationOutline, mapOutline, pinOutline, schoolOutline, star, starOutline, warningOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
 import NotificationToast from "../notification/NotificationToast";
 import './DetalleMedico.css'
 import MapComponent from "../mapComponent/MapComponent";
+import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import { useUser } from "../../context/UserContext";
+import { backendService } from "../../services/backendService";
 
 
 const DetalleMedicoWrapper: React.FC = () => {
@@ -18,14 +21,15 @@ const DetalleMedicoWrapper: React.FC = () => {
         centro: CentroDTO;
         especialidad: EspecialidadDTO;
         isFavorito: boolean;
+        seccionAgendarCita: boolean;
     }>();
 
-    const { medico, centro, especialidad, isFavorito } = location.state || {};
+    const { medico, centro, especialidad, isFavorito, seccionAgendarCita } = location.state || {};
 
-    return <DetalleMedico medico={medico} centro={centro} especialidad={especialidad} isFavorito={isFavorito} />;
+    return <DetalleMedico medico={medico} centro={centro} especialidad={especialidad} isFavorito={isFavorito} seccionAgendarCita={seccionAgendarCita} />;
 };
 
-const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especialidad, isFavorito }) => {
+const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especialidad, isFavorito, seccionAgendarCita }) => {
 
     const [toast, setToast] = useState({
         show: false,
@@ -34,7 +38,30 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         icon: checkmarkOutline,
     });
 
+    const cerrarDialogo = () => {
+        setDialogState({
+            isOpen: false,
+            tittle: "",
+            message: "",
+            img: "",
+            onConfirm: () => { },
+        });
+    };
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+    const { userData, setUserData } = useUser();
+
     const [modalUbicacionAbierto, setModalUbicacionAbierto] = useState(false);
+    const [seccionAgendarCitaState, setSeccionAgendarCita] = useState(seccionAgendarCita);
+    const [isFavoritoState, setIsFavorito] = useState<boolean>(isFavorito);
+
 
     const handleNuevaCita = () => {
         window.history.back();
@@ -71,6 +98,73 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         )
     );
 
+    const onFavoritoDobleCheck = () => {
+        if (!userData || !userData.medicosFavoritos) return;
+
+        const yaEsFavorito = userData.medicosFavoritos.includes(medico.uid);
+
+        if (yaEsFavorito) {
+            // Si ya es favorito, pedimos confirmación para eliminar
+            setDialogState({
+                isOpen: true,
+                tittle: "Eliminar médico de favoritos",
+                message: `¿Está seguro de que desea eliminar a ${medico.nombreMedico} ${medico.apellidosMedico} de sus médicos favoritos? Podrá volver a agregarlo en cualquier momento.`,
+                img: "moveCollection.svg",
+                onConfirm: () => {
+                    onFavoritoClick();
+                    cerrarDialogo();
+                }
+            });
+
+        } else {
+            // Si no es favorito, lo añadimos directamente
+            onFavoritoClick();
+        }
+    };
+
+    const onFavoritoClick = async () => {
+        if (!userData || !userData.medicosFavoritos) return;
+
+        let nuevosFavoritos: string[];
+        let mensajeToast = "";
+
+        if (userData.medicosFavoritos.includes(medico.uid)) {
+            mensajeToast = `${medico.nombreMedico} ${medico.apellidosMedico} eliminado de favoritos`;
+            // Si ya es favorito, lo quitamos
+            nuevosFavoritos = userData.medicosFavoritos.filter(uid => uid !== medico.uid);
+            setIsFavorito(false);
+        } else {
+            mensajeToast = `${medico.nombreMedico} ${medico.apellidosMedico} añadido a favoritos`;
+            // Si no es favorito, lo agregamos
+            nuevosFavoritos = [...userData.medicosFavoritos, medico.uid];
+            setIsFavorito(true);
+        }
+
+        const updatedUser: InfoUserDTO = {
+            ...userData,
+            medicosFavoritos: nuevosFavoritos,
+        };
+
+        try {
+            await backendService.updateUserInfo(updatedUser);
+            setUserData(updatedUser);
+            setToast({
+                show: true,
+                message: mensajeToast,
+                color: "success",
+                icon: checkmarkOutline,
+            });
+        } catch (error) {
+
+            setToast({
+                show: true,
+                message: "Error al actualizar favorito",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
+    };
+
     return (
         <>
             <SideMenu />
@@ -88,13 +182,23 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                     </span>
                                 </div>
                                 <span className="nameTitleDM">{medico.nombreMedico + " " + medico.apellidosMedico}</span>
-                                <IonIcon color="warning" icon={starOutline} size="large" slot="icon-only"></IonIcon>
+                                <IonButton
+                                    fill="clear"
+                                    onClick={onFavoritoDobleCheck}
+                                >
+                                    <IonIcon
+                                        color={"warning"}
+                                        icon={isFavoritoState ? star : starOutline}
+                                        size="large"
+                                        slot="icon-only"
+                                    />
+                                </IonButton>
                             </div>
                             <div className="contentDMDetalle">
                                 <div className="detalleSectionContainer">
                                     <div className="detalleLineaTextContainerDM">
                                         <span className="detalleText">Detalle</span>
-                                        {isFavorito &&
+                                        {isFavoritoState &&
                                             <IonBadge color="warning" style={{ color: "#000", fontWeight: "bold" }}>
                                                 Favorito
                                             </IonBadge>
@@ -144,18 +248,25 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 </div>
 
                             </div>
-                            <AgendaCita />
+                            {
+                                seccionAgendarCitaState && <AgendaCita setSeccionAgendarCita={setSeccionAgendarCita} />
+                            }
+
                             <div className="buttonContainerMedico">
-                                <IonButton
-                                    size="large"
-                                    expand="full"
-                                    shape="round"
-                                    className="buttonNuevaCita"
-                                    onClick={handleNuevaCita}
-                                >
-                                    <IonIcon slot="start" icon={addCircleOutline}></IonIcon>
-                                    <span className="buttonTextMedico">Agendar nueva cita</span>
-                                </IonButton>
+                                {
+                                    !seccionAgendarCitaState &&
+                                    <IonButton
+                                        size="large"
+                                        expand="full"
+                                        shape="round"
+                                        className="buttonNuevaCita"
+                                        onClick={() => setSeccionAgendarCita(true)}
+                                    >
+                                        <IonIcon slot="start" icon={addCircleOutline}></IonIcon>
+                                        <span className="buttonTextMedico">Agendar nueva cita</span>
+                                    </IonButton>
+                                }
+
                                 <IonButton
                                     size="large"
                                     expand="full"
@@ -201,6 +312,14 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                 show={toast.show}
                 onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
+            <DobleConfirmacion
+                isOpen={dialogState.isOpen}
+                tittle={dialogState.tittle}
+                message={dialogState.message}
+                img={dialogState.img}
+                onConfirm={dialogState.onConfirm}
+                onCancel={() => cerrarDialogo()}
+            />
             <ModalUbicacion isOpen={modalUbicacionAbierto} ubicacion={centro.ubicacion!} onClose={() => setModalUbicacionAbierto(false)} />
 
         </>
@@ -237,7 +356,7 @@ const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
 };
 
 
-const AgendaCita: React.FC = ({
+const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita
 }) => {
 
     const horariosDisponibles = [
@@ -255,29 +374,72 @@ const AgendaCita: React.FC = ({
         "13:30 - 14:00",
     ];
 
+    const diasDisponibles = [
+        "2025-04-26",
+        "2025-04-27",
+        "2025-04-29",
+        "2025-05-03",
+        "2025-05-05",
+        "2025-05-10",
+    ];
+
+
     const [fechaCita, setFechaCita] = useState<string>("");
     const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
 
     const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
 
+    const today = new Date();
+    const twoMonthsLater = new Date();
+    twoMonthsLater.setMonth(today.getMonth() + 2);
+
+    // Formateamos las fechas al formato que espera IonDatetime (YYYY-MM-DD)
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
+    const minDate = formatDate(today);
+    const maxDate = formatDate(twoMonthsLater);
+
+    const highlightedDates = diasDisponibles.map(date => ({
+        date,
+        textColor: '#ffffff',         // Texto blanco
+        backgroundColor: '#28a745',    // Fondo verde
+    }));
+
+    //FUNCIONES
+
     const handleChangeDate = (e: CustomEvent) => {
         const selectedDate = e.detail.value;
-        if (selectedDate) {
-            setFechaCita(selectedDate);
-            setIsOpenCalendar(false); // Cierra el modal después de seleccionar fecha
+
+        if (typeof selectedDate === "string") {
+            const selectedDay = selectedDate.split("T")[0]; // Extraemos solo la parte YYY-MM-DD
+
+            // Solo aceptar si la fecha está en los días habilitados
+            if (diasDisponibles.includes(selectedDay)) {
+                setFechaCita(selectedDay);
+                setHorarioSeleccionado(""); // Limpia horario
+                setIsOpenCalendar(false);    // Cierra el modal
+            }
         }
     };
-
     const openCalendar = () => setIsOpenCalendar(true);
     const closeCalendar = () => setIsOpenCalendar(false);
 
     const agendarNuevaCita = () => {
-
+        setSeccionAgendarCita(false);
     }
 
     const cancelarAgendarCita = () => {
-
+        setSeccionAgendarCita(false);
     }
+
+    const formatFechaCita = (fecha: string) => {
+        if (!fecha) return "";
+
+        const dateObj = new Date(fecha);
+        const opciones: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+
+        return dateObj.toLocaleDateString('es-ES', opciones);
+    };
 
     return (
         <div className="agendaCitaContainer">
@@ -292,7 +454,7 @@ const AgendaCita: React.FC = ({
                     className="inputFechaCita"
                     onClick={openCalendar}
                 >
-                    {fechaCita !== "" ? fechaCita : "Seleccione una fecha disponible"}
+                    {fechaCita !== "" ? formatFechaCita(fechaCita) : "Seleccione una fecha disponible"}
                 </span>
 
                 <IonButton onClick={openCalendar} className="calendarButtonAC">
@@ -300,32 +462,35 @@ const AgendaCita: React.FC = ({
                 </IonButton>
                 <IonModal isOpen={isOpenCalendar} onDidDismiss={closeCalendar}>
                     <IonHeader>
-                        <IonToolbar className="top-BarBackgroundAC">
-                            <div className="topBarModalAC">
-                                <div className="left-contentAC">
-                                    <IonIcon
-                                        icon={calendarNumberOutline}
-                                        size="large"
-                                        slot="icon-only"
-                                    />
-                                    <span className="modalTitleAC">Calendario</span>
-                                </div>
-                                <IonButton className="leaveCalendarButtonAC" onClick={closeCalendar}>
-                                    Cerrar
-                                </IonButton>
+                        <div className="topBarModalAC">
+                            <div className="left-contentAC">
+                                <IonIcon
+                                    icon={calendarNumberOutline}
+                                    size="large"
+                                    slot="icon-only"
+                                />
+                                <span className="modalTitleAC">Calendario</span>
                             </div>
-                        </IonToolbar>
+                            <IonButton className="leaveCalendarButtonAC" onClick={closeCalendar}>
+                                Cerrar
+                            </IonButton>
+                        </div>
                     </IonHeader>
                     <div className="contentAC">
                         <IonDatetime
+                            className="calendarCitas"
+                            color={"success"}
                             size="fixed"
                             name="fechaCita"
                             presentation="date"
-                            color="success"
                             value={fechaCita}
-                            onIonChange={handleChangeDate}
+                            onIonChange={(e) => handleChangeDate(e)}
+                            min={minDate}
+                            max={maxDate}
+                            isDateEnabled={(dateString) => diasDisponibles.includes(dateString)}
+                            highlightedDates={highlightedDates}
                         >
-                            <span slot="title">Fecha de la Cita</span>
+
                         </IonDatetime>
                     </div>
                 </IonModal>
@@ -365,12 +530,13 @@ const AgendaCita: React.FC = ({
                         shape="round"
                         className="buttonNuevaCita"
                         onClick={() => agendarNuevaCita()}
+                        disabled={fechaCita === "" || horarioSeleccionado === ""}
                     >
                         <IonIcon slot="start" icon={addCircleOutline}></IonIcon>
                         <span className="buttonTextMedico">Agendar cita</span>
                     </IonButton>
                     <IonButton
-  
+
                         expand="full"
                         shape="round"
                         className="buttonVolverMedico"
@@ -388,8 +554,5 @@ const AgendaCita: React.FC = ({
         </div >
     );
 };
-
-
-
 
 export default DetalleMedicoWrapper;
