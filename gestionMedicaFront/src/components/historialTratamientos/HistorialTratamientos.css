@@ -185,8 +185,8 @@
 }
 
 .badgeEstado.archivado {
-    background-color: var(--ion-color-customYellow);
-    color: black;
+    background-color: #d9d9d9; /* Gris claro */
+    color: #595959;           /* Gris oscuro para el texto */
   }
 
 .bodySection{

@@ -60,6 +60,7 @@ import HistorialTratamientos from './components/historialTratamientos/HistorialT
 import DetalleTratamientoWrapper from './components/detalleTratamiento/DetalleTratamiento';
 import BuscaMedico from './components/buscaMedico/BuscaMedico';
 import DetalleMedicoWrapper from './components/detalleMedico/DetalleMedico';
+import HistorialCitas from './components/historialCitas/HistorialCitas';
 
 
 
@@ -126,6 +127,11 @@ const App: React.FC = () => (
             <Route exact path="/doctor-detail">
               <UserProvider>
                 <DetalleMedicoWrapper />
+              </UserProvider>
+            </Route>
+            <Route exact path="/appointment-history">
+              <UserProvider>
+                <HistorialCitas />
               </UserProvider>
             </Route>
 

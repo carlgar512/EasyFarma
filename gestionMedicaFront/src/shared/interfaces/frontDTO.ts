@@ -71,3 +71,13 @@ export interface AgendaMedicaDTO {
   idMedico: string;
   horarios: Record<string, boolean>;
 }
+
+export interface CitaDTO {
+  uid: string;
+  fechaCita: string;      
+  horaCita: string;       
+  estadoCita: "Pendiente" | "Cancelada" | "Completada";
+  archivado: boolean;
+  idUsuario: string;
+  idMedico: string;
+}
