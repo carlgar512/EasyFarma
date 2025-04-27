@@ -64,3 +64,10 @@ export interface EspecialidadDTO {
   uid: string;
   nombre: string;
 }
+
+export interface AgendaMedicaDTO {
+  uid: string;
+  fecha: string;
+  idMedico: string;
+  horarios: Record<string, boolean>;
+}

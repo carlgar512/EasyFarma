@@ -1,4 +1,4 @@
-import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
+import { AgendaMedicaDTO, CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 
 
 export interface DetalleMedicoProps {
@@ -17,4 +17,6 @@ export interface ModalUbicacionProps {
 
 export  interface AgendaCitaProps {
     setSeccionAgendarCita: (value: boolean) => void;
+    agendas: AgendaMedicaDTO[];
+    medico: MedicoDTO;
 }

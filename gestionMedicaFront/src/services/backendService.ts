@@ -363,8 +363,64 @@ const obtenerMapaFiltros = async () :Promise<MapaFiltrosResponse> => {
     return data.data; // contiene { mapa, medicos, centros, especialidades }
   };
   
+  const obtenerAgendasMedico = async (idMedico: string): Promise<any[]> => {
+    const response = await fetch(`${BASE_URL}/getAgendasMedico?idMedico=${idMedico}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener las agendas médicas del médico");
+    }
+  
+    return data.agendas; // depende de cómo lo devuelvas en back, podría ser data.data.agendas
+  };
 
+  const actualizarHorariosAgenda = async (idAgenda: string, nuevosHorarios: Record<string, boolean>): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/actualizarHorariosAgenda?idAgenda=${idAgenda}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(nuevosHorarios),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al actualizar los horarios de la agenda médica");
+    }
+  };
 
+  const guardarCita = async (idUsuario: string, idMedico: string, fechaCita: string, horaCita: string): Promise<void> => {
+    const citaData = {
+      fechaCita,
+      horaCita,
+      estadoCita: "Pendiente", // Estado inicial
+      archivado: false,         // No archivada al crearla
+      idUsuario,
+      idMedico
+    };
+  
+    const response = await fetch(`${BASE_URL}/guardarCita`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(citaData),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al guardar la cita");
+    }
+  };
+  
 export const backendService = {
     register,
     login,
@@ -382,5 +438,9 @@ export const backendService = {
     updateArchivadoTratamiento,
     getTratamientoCompleto,
     generarPdfCifradoTratamiento,
-    obtenerMapaFiltros
+    obtenerMapaFiltros,
+    obtenerAgendasMedico,
+    actualizarHorariosAgenda,
+    guardarCita
 };
+

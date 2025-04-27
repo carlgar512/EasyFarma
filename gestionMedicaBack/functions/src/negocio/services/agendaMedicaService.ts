@@ -29,7 +29,11 @@ export class AgendaMedicaService {
     logger.info(`💾 Recibidas ${agendasData.length} agendas médicas para guardar`);
 
     for (const agendaRaw of agendasData) {
-      const agenda = AgendaMedica.fromFirestore(agendaRaw.uid, agendaRaw);
+      const agenda = new AgendaMedica( 
+        agendaRaw.fecha,
+        agendaRaw.idMedico,
+        agendaRaw.horarios
+    );
 
       await saveAgendaMedicaToFirestore(agenda.toFirestoreObject());
       logger.info(`✅ Agenda médica para el médico ${agenda.getIdMedico()} en fecha ${agenda.getFecha()} guardada correctamente`);

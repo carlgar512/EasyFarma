@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { AgendaCitaProps, DetalleMedicoProps, ModalUbicacionProps } from "./DetalleMedicoInterfaces";
-import React, { useState } from "react";
-import { CentroDTO, EspecialidadDTO, InfoUserDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
+import React, { useEffect, useState } from "react";
+import { AgendaMedicaDTO, CentroDTO, EspecialidadDTO, InfoUserDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 import SideMenu from "../sideMenu/SideMenu";
 import { IonBadge, IonButton, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage, IonSpinner, IonTitle } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
@@ -37,6 +37,20 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         color: "success",
         icon: checkmarkOutline,
     });
+    const [loading, setLoading] = useState<boolean>(false);
+    const [agendas, setAgendas] = useState<AgendaMedicaDTO[]>([]);
+    const { userData, setUserData } = useUser();
+    const [modalUbicacionAbierto, setModalUbicacionAbierto] = useState(false);
+    const [seccionAgendarCitaState, setSeccionAgendarCita] = useState(seccionAgendarCita);
+    const [isFavoritoState, setIsFavorito] = useState<boolean>(isFavorito);
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
 
     const cerrarDialogo = () => {
         setDialogState({
@@ -48,24 +62,30 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         });
     };
 
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
+    useEffect(() => {
+        const cargarAgendas = async () => {
+            try {
+                setLoading(true);
+                if (medico && medico.uid) { // 🔥 Comprobamos que medico exista
+                    const agendasData = await backendService.obtenerAgendasMedico(medico.uid);
+                    setAgendas(agendasData);
+                }
+            } catch (error: any) {
+                setToast({
+                    show: true,
+                    message: "Error al cargar agendas médicas",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const { userData, setUserData } = useUser();
-
-    const [modalUbicacionAbierto, setModalUbicacionAbierto] = useState(false);
-    const [seccionAgendarCitaState, setSeccionAgendarCita] = useState(seccionAgendarCita);
-    const [isFavoritoState, setIsFavorito] = useState<boolean>(isFavorito);
-
-
-    const handleNuevaCita = () => {
-        window.history.back();
-    };
+        if (medico && medico.uid) {  // 🔥 Nuevo chequeo aquí también
+            cargarAgendas();
+        }
+    }, [medico]);
 
     // TODO arrglar esto se va a otras paginas que no es la anterior
     const handleVolver = () => {
@@ -249,7 +269,11 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
 
                             </div>
                             {
-                                seccionAgendarCitaState && <AgendaCita setSeccionAgendarCita={setSeccionAgendarCita} />
+                                seccionAgendarCitaState &&
+                                <AgendaCita
+                                    setSeccionAgendarCita={setSeccionAgendarCita}
+                                    agendas={agendas}
+                                    medico={medico} />
                             }
 
                             <div className="buttonContainerMedico">
@@ -320,8 +344,9 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                 onConfirm={dialogState.onConfirm}
                 onCancel={() => cerrarDialogo()}
             />
-            <ModalUbicacion isOpen={modalUbicacionAbierto} ubicacion={centro.ubicacion!} onClose={() => setModalUbicacionAbierto(false)} />
-
+            {centro && centro.ubicacion &&
+                <ModalUbicacion isOpen={modalUbicacionAbierto} ubicacion={centro.ubicacion} onClose={() => setModalUbicacionAbierto(false)} />
+            }
         </>
     );
 }
@@ -356,38 +381,60 @@ const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
 };
 
 
-const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita
+const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas, medico
 }) => {
+    const [diasDisponibles, setDiasDisponibles] = useState<string[]>([]);
 
-    const horariosDisponibles = [
-        "08:00 - 08:30",
-        "08:30 - 09:00",
-        "09:00 - 09:30",
-        "09:30 - 10:00",
-        "10:00 - 10:30",
-        "10:30 - 11:00",
-        "11:00 - 11:30",
-        "11:30 - 12:00",
-        "12:00 - 12:30",
-        "12:30 - 13:00",
-        "13:00 - 13:30",
-        "13:30 - 14:00",
-    ];
+    useEffect(() => {
+        if (agendas.length > 0) {
+            const fechas = agendas
+                .filter((agenda) =>
+                    Object.values(agenda.horarios).some((disponible) => disponible)
+                )
+                .map((agenda) => {
+                    const [day, month, year] = agenda.fecha.split("-");
+                    return `${year}-${month}-${day}`; // Convertimos a YYYY-MM-DD
+                });
 
-    const diasDisponibles = [
-        "2025-04-26",
-        "2025-04-27",
-        "2025-04-29",
-        "2025-05-03",
-        "2025-05-05",
-        "2025-05-10",
-    ];
-
+            setDiasDisponibles(fechas);
+        } else {
+            setDiasDisponibles([]);
+        }
+    }, [agendas]);
 
     const [fechaCita, setFechaCita] = useState<string>("");
+    const [agendaSeleccionada, setAgendaSeleccionada] = useState<AgendaMedicaDTO | null>(null);
+    const [horariosDisponibles, setHorariosDisponibles] = useState<string[]>([]);
     const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
+    const { userData, setUserData } = useUser();
 
     const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+    const cerrarDialogo = () => {
+        setDialogState({
+            isOpen: false,
+            tittle: "",
+            message: "",
+            img: "",
+            onConfirm: () => { },
+        });
+    };
+
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+
 
     const today = new Date();
     const twoMonthsLater = new Date();
@@ -411,21 +458,106 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita
         const selectedDate = e.detail.value;
 
         if (typeof selectedDate === "string") {
-            const selectedDay = selectedDate.split("T")[0]; // Extraemos solo la parte YYY-MM-DD
+            const selectedDay = selectedDate.split("T")[0]; // YYYY-MM-DD
 
             // Solo aceptar si la fecha está en los días habilitados
             if (diasDisponibles.includes(selectedDay)) {
                 setFechaCita(selectedDay);
                 setHorarioSeleccionado(""); // Limpia horario
                 setIsOpenCalendar(false);    // Cierra el modal
+
+                //  convertir selectedDay a formato agenda (DD-MM-YYYY) para buscar
+                const [year, month, day] = selectedDay.split("-");
+                const formattedSelectedDay = `${day}-${month}-${year}`;
+
+                const agendaDelDia = agendas.find((agenda) => agenda.fecha === formattedSelectedDay);
+
+                if (agendaDelDia) {
+                    setAgendaSeleccionada(agendaDelDia);
+
+                    const horariosDisponiblesDelDia = Object.entries(agendaDelDia.horarios)
+                        .filter(([_, disponible]) => disponible)
+                        .map(([horario]) => horario);
+
+                    setHorariosDisponibles(horariosDisponiblesDelDia);
+                } else {
+                    setAgendaSeleccionada(null);
+                    setHorariosDisponibles([]);
+                }
             }
         }
     };
+
     const openCalendar = () => setIsOpenCalendar(true);
     const closeCalendar = () => setIsOpenCalendar(false);
 
-    const agendarNuevaCita = () => {
-        setSeccionAgendarCita(false);
+    const agendarNuevaCitaDobleCheck = () => {
+        setDialogState({
+            isOpen: true,
+            tittle: "Eliminar médico de favoritos",
+            message: `¿Desea confirmar la creación de una cita con el Dr./Dra. ${medico.nombreMedico} ${medico.apellidosMedico} el día ${agendaSeleccionada?.fecha} a las ${horarioSeleccionado}? La cita quedará registrada en su historial médico.`,
+            img: "nuevaCita.svg",
+            onConfirm: () => {
+                onAgendarNuevaCita();
+                cerrarDialogo();
+            }
+        });
+    }
+    const resetearFormulario = () => {
+        setFechaCita("");
+        setHorarioSeleccionado("");
+        setAgendaSeleccionada(null);
+        setHorariosDisponibles([]);
+    };
+
+    const onAgendarNuevaCita = async () => {
+        if (!agendaSeleccionada || !horarioSeleccionado) {
+            setToast({
+                show: true,
+                message: "Debe seleccionar una fecha y un horario antes de agendar la cita.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            return;
+        }
+        try {
+            // 🔹 Primero actualizar horarios
+            const nuevosHorarios = {
+                ...agendaSeleccionada.horarios,
+                [horarioSeleccionado]: false, // Marcamos el horario como ocupado
+            };
+
+            await backendService.actualizarHorariosAgenda(agendaSeleccionada.uid, nuevosHorarios);
+
+            // 🔹 Luego guardar la cita
+            await backendService.guardarCita(userData!.uid, agendaSeleccionada.idMedico, agendaSeleccionada.fecha, horarioSeleccionado);
+
+            // 🔹 Mostrar toast de éxito
+            setToast({
+                show: true,
+                message: "Cita agendada correctamente",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+
+            // Opcional: podrías resetear estados o volver a otra vista si quieres aquí
+            resetearFormulario();
+            setTimeout(() => {
+                setSeccionAgendarCita(false);
+            }, 2000); // Espera 2 segundos (2000 ms)
+            window.location.reload();
+
+
+        } catch (error: any) {
+
+            setToast({
+                show: true,
+                message: error.message || "Error inesperado al agendar cita.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
+
     }
 
     const cancelarAgendarCita = () => {
@@ -529,7 +661,7 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita
                         expand="full"
                         shape="round"
                         className="buttonNuevaCita"
-                        onClick={() => agendarNuevaCita()}
+                        onClick={() => agendarNuevaCitaDobleCheck()}
                         disabled={fechaCita === "" || horarioSeleccionado === ""}
                     >
                         <IonIcon slot="start" icon={addCircleOutline}></IonIcon>
@@ -550,8 +682,23 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita
 
             </div>
 
-
+            <DobleConfirmacion
+                isOpen={dialogState.isOpen}
+                tittle={dialogState.tittle}
+                message={dialogState.message}
+                img={dialogState.img}
+                onConfirm={dialogState.onConfirm}
+                onCancel={() => cerrarDialogo()}
+            />
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
         </div >
+
     );
 };
 

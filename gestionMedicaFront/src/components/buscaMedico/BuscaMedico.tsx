@@ -70,8 +70,9 @@ const BuscaMedico: React.FC = () => {
             setLoading(false);
         }
     };
+
    
-    useEffect(() => {
+    useEffect(() => { 
         cargarDatos();
     }, []);
 

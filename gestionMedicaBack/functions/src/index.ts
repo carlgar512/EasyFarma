@@ -62,14 +62,25 @@ import {
     obtenerTodasLasLineasHandler
 } from "./presentacion/controllers/lineaTratamientoController";
 
-import { 
-    getAgendasMedicoHandler, 
-    guardarAgendasHandler, 
-    eliminarAgendasMedicoHandler, 
-    eliminarAgendaPorIdHandler, 
-    eliminarAgendasAntiguasHandler, 
+import {
+    getAgendasMedicoHandler,
+    guardarAgendasHandler,
+    eliminarAgendasMedicoHandler,
+    eliminarAgendaPorIdHandler,
+    eliminarAgendasAntiguasHandler,
     actualizarHorariosAgendaHandler
-  } from "./presentacion/controllers/agendaMedicaController";
+} from "./presentacion/controllers/agendaMedicaController";
+import {
+    actualizarCitaHandler,
+    eliminarCitaPorIdHandler,
+    eliminarCitasUsuarioHandler,
+    guardarCitaHandler,
+    obtenerCitaPorIdHandler,
+    obtenerCitasArchivadasUsuarioHandler,
+    obtenerCitasMedicoHandler,
+    obtenerCitasNoArchivadasUsuarioHandler,
+    obtenerCitasPendientesUsuarioHandler
+} from "./presentacion/controllers/citaController";
 
 
 
@@ -111,7 +122,6 @@ export const getTratamientosActuales = getTratamientosActualesHandler;
 export const obtenerTratamientoCompleto = obtenerTratamientoCompletoHandler;
 export const generarPdfCifradoTratamiento = generarPdfCifradoTratamientoHandler;
 
-
 // Exportación de funciones Especialidad
 export const guardarEspecialidades = guardarEspecialidadesHandler;
 export const obtenerEspecialidades = obtenerEspecialidadesHandler;
@@ -137,6 +147,7 @@ export const obtenerTodasLasLineasTratamiento = obtenerTodasLasLineasHandler;
 export const obtenerLineaTratamientoPorId = obtenerLineaTratamientoPorIdHandler;
 export const obtenerLineasPorIdTratamiento = obtenerLineasPorIdTratamientoHandler;
 
+// Exportación de funciones AgendaMedico
 export const getAgendasMedico = getAgendasMedicoHandler;
 export const guardarAgendas = guardarAgendasHandler;
 export const eliminarAgendasMedico = eliminarAgendasMedicoHandler;
@@ -144,6 +155,16 @@ export const eliminarAgendaPorId = eliminarAgendaPorIdHandler;
 export const eliminarAgendasAntiguas = eliminarAgendasAntiguasHandler;
 export const actualizarHorariosAgenda = actualizarHorariosAgendaHandler;
 
+// Exportación de funciones Cita
+export const guardarCita = guardarCitaHandler;
+export const obtenerCitasNoArchivadasUsuario = obtenerCitasNoArchivadasUsuarioHandler;
+export const obtenerCitasArchivadasUsuario = obtenerCitasArchivadasUsuarioHandler;
+export const obtenerCitasPendientesUsuario = obtenerCitasPendientesUsuarioHandler;
+export const obtenerCitasMedico = obtenerCitasMedicoHandler;
+export const obtenerCitaPorId = obtenerCitaPorIdHandler;
+export const actualizarCita = actualizarCitaHandler;
+export const eliminarCitasUsuario = eliminarCitasUsuarioHandler;
+export const eliminarCitaPorId = eliminarCitaPorIdHandler;
 
 
 
