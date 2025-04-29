@@ -34,10 +34,9 @@ const HistorialTratamientos: React.FC = () => {
 
     // 🔁 Cambiar tipo de vista y actualizar URL
     const cambiarVista = (nuevaVista: "todos" | "actuales" | "archivados") => {
-        setTipoVista(nuevaVista);
         history.push(`/treatment-history?tipo=${nuevaVista}`);
+        window.location.reload();
     };
-
 
     //TODO state para archivados
     const parseFecha = (fechaStr: string): Date => {
@@ -113,6 +112,11 @@ const HistorialTratamientos: React.FC = () => {
         }
     };
 
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tipo = searchParams.get("tipo") as "todos" | "actuales" | "archivados" | null;
+        setTipoVista(tipo || "todos");
+    }, [location.search]);
 
     useEffect(() => {
         fetchTratamientos();
@@ -286,7 +290,7 @@ const TratamientoCard: React.FC<TratamientoCardProps> = ({ tratamiento, index, o
             await backendService.updateArchivadoTratamiento(tratamiento.uid, true);
             setToast({
                 show: true,
-                message: "El tratamiento se ha activado correctamente.",
+                message: "El tratamiento se ha archivado correctamente.",
                 color: "success",
                 icon: checkmarkOutline,
             });

@@ -25,7 +25,7 @@ export const operations: Operation[] = [
         description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado.",
         type: "Citas",
         icon: "calendarOutline",
-        url: "/appointment-history",
+        url: "/appointment-history?tipo=todos",
         img: "historialCitas.svg"
     },
     {

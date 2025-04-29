@@ -74,7 +74,7 @@ export const getCitasNoArchivadasUsuarioFromFirestore = async (idUsuario: string
     try {
       const snapshot = await db.collection(COLLECTION_NAME)
         .where("idUsuario", "==", idUsuario)
-        .where("estadoCita", "==", "pendiente") // 👈 Buscando solo las pendientes
+        .where("estadoCita", "==", "Pendiente") // 👈 Buscando solo las pendientes
         .get();
   
       return snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }));

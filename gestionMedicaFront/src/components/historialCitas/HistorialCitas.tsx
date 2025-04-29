@@ -1,8 +1,8 @@
-import { IonBadge, IonButton, IonContent, IonIcon, IonImg, IonPage, IonSpinner } from "@ionic/react";
+import { IonButton, IonContent, IonIcon, IonImg, IonPage, IonSpinner } from "@ionic/react";
 import SideMenu from "../sideMenu/SideMenu";
 import MainHeader from "../mainHeader/MainHeader";
 import React, { useEffect, useState } from "react";
-import { archiveOutline, arrowBackOutline, calendarOutline, cloudUploadOutline, eyeOutline, timeOutline, trashOutline } from "ionicons/icons";
+import { alertCircleOutline, archiveOutline, arrowBackOutline, calendarOutline, checkmarkOutline, eyeOutline, fileTrayFullOutline, folderOpenOutline, timeOutline, trashOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
 import { useUser } from "../../context/UserContext";
 import { backendService } from "../../services/backendService";
@@ -10,166 +10,148 @@ import { CitaCardProps } from "./HistorialCitasInterfaces";
 import { CitaDTO } from "../../shared/interfaces/frontDTO";
 import './HistorialCitas.css'
 import Paginacion from "../paginacion/Paginacion";
+import { useHistory, useLocation } from "react-router-dom";
+import NotificationToast from "../notification/NotificationToast";
+import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 
 const HistorialCitas: React.FC = () => {
-    const [citas, setCitas] = useState([]);
-    const [loading, setLoading] = useState(true);
-
     const { userData } = useUser();
 
+    const location = useLocation();
+    const history = useHistory();
 
-    useEffect(() => {
-        const fetchAlergias = async () => {
-            if (!userData?.uid) return;
+    // 🔍 Leer tipo desde la URL
+    const searchParams = new URLSearchParams(location.search);
+    const tipoParam = searchParams.get("tipo") as "todos" | "actuales" | "archivados" | null;
 
-            setLoading(true); // ← Empezamos cargando
+    // ✅ Estado interno basado en la URL (si no hay tipo → 'todos')
+    const [tipoVista, setTipoVista] = useState<"todos" | "actuales" | "archivados">(tipoParam || "todos");
 
-            try {
 
-            } catch (err: any) {
-                console.error("❌ Error al obtener citas:", err.message || err);
-            } finally {
-                setLoading(false);
-            }
+    const [citas, setCitas] = useState<CitaDTO[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    // 🔁 Cambiar tipo de vista y actualizar URL
+    const cambiarVista = (nuevaVista: "todos" | "actuales" | "archivados") => {
+        history.push(`/appointment-history?tipo=${nuevaVista}`);
+        window.location.reload();
+
+    };
+
+    const ordenarCitasPorFecha = (citas: CitaDTO[]): CitaDTO[] => {
+        const parseFecha = (fechaStr: string): Date => {
+            const [day, month, year] = fechaStr.split("-").map(Number);
+            return new Date(year, month - 1, day);
         };
 
-        fetchAlergias();
-    }, [userData?.uid]);
+        return citas.sort((a, b) => {
+            const fechaA = parseFecha(a.fechaCita);
+            const fechaB = parseFecha(b.fechaCita);
+            return fechaB.getTime() - fechaA.getTime(); // Fecha más futura primero
+        });
+    };
+
+    const fetchCitas = async () => {
+        if (!userData?.uid) return;
+
+        setLoading(true);
+        let data: any[] = [];
+        try {
+            switch (tipoVista) {
+                case "actuales":
+                    data = await backendService.getCitasActuales(userData.uid);
+                    break;
+                case "archivados":
+                    data = await backendService.getCitasArchivados(userData.uid);
+                    break;
+                case "todos":
+                default:
+                    data = await backendService.getCitasAll(userData.uid);
+                    break;
+            }
+
+            const citasMapeadas: CitaDTO[] = data.map((item: any) => ({
+                uid: item.uid,
+                fechaCita: item.fechaCita,
+                horaCita: item.horaCita,
+                estadoCita: item.estadoCita as "Pendiente" | "Cancelada" | "Completada",
+                archivado: item.archivado,
+                idUsuario: item.idUsuario,
+                idMedico: item.idMedico,
+            }));
+
+
+            setCitas(ordenarCitasPorFecha(citasMapeadas));
+        } catch (err: any) {
+            console.error("❌ Error al obtener tratamientos:", err.message || err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tipo = searchParams.get("tipo") as "todos" | "actuales" | "archivados" | null;
+        setTipoVista(tipo || "todos");
+    }, [location.search]);
+
+    useEffect(() => {
+        fetchCitas();
+    }, [tipoVista, userData?.uid]);
 
 
     const handleVolver = () => {
-        window.history.back();
+        history.replace("/principal");
     };
-
-    const mockCitas: CitaDTO[] = [
-        {
-          uid: "cita001",
-          fechaCita: "20-05-2025",
-          horaCita: "09:00-09:30",
-          estadoCita: "Pendiente",
-          archivado: false,
-          idUsuario: "usuario001",
-          idMedico: "medico001"
-        },
-        {
-          uid: "cita002",
-          fechaCita: "21-05-2025",
-          horaCita: "10:00-10:30",
-          estadoCita: "Completada",
-          archivado: true,
-          idUsuario: "usuario001",
-          idMedico: "medico002"
-        },
-        {
-          uid: "cita003",
-          fechaCita: "22-05-2025",
-          horaCita: "11:00-11:30",
-          estadoCita: "Cancelada",
-          archivado: true,
-          idUsuario: "usuario002",
-          idMedico: "medico003"
-        },
-        {
-          uid: "cita004",
-          fechaCita: "23-05-2025",
-          horaCita: "12:00-12:30",
-          estadoCita: "Pendiente",
-          archivado: false,
-          idUsuario: "usuario002",
-          idMedico: "medico001"
-        },
-        {
-          uid: "cita005",
-          fechaCita: "24-05-2025",
-          horaCita: "13:00-13:30",
-          estadoCita: "Pendiente",
-          archivado: false,
-          idUsuario: "usuario003",
-          idMedico: "medico004"
-        },
-        {
-          uid: "cita006",
-          fechaCita: "19-05-2025",
-          horaCita: "08:00-08:30",
-          estadoCita: "Completada",
-          archivado: false,
-          idUsuario: "usuario003",
-          idMedico: "medico002"
-        },
-        {
-          uid: "cita007",
-          fechaCita: "25-05-2025",
-          horaCita: "14:00-14:30",
-          estadoCita: "Pendiente",
-          archivado: false,
-          idUsuario: "usuario004",
-          idMedico: "medico005"
-        },
-        {
-          uid: "cita008",
-          fechaCita: "18-05-2025",
-          horaCita: "15:00-15:30",
-          estadoCita: "Cancelada",
-          archivado: false,
-          idUsuario: "usuario001",
-          idMedico: "medico006"
-        },
-        {
-          uid: "cita009",
-          fechaCita: "26-05-2025",
-          horaCita: "16:00-16:30",
-          estadoCita: "Pendiente",
-          archivado: false,
-          idUsuario: "usuario005",
-          idMedico: "medico007"
-        },
-        {
-          uid: "cita010",
-          fechaCita: "17-05-2025",
-          horaCita: "17:00-17:30",
-          estadoCita: "Completada",
-          archivado: true,
-          idUsuario: "usuario006",
-          idMedico: "medico008"
-        }
-      ];
-      
-
-      const ordenarCitasPorFecha = (citas: CitaDTO[]): CitaDTO[] => {
-        const parseFecha = (fechaStr: string): Date => {
-          const [day, month, year] = fechaStr.split("-").map(Number);
-          return new Date(year, month - 1, day);
-        };
-      
-        return citas.sort((a, b) => {
-          const fechaA = parseFecha(a.fechaCita);
-          const fechaB = parseFecha(b.fechaCita);
-          return fechaB.getTime() - fechaA.getTime(); // Fecha más futura primero
-        });
-      };
-
 
     const [paginaActual, setPaginaActual] = useState(1);
     const tratamientosPorPagina = 5;
 
-    const totalPaginas = Math.ceil(mockCitas.length / tratamientosPorPagina);
+    const totalPaginas = Math.ceil(citas.length / tratamientosPorPagina);
 
-    const citasPaginadas = ordenarCitasPorFecha(mockCitas).slice(
+    const citasPaginadas = ordenarCitasPorFecha(citas).slice(
         (paginaActual - 1) * tratamientosPorPagina,
         paginaActual * tratamientosPorPagina
     );
-
 
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Historial de citas" />
-                {loading ? (
+                {!loading ? (
                     <IonContent fullscreen className="contentCitas">
                         <div className="contentCentralCitas">
-                            {mockCitas.length === 0 ? (
+                            <div className="buttonContainerCitas">
+                                {tipoVista === "todos" && (
+                                    <IonButton
+                                        size="large"
+                                        expand="full"
+                                        shape="round"
+                                        className="buttonCitasArchivadas"
+                                        onClick={() => cambiarVista("archivados")}
+                                    >
+                                        <IonIcon slot="start" size="large" icon={archiveOutline}></IonIcon>
+                                        <span className="buttonTextCitasArchivados">Archivados</span>
+                                    </IonButton>
+                                )}
+
+                                {tipoVista === "archivados" && (
+                                    <IonButton
+                                        size="large"
+                                        expand="full"
+                                        shape="round"
+                                        className="buttonCitasArchivadas"
+                                        onClick={() => cambiarVista("todos")}
+                                    >
+                                        <IonIcon slot="start" size="large" icon={fileTrayFullOutline}></IonIcon>
+                                        <span className="buttonTextCitasArchivados">Ver todos</span>
+                                    </IonButton>
+                                )}
+                            </div>
+                            {citas.length === 0 ? (
                                 <div className="noCitasContainerGrid">
+
                                     <div className="noCitasContainer">
                                         <div className="imgContainer">
                                             <IonImg src="NoData.svg" className="imgNoData" />
@@ -186,6 +168,7 @@ const HistorialCitas: React.FC = () => {
                                             cita={cita}
                                             key={index}
                                             index={(paginaActual - 1) * tratamientosPorPagina + index + 1}
+                                            onActualizar={fetchCitas}
 
                                         />
                                     ))}
@@ -244,18 +227,141 @@ const HistorialCitas: React.FC = () => {
 };
 
 
-const CitaCard: React.FC<CitaCardProps> = ({ cita, index }) => {
+const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
 
     const puedeArchivar = cita.estadoCita === "Completada" || cita.estadoCita === "Cancelada";
     const puedeEliminar = cita.estadoCita === "Cancelada";
 
-    const onDesarchivar = () => {
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+
+    const cerrarDialogo = () => {
+        setDialogState({
+            isOpen: false,
+            tittle: "",
+            message: "",
+            img: "",
+            onConfirm: () => { },
+        });
+    };
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+    const onDesArchivarDobleCheck = () => {
+        setDialogState({
+            isOpen: true,
+            tittle: "Desarchivar cita",
+            message: "¿Desea desarchivar esta cita? Esta acción es reversible. La cita volverá a estar disponible en el historial completo de citas.",
+            img: "desarchivar.svg",
+            onConfirm: () => onDesarchivar(),
+        });
+    };
+
+    const onArchivarDobleCheck = () => {
+        setDialogState({
+            isOpen: true,
+            tittle: "Archivar cita",
+            message: "¿Desea archivar esta cita? Esta acción es reversible. Podrá visualizar la cita archivada posteriormente en la sección de citas archivadas.",
+            img: "archivar.svg",
+            onConfirm: () => onArchivar(),
+        });
+    };
+
+    const onEliminarDobleCheck = () => {
+        setDialogState({
+            isOpen: true,
+            tittle: "Eliminar cita",
+            message: "¿Está seguro de que desea eliminar esta cita? Esta acción es irreversible y no podrá recuperar la información eliminada.",
+            img: "bajaCuenta.svg",
+            onConfirm: () => onEliminar(),
+        });
+    };
+
+    const onDesarchivar = async () => {
+        try {
+            const citaActualizada: CitaDTO = {
+                ...cita,
+                archivado: false,
+            };
+    
+            await backendService.actualizarCita(citaActualizada);
+            setToast({
+                show: true,
+                message: "Cita devuelta al historial completo.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+            setTimeout(() => {
+                onActualizar();
+            }, 500); // 👈 vuelve a cargar la lista actualizada
+        } catch (error) {
+            setToast({
+                show: true,
+                message: "Error al devolver la cita al historial completo: " + error,
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
 
     };
-    const onArchivar = () => {
+    const onArchivar = async () => {
+        try {
+            const citaActualizada: CitaDTO = {
+                ...cita,
+                archivado: true,
+            };
+    
+            await backendService.actualizarCita(citaActualizada);
+            setToast({
+                show: true,
+                message: "La cita se ha archivado correctamente.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+            setTimeout(() => {
+                onActualizar();
+            }, 500); // 👈 vuelve a cargar la lista actualizada
+        } catch (error) {
+            setToast({
+                show: true,
+                message: "Error al archivar cita: " + error,
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
 
     };
-    const onEliminar = () => {
+
+    const onEliminar = async () => {
+        try {
+            await backendService.eliminarCitaPorId(cita.uid);
+            setToast({
+                show: true,
+                message: "La cita se ha eliminado correctamente.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+            setTimeout(() => {
+                onActualizar();
+            }, 500); // 👈 vuelve a cargar la lista actualizada
+        } catch (error) {
+            setToast({
+                show: true,
+                message: "Error al eliminar cita: " + error,
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
 
     };
     const onVerDetalle = () => {
@@ -282,18 +388,18 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index }) => {
 
                 <div className="cita-action-buttons">
                     {puedeEliminar && (
-                        <IonButton onClick={() => onEliminar()} className="cita-buttonElim">
+                        <IonButton onClick={() => onEliminarDobleCheck()} className="cita-buttonElim">
                             <IonIcon icon={trashOutline} size="large" slot="icon-only" />
                         </IonButton>
                     )}
                     {cita.archivado && (
-                        <IonButton onClick={() => onDesarchivar()} className="citaButtonArchive">
-                            <IonIcon icon={cloudUploadOutline} size="large" slot="icon-only" />
+                        <IonButton onClick={() => onDesArchivarDobleCheck()} className="citaButtonArchive">
+                            <IonIcon icon={folderOpenOutline} size="large" slot="icon-only" />
                         </IonButton>
                     )}
 
                     {!cita.archivado && puedeArchivar && (
-                        <IonButton onClick={() => onArchivar()} className="citaButtonArchive">
+                        <IonButton onClick={() => onArchivarDobleCheck()} className="citaButtonArchive">
                             <IonIcon icon={archiveOutline} size="large" slot="icon-only" />
                         </IonButton>
                     )}
@@ -321,6 +427,21 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index }) => {
                 </div>
 
             </div>
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
+            <DobleConfirmacion
+                isOpen={dialogState.isOpen}
+                tittle={dialogState.tittle}
+                message={dialogState.message}
+                img={dialogState.img}
+                onConfirm={dialogState.onConfirm}
+                onCancel={() => cerrarDialogo()}
+            />
         </div>
     );
 

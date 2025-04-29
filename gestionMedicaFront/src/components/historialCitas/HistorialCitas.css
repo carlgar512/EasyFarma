@@ -13,8 +13,6 @@
     width: 100%;
     height: auto;
     min-height: 90%;
-    margin-top: 30px;
-    margin-top: 30px;
     justify-content: space-between;
     align-items: center;
 }
@@ -243,4 +241,28 @@
  {
     transform: scale(1.02);
     transition: 0.3s ease-in-out;
+}
+
+.buttonContainerCitas {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+   
+}
+
+.buttonTextCitasArchivados{
+   font-weight:  bold;
+   display: flex;
+   justify-content: center;
+   width: 80%;
+}
+
+.buttonCitasArchivadas{
+    --background: var(--ion-color-customYellow);
+    color: black;
+    width: 90%;
+    max-width: 1000px;
 }

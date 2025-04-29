@@ -1,6 +1,6 @@
 // src/services/backendService.ts
 
-import { InfoUserDTO, LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
+import { CitaDTO, InfoUserDTO, LoginDTO, RegisterDTO } from "../shared/interfaces/frontDTO";
 import { signInWithEmailAndPassword, updateEmail } from "firebase/auth";
 import { auth } from "./firebaseConfig"; // Asegúrate de que este path es correcto
 import { MapaFiltrosResponse } from "../components/buscaMedico/BuscaMedicoInterfaces";
@@ -420,6 +420,90 @@ const obtenerMapaFiltros = async () :Promise<MapaFiltrosResponse> => {
       throw new Error(data.message || "Error al guardar la cita");
     }
   };
+
+
+  const getCitasActuales = async (idUsuario: string): Promise<any[]> => {
+    const response = await fetch(`${BASE_URL}/obtenerCitasPendientesUsuario?idUsuario=${idUsuario}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener las citas actuales");
+    }
+  
+    return data.citas;
+  };
+  
+  const getCitasArchivados = async (idUsuario: string): Promise<any[]> => {
+    const response = await fetch(`${BASE_URL}/obtenerCitasArchivadasUsuario?idUsuario=${idUsuario}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener las citas archivadas");
+    }
+  
+    return data.citas;
+  };
+  
+  const getCitasAll = async (idUsuario: string): Promise<any[]> => {
+    const response = await fetch(`${BASE_URL}/obtenerCitasNoArchivadasUsuario?idUsuario=${idUsuario}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener todas las citas");
+    }
+  
+    return data.citas;
+  };
+  
+  const actualizarCita = async (citaActualizada: CitaDTO): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/actualizarCita?idCita=${citaActualizada.uid}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(citaActualizada),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al actualizar la cita");
+    }
+  };
+  
+  const eliminarCitaPorId = async (idCita: string): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/eliminarCitaPorId?idCita=${idCita}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al eliminar la cita");
+    }
+  };
+  
   
 export const backendService = {
     register,
@@ -441,6 +525,11 @@ export const backendService = {
     obtenerMapaFiltros,
     obtenerAgendasMedico,
     actualizarHorariosAgenda,
-    guardarCita
+    guardarCita,
+    getCitasActuales,
+    getCitasArchivados,
+    getCitasAll,
+    actualizarCita,
+    eliminarCitaPorId
 };
 

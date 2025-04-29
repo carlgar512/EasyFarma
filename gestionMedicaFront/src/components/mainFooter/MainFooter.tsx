@@ -13,7 +13,7 @@ const MainFooter: React.FC = () => {
                 history.push('/principal');
                 break;
             case 'citas':
-               history.push('/appointment-history');
+               history.push('/appointment-history?tipo=actuales');
                 break;
             case 'medicos':
                 history.push('/favorite-doctors');
