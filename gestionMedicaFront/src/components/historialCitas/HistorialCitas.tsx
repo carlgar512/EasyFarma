@@ -231,6 +231,8 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
 
     const puedeArchivar = cita.estadoCita === "Completada" || cita.estadoCita === "Cancelada";
     const puedeEliminar = cita.estadoCita === "Cancelada";
+    const history = useHistory();
+
 
     const [toast, setToast] = useState({
         show: false,
@@ -293,7 +295,7 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
                 ...cita,
                 archivado: false,
             };
-    
+
             await backendService.actualizarCita(citaActualizada);
             setToast({
                 show: true,
@@ -320,7 +322,7 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
                 ...cita,
                 archivado: true,
             };
-    
+
             await backendService.actualizarCita(citaActualizada);
             setToast({
                 show: true,
@@ -364,8 +366,12 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
         }
 
     };
-    const onVerDetalle = () => {
 
+    const onVerDetalle = () => {
+        history.push({
+            pathname: "/appointment-detail",
+            state: { cita }, // 👈 aquí mandamos el tratamiento
+        });
     };
 
     return (

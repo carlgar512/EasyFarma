@@ -352,7 +352,7 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
 }
 
 
-const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
+export const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
     isOpen,
     onClose,
     ubicacion,

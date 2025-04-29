@@ -22,7 +22,7 @@ const DetalleTratamientoWrapper: React.FC = () => {
 
     if (!tratamiento) {
         // 🔙 Si se accede sin datos, redirige o muestra mensaje
-        return <Redirect to="/treatment-history" />;
+        return <Redirect to="/treatment-history?tipo=todos" />;
     }
 
     return <DetalleTratamiento tratamiento={tratamiento} />;
@@ -172,7 +172,7 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
 
     const history = useHistory();
     const handleVolver = () => {
-        history.replace("/treatment-history");
+        history.goBack()
     };
 
     const handleGeneraPDFConfirmacion = () => {
@@ -231,7 +231,7 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                         <div className="contenedorDeTratamiento">
                             <div className="cabeceraDT">
                                 <span className="tituloDT">
-                                    Tratamiento 1
+                                    Tratamiento
                                 </span>
                                 {!tratamientoCompleto.estado && !tratamientoCompleto.archivado && (
                                     <IonButton
