@@ -6,7 +6,7 @@
 }
 
 .contentDetalleCita {
-    --background: var(--ion-color-VerdePastel);
+    --background: var(--ion-color-VerdePastel)!important;
 }
 
 .cabeceraDC {
@@ -99,6 +99,8 @@
     align-content: center;
     flex-direction: column;
     gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .TextTittleDC {
@@ -109,7 +111,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 10px;
+
 }
 
 .lineaSepDC {
@@ -165,6 +167,14 @@
     max-width: 1000px;
     flex-direction: column;
     gap: 10px;
+    padding: 20px;
+    background-color: #ffffff;
+    /* Fondo blanco puro para más contraste */
+    border: 1px solid #e0e0e0;
+    /* Borde ligero para separar del fondo */
+    border-radius: 16px;
+    /* Bordes un poco más redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .detalleContainerDCTop {

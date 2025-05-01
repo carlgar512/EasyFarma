@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { AgendaCitaProps, DetalleMedicoProps, ModalUbicacionProps } from "./DetalleMedicoInterfaces";
 import React, { useEffect, useState } from "react";
 import { AgendaMedicaDTO, CentroDTO, EspecialidadDTO, InfoUserDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
@@ -20,16 +20,15 @@ const DetalleMedicoWrapper: React.FC = () => {
         medico: MedicoDTO;
         centro: CentroDTO;
         especialidad: EspecialidadDTO;
-        isFavorito: boolean;
         seccionAgendarCita: boolean;
     }>();
 
-    const { medico, centro, especialidad, isFavorito, seccionAgendarCita } = location.state || {};
+    const { medico, centro, especialidad, seccionAgendarCita } = location.state || {};
 
-    return <DetalleMedico medico={medico} centro={centro} especialidad={especialidad} isFavorito={isFavorito} seccionAgendarCita={seccionAgendarCita} />;
+    return <DetalleMedico medico={medico} centro={centro} especialidad={especialidad} seccionAgendarCita={seccionAgendarCita} />;
 };
 
-const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especialidad, isFavorito, seccionAgendarCita }) => {
+const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especialidad, seccionAgendarCita }) => {
 
     const [toast, setToast] = useState({
         show: false,
@@ -39,10 +38,15 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
     });
     const [loading, setLoading] = useState<boolean>(false);
     const [agendas, setAgendas] = useState<AgendaMedicaDTO[]>([]);
+    const [medicoState, setMedico] = useState<MedicoDTO>(medico);
+    const [centroState, setCentro] = useState<CentroDTO>(centro);
+    const [especialidadState, setEspecialidad] = useState<EspecialidadDTO>(especialidad);
+
     const { userData, setUserData } = useUser();
     const [modalUbicacionAbierto, setModalUbicacionAbierto] = useState(false);
     const [seccionAgendarCitaState, setSeccionAgendarCita] = useState(seccionAgendarCita);
-    const [isFavoritoState, setIsFavorito] = useState<boolean>(isFavorito);
+
+    const [isFavoritoState, setIsFavorito] = useState<boolean>();
 
     const [dialogState, setDialogState] = useState({
         isOpen: false,
@@ -63,11 +67,18 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
     };
 
     useEffect(() => {
+        if (userData?.medicosFavoritos && medicoState?.uid) {
+            setIsFavorito(userData.medicosFavoritos.includes(medicoState.uid));
+        }
+    }, [userData, medicoState]);
+
+    useEffect(() => {
+        if (!medicoState?.uid) return;
         const cargarAgendas = async () => {
             try {
                 setLoading(true);
-                if (medico && medico.uid) { // 🔥 Comprobamos que medico exista
-                    const agendasData = await backendService.obtenerAgendasMedico(medico.uid);
+                if (medicoState && medicoState.uid) {
+                    const agendasData = await backendService.obtenerAgendasMedico(medicoState.uid);
                     setAgendas(agendasData);
                 }
             } catch (error: any) {
@@ -82,14 +93,17 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
             }
         };
 
-        if (medico && medico.uid) {  // 🔥 Nuevo chequeo aquí también
+        if (medicoState && medicoState.uid) {  // 🔥 Nuevo chequeo aquí también
             cargarAgendas();
         }
-    }, [medico]);
+    }, []);
 
-    // TODO arrglar esto se va a otras paginas que no es la anterior
+    const history = useHistory();
+
     const handleVolver = () => {
-        window.history.back();
+        history.replace("./search-doctor");
+        window.location.reload();
+
     };
 
     const handleLlamarCentro = () => {
@@ -105,8 +119,8 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
             return;
         }
 
-        if (centro.telefono) {
-            window.location.href = `tel:${centro.telefono}`;
+        if (centroState.telefono) {
+            window.location.href = `tel:${centroState.telefono}`;
         }
     };
 
@@ -128,7 +142,7 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
             setDialogState({
                 isOpen: true,
                 tittle: "Eliminar médico de favoritos",
-                message: `¿Está seguro de que desea eliminar a ${medico.nombreMedico} ${medico.apellidosMedico} de sus médicos favoritos? Podrá volver a agregarlo en cualquier momento.`,
+                message: `¿Está seguro de que desea eliminar a ${medicoState.nombreMedico} ${medicoState.apellidosMedico} de sus médicos favoritos? Podrá volver a agregarlo en cualquier momento.`,
                 img: "moveCollection.svg",
                 onConfirm: () => {
                     onFavoritoClick();
@@ -148,15 +162,15 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         let nuevosFavoritos: string[];
         let mensajeToast = "";
 
-        if (userData.medicosFavoritos.includes(medico.uid)) {
-            mensajeToast = `${medico.nombreMedico} ${medico.apellidosMedico} eliminado de favoritos`;
+        if (userData.medicosFavoritos.includes(medicoState.uid)) {
+            mensajeToast = `${medicoState.nombreMedico} ${medicoState.apellidosMedico} eliminado de favoritos`;
             // Si ya es favorito, lo quitamos
-            nuevosFavoritos = userData.medicosFavoritos.filter(uid => uid !== medico.uid);
+            nuevosFavoritos = userData.medicosFavoritos.filter(uid => uid !== medicoState.uid);
             setIsFavorito(false);
         } else {
-            mensajeToast = `${medico.nombreMedico} ${medico.apellidosMedico} añadido a favoritos`;
+            mensajeToast = `${medicoState.nombreMedico} ${medicoState.apellidosMedico} añadido a favoritos`;
             // Si no es favorito, lo agregamos
-            nuevosFavoritos = [...userData.medicosFavoritos, medico.uid];
+            nuevosFavoritos = [...userData.medicosFavoritos, medicoState.uid];
             setIsFavorito(true);
         }
 
@@ -166,7 +180,9 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         };
 
         try {
+            setLoading(true);
             await backendService.updateUserInfo(updatedUser);
+
             setUserData(updatedUser);
             setToast({
                 show: true,
@@ -174,6 +190,7 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                 color: "success",
                 icon: checkmarkOutline,
             });
+
         } catch (error) {
 
             setToast({
@@ -183,6 +200,9 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                 icon: alertCircleOutline,
             });
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -190,18 +210,18 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle={"Detalle de Médico"} />
-                {medico ? (
+                {!loading ? (
                     <IonContent fullscreen className="ion-padding contentDetalleMedico">
                         <div className="centralDetalleMedico">
 
                             <div className="topBarDetalleMedico">
                                 <div className="avatarMedico">
                                     <span className="letrasAvatar">
-                                        {medico.nombreMedico.charAt(0)}
-                                        {medico.apellidosMedico.charAt(0)}
+                                        {medicoState.nombreMedico.charAt(0)}
+                                        {medicoState.apellidosMedico.charAt(0)}
                                     </span>
                                 </div>
-                                <span className="nameTitleDM">{medico.nombreMedico + " " + medico.apellidosMedico}</span>
+                                <span className="nameTitleDM">{medicoState.nombreMedico + " " + medicoState.apellidosMedico}</span>
                                 <IonButton
                                     fill="clear"
                                     onClick={onFavoritoDobleCheck}
@@ -231,19 +251,19 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 <div className="contentItemDM">
                                     <IonIcon icon={schoolOutline} size="large" slot="icon-only" />
                                     <span className="campoTitle">Especialidad: </span>
-                                    <span>{mostrarDato(especialidad?.nombre)}</span>
+                                    <span>{mostrarDato(especialidadState?.nombre)}</span>
                                 </div>
 
                                 <div className="contentItemDM">
                                     <IonIcon icon={businessOutline} size="large" slot="icon-only" />
                                     <span className="campoTitle">Centro: </span>
-                                    <span>{mostrarDato(centro?.nombreCentro)}</span>
+                                    <span>{mostrarDato(centroState?.nombreCentro)}</span>
                                 </div>
                                 <div className="contentItemDM">
                                     <IonIcon icon={callOutline} size="large" slot="icon-only" />
                                     <span className="campoTitle">Teléfono: </span>
-                                    <span>{mostrarDato(centro?.telefono)}</span>
-                                    {centro?.telefono && (
+                                    <span>{mostrarDato(centroState?.telefono)}</span>
+                                    {centroState?.telefono && (
                                         <IonButton className="buttonActionDM" onClick={() => handleLlamarCentro()}>
                                             <IonIcon icon={callOutline} size="large" slot="icon-only" />
                                             <span className="buttonTextDM">Llamar</span>
@@ -253,8 +273,8 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 <div className="contentItemDM">
                                     <IonIcon icon={locationOutline} size="large" slot="icon-only" />
                                     <span className="campoTitle">Ubicación: </span>
-                                    <span>{mostrarDato(centro?.ubicacion)}</span>
-                                    {centro?.ubicacion && (
+                                    <span>{mostrarDato(centroState?.ubicacion)}</span>
+                                    {centroState?.ubicacion && (
                                         <IonButton className="buttonActionDM" onClick={() => setModalUbicacionAbierto(true)}>
                                             <IonIcon icon={mapOutline} size="large" slot="icon-only" />
                                             <span className="buttonTextDM">Ver en el mapa</span>
@@ -264,7 +284,7 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 <div className="contentItemDM">
                                     <IonIcon icon={pinOutline} size="large" slot="icon-only" />
                                     <span className="campoTitle">Provincia: </span>
-                                    <span>{mostrarDato(centro?.provincia)}</span>
+                                    <span>{mostrarDato(centroState?.provincia)}</span>
                                 </div>
 
                             </div>
@@ -273,7 +293,7 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                                 <AgendaCita
                                     setSeccionAgendarCita={setSeccionAgendarCita}
                                     agendas={agendas}
-                                    medico={medico} />
+                                    medico={medicoState} />
                             }
 
                             <div className="buttonContainerMedico">
@@ -344,8 +364,8 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                 onConfirm={dialogState.onConfirm}
                 onCancel={() => cerrarDialogo()}
             />
-            {centro && centro.ubicacion &&
-                <ModalUbicacion isOpen={modalUbicacionAbierto} ubicacion={centro.ubicacion} onClose={() => setModalUbicacionAbierto(false)} />
+            {centroState && centroState.ubicacion &&
+                <ModalUbicacion isOpen={modalUbicacionAbierto} ubicacion={centroState.ubicacion} onClose={() => setModalUbicacionAbierto(false)} />
             }
         </>
     );
@@ -381,7 +401,7 @@ export const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
 };
 
 
-const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas, medico
+export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas, medico
 }) => {
     const [diasDisponibles, setDiasDisponibles] = useState<string[]>([]);
 
@@ -427,6 +447,20 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas,
             onConfirm: () => { },
         });
     };
+
+    const [citaOriginal, setCitaOriginal] = useState<{ uid: string, fecha: string, hora: string } | undefined>(undefined);
+
+    useEffect(() => {
+        const citaGuardada = sessionStorage.getItem("citaOriginal");
+        if (citaGuardada) {
+            try {
+                setCitaOriginal(JSON.parse(citaGuardada));
+            } catch {
+                setCitaOriginal(undefined);
+            }
+            sessionStorage.removeItem("citaOriginal"); // Limpieza para evitar efectos secundarios
+        }
+    }, []);
 
     const [toast, setToast] = useState({
         show: false,
@@ -509,6 +543,7 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas,
         setAgendaSeleccionada(null);
         setHorariosDisponibles([]);
     };
+    const history = useHistory();
 
     const onAgendarNuevaCita = async () => {
         if (!agendaSeleccionada || !horarioSeleccionado) {
@@ -521,16 +556,27 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas,
             return;
         }
         try {
-            // 🔹 Primero actualizar horarios
-            const nuevosHorarios = {
-                ...agendaSeleccionada.horarios,
-                [horarioSeleccionado]: false, // Marcamos el horario como ocupado
-            };
 
-            await backendService.actualizarHorariosAgenda(agendaSeleccionada.uid, nuevosHorarios);
+            await backendService.actualizarHorariosAgenda(agendaSeleccionada.uid, false, horarioSeleccionado);
 
             // 🔹 Luego guardar la cita
             await backendService.guardarCita(userData!.uid, agendaSeleccionada.idMedico, agendaSeleccionada.fecha, horarioSeleccionado);
+
+            // 🔹 Si hay una cita anterior, eliminarla
+            if (citaOriginal?.uid) {
+                try {
+                    await backendService.eliminarCitaPorId(citaOriginal.uid);
+                    await backendService.liberarHorario(medico.uid, citaOriginal.fecha, citaOriginal.hora);                
+                } catch (err) {
+                    console.warn("No se pudo eliminar la cita anterior", err);
+                    setToast({
+                        show: true,
+                        message: "La nueva cita fue creada, pero no se pudo eliminar la anterior.",
+                        color: "warning",
+                        icon: alertCircleOutline,
+                    });
+                }
+            }
 
             // 🔹 Mostrar toast de éxito
             setToast({
@@ -545,19 +591,30 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas,
             setTimeout(() => {
                 setSeccionAgendarCita(false);
             }, 2000); // Espera 2 segundos (2000 ms)
-            window.location.reload();
 
+            if (citaOriginal?.uid) {
+                history.replace('./appointment-history?tipo=todos');
+                window.location.reload();
+            } else {
+                window.location.reload();
+            }
 
         } catch (error: any) {
+            const mensaje = error.message || "";
+            const esConflicto = mensaje.includes("ya no está disponible");
 
             setToast({
                 show: true,
-                message: error.message || "Error inesperado al agendar cita.",
+                message: esConflicto
+                  ? "Este horario ya ha sido reservado por otro usuario. Recarga la página para ver los horarios disponibles actualizados."
+                  : mensaje || "Error inesperado al agendar cita.",
                 color: "danger",
                 icon: alertCircleOutline,
-            });
-        }
+              });
 
+            return;
+
+        }
     }
 
     const cancelarAgendarCita = () => {
@@ -576,9 +633,15 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas,
     return (
         <div className="agendaCitaContainer">
             <div className="titleContainerAC">
-                <h2 className="agendaCitaTitle">Agendar nueva cita</h2>
+                <h2 className="agendaCitaTitle">Agendar cita</h2>
                 <hr className="barraSeparacionAC" />
             </div>
+            {citaOriginal && (
+                <div className="modificacionBanner">
+                    <IonIcon icon={alertCircleOutline} style={{ marginRight: 8 }} />
+                    Estás modificando una cita existente. La anterior será eliminada al confirmar esta nueva.
+                </div>
+            )}
 
             <div className="form-itemAC">
                 <label className="form-labelAC">Fecha:</label>
@@ -589,44 +652,55 @@ const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas,
                     {fechaCita !== "" ? formatFechaCita(fechaCita) : "Seleccione una fecha disponible"}
                 </span>
 
-                <IonButton onClick={openCalendar} className="calendarButtonAC">
+                <IonButton onClick={openCalendar} className="calendarButtonAC" disabled={diasDisponibles.length === 0}>
                     <IonIcon icon={calendarNumberOutline} size="large" slot="icon-only" />
                 </IonButton>
-                <IonModal isOpen={isOpenCalendar} onDidDismiss={closeCalendar}>
-                    <IonHeader>
-                        <div className="topBarModalAC">
-                            <div className="left-contentAC">
-                                <IonIcon
-                                    icon={calendarNumberOutline}
-                                    size="large"
-                                    slot="icon-only"
-                                />
-                                <span className="modalTitleAC">Calendario</span>
+                {diasDisponibles.length > 0 && (
+                    <IonModal isOpen={isOpenCalendar} onDidDismiss={closeCalendar}>
+                        <IonHeader>
+                            <div className="topBarModalAC">
+                                <div className="left-contentAC">
+                                    <IonIcon
+                                        icon={calendarNumberOutline}
+                                        size="large"
+                                        slot="icon-only"
+                                    />
+                                    <span className="modalTitleAC">Calendario</span>
+                                </div>
+                                <IonButton className="leaveCalendarButtonAC" onClick={closeCalendar}>
+                                    Cerrar
+                                </IonButton>
                             </div>
-                            <IonButton className="leaveCalendarButtonAC" onClick={closeCalendar}>
-                                Cerrar
-                            </IonButton>
-                        </div>
-                    </IonHeader>
-                    <div className="contentAC">
-                        <IonDatetime
-                            className="calendarCitas"
-                            color={"success"}
-                            size="fixed"
-                            name="fechaCita"
-                            presentation="date"
-                            value={fechaCita}
-                            onIonChange={(e) => handleChangeDate(e)}
-                            min={minDate}
-                            max={maxDate}
-                            isDateEnabled={(dateString) => diasDisponibles.includes(dateString)}
-                            highlightedDates={highlightedDates}
-                        >
+                        </IonHeader>
+                        <div className="contentAC">
+                            <IonDatetime
+                                className="calendarCitas"
+                                color={"success"}
+                                size="fixed"
+                                name="fechaCita"
+                                presentation="date"
+                                value={fechaCita}
+                                onIonChange={(e) => handleChangeDate(e)}
+                                min={minDate}
+                                max={maxDate}
+                                isDateEnabled={(dateString) => diasDisponibles.includes(dateString)}
+                                highlightedDates={highlightedDates}
+                            >
 
-                        </IonDatetime>
-                    </div>
-                </IonModal>
+                            </IonDatetime>
+                        </div>
+                    </IonModal>
+                )}
+
             </div>
+            {diasDisponibles.length === 0 && (
+                <div className="noDisponibilidadMensaje">
+                    <IonIcon icon={warningOutline} className="warningIcon" />
+                    <span>
+                        Este médico no dispone de agenda para los próximos 2 meses. Si desea una cita, busque otro especialista con disponibilidad.
+                    </span>
+                </div>
+            )}
 
             <div className="horariosDisponiblesContainerAC">
                 <div className="titleContainerAC">

@@ -346,165 +346,197 @@ const generarPdfCifradoTratamiento = async (dni: string, idTratamiento: string) 
     return data;
 };
 
-const obtenerMapaFiltros = async () :Promise<MapaFiltrosResponse> => {
+const obtenerMapaFiltros = async (): Promise<MapaFiltrosResponse> => {
     const response = await fetch(`${BASE_URL}/mapaFiltros`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al obtener el mapa de filtros");
+        throw new Error(data.message || "Error al obtener el mapa de filtros");
     }
-  
+
     return data.data; // contiene { mapa, medicos, centros, especialidades }
-  };
-  
-  const obtenerAgendasMedico = async (idMedico: string): Promise<any[]> => {
+};
+
+const obtenerAgendasMedico = async (idMedico: string): Promise<any[]> => {
     const response = await fetch(`${BASE_URL}/getAgendasMedico?idMedico=${idMedico}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al obtener las agendas médicas del médico");
+        throw new Error(data.message || "Error al obtener las agendas médicas del médico");
     }
-  
+
     return data.agendas; // depende de cómo lo devuelvas en back, podría ser data.data.agendas
-  };
+};
 
-  const actualizarHorariosAgenda = async (idAgenda: string, nuevosHorarios: Record<string, boolean>): Promise<void> => {
+const actualizarHorariosAgenda = async (idAgenda: string, nuevoEstado: boolean, horarioActualizar: string): Promise<void> => {
     const response = await fetch(`${BASE_URL}/actualizarHorariosAgenda?idAgenda=${idAgenda}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(nuevosHorarios),
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ nuevoEstado, horarioActualizar }),
     });
-  
-    const data = await response.json();
-  
-    if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al actualizar los horarios de la agenda médica");
-    }
-  };
 
-  const guardarCita = async (idUsuario: string, idMedico: string, fechaCita: string, horaCita: string): Promise<void> => {
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Error al actualizar los horarios de la agenda médica");
+    }
+};
+
+const guardarCita = async (idUsuario: string, idMedico: string, fechaCita: string, horaCita: string): Promise<void> => {
     const citaData = {
-      fechaCita,
-      horaCita,
-      estadoCita: "Pendiente", // Estado inicial
-      archivado: false,         // No archivada al crearla
-      idUsuario,
-      idMedico
+        fechaCita,
+        horaCita,
+        estadoCita: "Pendiente", // Estado inicial
+        archivado: false,         // No archivada al crearla
+        idUsuario,
+        idMedico
     };
-  
+
     const response = await fetch(`${BASE_URL}/guardarCita`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(citaData),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(citaData),
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al guardar la cita");
+        throw new Error(data.message || "Error al guardar la cita");
     }
-  };
+};
 
 
-  const getCitasActuales = async (idUsuario: string): Promise<any[]> => {
+const getCitasActuales = async (idUsuario: string): Promise<any[]> => {
     const response = await fetch(`${BASE_URL}/obtenerCitasPendientesUsuario?idUsuario=${idUsuario}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al obtener las citas actuales");
+        throw new Error(data.message || "Error al obtener las citas actuales");
     }
-  
+
     return data.citas;
-  };
-  
-  const getCitasArchivados = async (idUsuario: string): Promise<any[]> => {
+};
+
+const getCitasArchivados = async (idUsuario: string): Promise<any[]> => {
     const response = await fetch(`${BASE_URL}/obtenerCitasArchivadasUsuario?idUsuario=${idUsuario}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al obtener las citas archivadas");
+        throw new Error(data.message || "Error al obtener las citas archivadas");
     }
-  
+
     return data.citas;
-  };
-  
-  const getCitasAll = async (idUsuario: string): Promise<any[]> => {
+};
+
+const getCitasAll = async (idUsuario: string): Promise<any[]> => {
     const response = await fetch(`${BASE_URL}/obtenerCitasNoArchivadasUsuario?idUsuario=${idUsuario}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al obtener todas las citas");
+        throw new Error(data.message || "Error al obtener todas las citas");
     }
-  
+
     return data.citas;
-  };
-  
-  const actualizarCita = async (citaActualizada: CitaDTO): Promise<void> => {
+};
+
+const actualizarCita = async (citaActualizada: CitaDTO): Promise<void> => {
     const response = await fetch(`${BASE_URL}/actualizarCita?idCita=${citaActualizada.uid}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(citaActualizada),
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(citaActualizada),
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al actualizar la cita");
+        throw new Error(data.message || "Error al actualizar la cita");
     }
-  };
-  
-  const eliminarCitaPorId = async (idCita: string): Promise<void> => {
+};
+
+const eliminarCitaPorId = async (idCita: string): Promise<void> => {
     const response = await fetch(`${BASE_URL}/eliminarCitaPorId?idCita=${idCita}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al eliminar la cita");
+        throw new Error(data.message || "Error al eliminar la cita");
     }
-  };
-  
-  
+};
+
+const obtenerInfoMedicoPorId = async (idMedico: string): Promise<any> => {
+    const response = await fetch(`${BASE_URL}/getInfoMedico?idMedico=${idMedico}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Error al obtener la información del médico");
+    }
+
+    return data.data; // Contiene: { medico, centro, especialidad }
+};
+
+const liberarHorario = async (idMedico: string, fecha: string, horario: string): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/liberarHorario`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idMedico, fecha, horario }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+        throw new Error(data.message || "Error al liberar el horario");
+    }
+};
+
 export const backendService = {
     register,
     login,
@@ -530,6 +562,8 @@ export const backendService = {
     getCitasArchivados,
     getCitasAll,
     actualizarCita,
-    eliminarCitaPorId
+    eliminarCitaPorId,
+    obtenerInfoMedicoPorId,
+    liberarHorario
 };
 

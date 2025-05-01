@@ -22,6 +22,7 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
     const { userData, setUserData } = useUser();
     const [isFavorito, setIsFavorito] = useState<boolean>(esFavorito);
 
+
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -29,32 +30,32 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
         icon: checkmarkOutline,
     });
 
-     const cerrarDialogo = () => {
-            setDialogState({
-                isOpen: false,
-                tittle: "",
-                message: "",
-                img: "",
-                onConfirm: () => { },
-            });
-        };
-    
-        const [dialogState, setDialogState] = useState({
+    const cerrarDialogo = () => {
+        setDialogState({
             isOpen: false,
             tittle: "",
             message: "",
             img: "",
             onConfirm: () => { },
         });
+    };
 
-        const onFavoritoDobleCheck = () => {
-            if (!userData || !userData.medicosFavoritos) return;
-          
-            const yaEsFavorito = userData.medicosFavoritos.includes(medico.uid);
-          
-            if (yaEsFavorito) {
-              // Si ya es favorito, pedimos confirmación para eliminar
-              setDialogState({
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+    const onFavoritoDobleCheck = () => {
+        if (!userData || !userData.medicosFavoritos) return;
+
+        const yaEsFavorito = userData.medicosFavoritos.includes(medico.uid);
+
+        if (yaEsFavorito) {
+            // Si ya es favorito, pedimos confirmación para eliminar
+            setDialogState({
                 isOpen: true,
                 tittle: "Eliminar médico de favoritos",
                 message: `¿Está seguro de que desea eliminar a ${medico.nombreMedico} ${medico.apellidosMedico} de sus médicos favoritos? Podrá volver a agregarlo en cualquier momento.`,
@@ -62,14 +63,14 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
                 onConfirm: () => {
                     onFavoritoClick();
                     cerrarDialogo();
-                  }
-              });
-              
-            } else {
-              // Si no es favorito, lo añadimos directamente
-              onFavoritoClick();
-            }
-          };
+                }
+            });
+
+        } else {
+            // Si no es favorito, lo añadimos directamente
+            onFavoritoClick();
+        }
+    };
 
     const onFavoritoClick = async () => {
         if (!userData || !userData.medicosFavoritos) return;
@@ -83,7 +84,7 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
             nuevosFavoritos = userData.medicosFavoritos.filter(uid => uid !== medico.uid);
             setIsFavorito(false);
         } else {
-            mensajeToast =`${medico.nombreMedico} ${medico.apellidosMedico} añadido a favoritos`;
+            mensajeToast = `${medico.nombreMedico} ${medico.apellidosMedico} añadido a favoritos`;
             // Si no es favorito, lo agregamos
             nuevosFavoritos = [...userData.medicosFavoritos, medico.uid];
             setIsFavorito(true);
@@ -102,25 +103,23 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
                 message: mensajeToast,
                 color: "success",
                 icon: checkmarkOutline,
-              });
+            });
         } catch (error) {
-            
+
             setToast({
                 show: true,
                 message: "Error al actualizar favorito",
                 color: "danger",
                 icon: alertCircleOutline,
-              });
+            });
         }
     };
 
     const onVerDetalleClick = () => {
-
         history.push("/doctor-detail", {
             medico,
             centro,
             especialidad,
-            isFavorito,
             seccionAgendarCita: false
         });
     };
@@ -131,7 +130,6 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
             medico,
             centro,
             especialidad,
-            isFavorito,
             seccionAgendarCita: true
         });
     };
@@ -161,7 +159,7 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
                 <IonButton
                     fill="clear"
                     size="small"
-                    onClick={()=> onFavoritoDobleCheck()}
+                    onClick={() => onFavoritoDobleCheck()}
                     className="favorito-boton"
                 >
                     <IonIcon icon={isFavorito ? star : starOutline} />
@@ -196,7 +194,7 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
                 show={toast.show}
                 onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
-             <DobleConfirmacion
+            <DobleConfirmacion
                 isOpen={dialogState.isOpen}
                 tittle={dialogState.tittle}
                 message={dialogState.message}

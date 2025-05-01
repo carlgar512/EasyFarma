@@ -435,3 +435,55 @@
 .calendarCitas::part(calendar-day) {
     color: var(--ion-color-customRed);
 }
+
+.contenedorDeMedicoSpinner {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.spinnerContainerDM {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.textSpinnerMedico {
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+}
+
+.modificacionBanner {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    border: 1px solid #ffeeba;
+  }
+
+  .noDisponibilidadMensaje {
+    display: flex;
+    align-items: center;
+    background-color: #fff3cd; /* amarillo suave */
+    border: 1px solid #ffeeba;
+    color: #856404; /* marrón oscuro para contraste */
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    margin-top: 12px;
+    line-height: 1.4;
+  }
+  
+  .warningIcon {
+    margin-right: 10px;
+    font-size: 22px;
+    flex-shrink: 0;
+  }

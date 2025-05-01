@@ -19,6 +19,7 @@ const HistorialCitas: React.FC = () => {
 
     const location = useLocation();
     const history = useHistory();
+  
 
     // 🔍 Leer tipo desde la URL
     const searchParams = new URLSearchParams(location.search);
@@ -114,6 +115,7 @@ const HistorialCitas: React.FC = () => {
         paginaActual * tratamientosPorPagina
     );
 
+  
     return (
         <>
             <SideMenu />
@@ -169,7 +171,6 @@ const HistorialCitas: React.FC = () => {
                                             key={index}
                                             index={(paginaActual - 1) * tratamientosPorPagina + index + 1}
                                             onActualizar={fetchCitas}
-
                                         />
                                     ))}
 
@@ -290,6 +291,7 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
     };
 
     const onDesarchivar = async () => {
+        cerrarDialogo();
         try {
             const citaActualizada: CitaDTO = {
                 ...cita,
@@ -317,6 +319,7 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
 
     };
     const onArchivar = async () => {
+        cerrarDialogo();
         try {
             const citaActualizada: CitaDTO = {
                 ...cita,
@@ -345,6 +348,7 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
     };
 
     const onEliminar = async () => {
+        cerrarDialogo();
         try {
             await backendService.eliminarCitaPorId(cita.uid);
             setToast({
@@ -373,6 +377,12 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
             state: { cita }, // 👈 aquí mandamos el tratamiento
         });
     };
+
+    function obtenerAntesDelGuion(horario: string): string {
+        const partes = horario.split("-");
+        return partes[0].trim();
+    }
+
 
     return (
         <div className="cita-card">
@@ -422,7 +432,7 @@ const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
                     </div>
                     <div className="cita-hora">
                         <IonIcon size="large" icon={timeOutline} />
-                        <span>{cita.horaCita}</span>
+                        <span>{obtenerAntesDelGuion(cita.horaCita)}</span>
                     </div>
                 </div>
                 <div className="verDetalleContainer">

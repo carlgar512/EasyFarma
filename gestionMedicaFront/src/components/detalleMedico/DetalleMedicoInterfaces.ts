@@ -5,7 +5,6 @@ export interface DetalleMedicoProps {
     medico: MedicoDTO,
     centro: CentroDTO,
     especialidad: EspecialidadDTO,
-    isFavorito:boolean,
     seccionAgendarCita:boolean
 }
 

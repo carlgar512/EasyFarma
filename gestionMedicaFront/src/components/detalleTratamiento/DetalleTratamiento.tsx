@@ -74,7 +74,7 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
         if (tratamiento.uid) {
             fetchTratamientoCompleto();
         }
-    }, [tratamiento.uid, reloadTrigger]);
+    }, [reloadTrigger]);
 
 
     const cerrarDialogo = () => {

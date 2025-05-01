@@ -50,6 +50,7 @@ import {
     obtenerMedicamentosHandler
 } from "./presentacion/controllers/medicamentoController";
 import {
+    getInfoMedicoHandler,
     guardarMedicosHandler,
     mapaFiltrosHandler,
     obtenerMedicoPorIdHandler,
@@ -68,7 +69,8 @@ import {
     eliminarAgendasMedicoHandler,
     eliminarAgendaPorIdHandler,
     eliminarAgendasAntiguasHandler,
-    actualizarHorariosAgendaHandler
+    actualizarHorariosAgendaHandler,
+    liberarHorarioHandler
 } from "./presentacion/controllers/agendaMedicaController";
 import {
     actualizarCitaHandler,
@@ -140,6 +142,7 @@ export const guardarMedicos = guardarMedicosHandler;
 export const obtenerMedicos = obtenerMedicosHandler;
 export const obtenerMedicoPorId = obtenerMedicoPorIdHandler;
 export const mapaFiltros = mapaFiltrosHandler;
+export const getInfoMedico = getInfoMedicoHandler;
 
 // Exportación de funciones LineaTratamiento
 export const guardarLineasTratamiento = guardarLineasTratamientoHandler;
@@ -154,6 +157,7 @@ export const eliminarAgendasMedico = eliminarAgendasMedicoHandler;
 export const eliminarAgendaPorId = eliminarAgendaPorIdHandler;
 export const eliminarAgendasAntiguas = eliminarAgendasAntiguasHandler;
 export const actualizarHorariosAgenda = actualizarHorariosAgendaHandler;
+export const liberarHorario = liberarHorarioHandler;
 
 // Exportación de funciones Cita
 export const guardarCita = guardarCitaHandler;

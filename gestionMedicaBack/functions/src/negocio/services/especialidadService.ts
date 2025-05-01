@@ -1,5 +1,5 @@
 // 📁 especialidadService.ts
-import { saveEspecialidadToFirestore, getAllEspecialidadesFromFirestore } from "../../persistencia/repositorios/especialidadDAO";
+import { saveEspecialidadToFirestore, getAllEspecialidadesFromFirestore, getEspecialidadByIdFromFirestore } from "../../persistencia/repositorios/especialidadDAO";
 import { logger } from "../../presentacion/config/logger";
 import { Especialidad } from "../modelos/Especialidad";
 
@@ -33,4 +33,24 @@ export class EspecialidadService {
     logger.info(`✅ Se encontraron ${especialidades.length} especialidades.`);
     return especialidades;
   }
+
+  /**
+ * Obtiene una especialidad por su ID
+ */
+static async obtenerEspecialidadPorId(idEspecialidad: string): Promise<any> {
+  logger.info(`🔍 Obteniendo especialidad con ID: ${idEspecialidad}`);
+
+  const doc = await getEspecialidadByIdFromFirestore(idEspecialidad);
+
+  if (!doc) {
+    logger.warn(`⚠️ No se encontró especialidad con ID ${idEspecialidad}`);
+    return null;
+  }
+
+  const especialidad = Especialidad.fromFirestore(doc.id, doc).toFrontDTO();
+
+  logger.info(`✅ Especialidad "${especialidad.nombreEspecialidad}" encontrada.`);
+  return especialidad;
+}
+
 }

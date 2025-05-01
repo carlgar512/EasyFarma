@@ -65,14 +65,19 @@ export const getAgendasMedicasByMedicoId = async (idMedico: string) => {
 * @param uid UID de la agenda médica.
 * @param nuevosHorarios Objeto con los nuevos horarios.
 */
-export const updateAgendaMedicaHorarios = async (uid: string, nuevosHorarios: Record<string, boolean>) => {
+export const updateAgendaMedicaHorarios = async (
+    uid: string,
+    horario: string,
+    estado: boolean
+): Promise<void> => {
     try {
         await db.collection(COLLECTION_NAME).doc(uid).update({
-            horarios: nuevosHorarios
+            [`horarios.${horario}`]: estado,
         });
-        console.log(`✅ [DAO AgendaMedica] Horarios actualizados para la agenda ${uid}.`);
+
+        console.log(`✅ [DAO AgendaMedica] Horario '${horario}' actualizado a '${estado}' para la agenda ${uid}.`);
     } catch (error: any) {
-        console.error("❌ [DAO AgendaMedica] Error al actualizar horarios de la agenda médica:", error.message);
+        console.error("❌ [DAO AgendaMedica] Error al actualizar un horario de la agenda médica:", error.message);
         throw error;
     }
 };
@@ -144,28 +149,68 @@ export const deleteAllAgendasMedicas = async () => {
  */
 export const deleteAgendasAntiguasFromFirestore = async () => {
     try {
-      const hoy = new Date();
-      
-      const snapshot = await db.collection(COLLECTION_NAME).get();
-  
-      const batch = db.batch();
-      snapshot.docs.forEach(doc => {
-        const data = doc.data();
-        if (data.fecha) {
-          const partes = data.fecha.split("-"); // ["DD", "MM", "YYYY"]
-          const fechaAgenda = new Date(`${partes[2]}-${partes[1]}-${partes[0]}`); // "YYYY-MM-DD"
-  
-          if (fechaAgenda < hoy) {
-            batch.delete(doc.ref);
-          }
-        }
-      });
-  
-      await batch.commit();
-      console.log(`✅ [DAO AgendaMedica] Agendas médicas antiguas eliminadas correctamente.`);
+        const hoy = new Date();
+
+        const snapshot = await db.collection(COLLECTION_NAME).get();
+
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            if (data.fecha) {
+                const partes = data.fecha.split("-"); // ["DD", "MM", "YYYY"]
+                const fechaAgenda = new Date(`${partes[2]}-${partes[1]}-${partes[0]}`); // "YYYY-MM-DD"
+
+                if (fechaAgenda < hoy) {
+                    batch.delete(doc.ref);
+                }
+            }
+        });
+
+        await batch.commit();
+        console.log(`✅ [DAO AgendaMedica] Agendas médicas antiguas eliminadas correctamente.`);
     } catch (error: any) {
-      console.error("❌ [DAO AgendaMedica] Error al eliminar agendas antiguas:", error.message);
-      throw error;
+        console.error("❌ [DAO AgendaMedica] Error al eliminar agendas antiguas:", error.message);
+        throw error;
     }
-  };
-  
+};
+
+
+export const getAgendaMedicaById = async (idAgenda: string): Promise<any | null> => {
+    try {
+        const docRef = db.collection(COLLECTION_NAME).doc(idAgenda);
+        const docSnap = await docRef.get();
+
+        if (!docSnap.exists) {
+            console.warn(`⚠️ [DAO AgendaMedica] Agenda con ID '${idAgenda}' no encontrada.`);
+            return null;
+        }
+
+        return docSnap.data(); // Devuelves solo los datos planos
+    } catch (error: any) {
+        console.error(`❌ [DAO AgendaMedica] Error al obtener la agenda '${idAgenda}':`, error.message);
+        throw error;
+    }
+};
+
+
+
+export const getAgendaByMedicoYFecha = async (idMedico: string, fecha: string): Promise<{ uid: string; data: any } | null> => {
+    try {
+        const snapshot = await db.collection(COLLECTION_NAME)
+            .where("idMedico", "==", idMedico)
+            .where("fecha", "==", fecha)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) return null;
+
+        const doc = snapshot.docs[0];
+        return {
+            uid: doc.id,
+            data: doc.data(),
+        };
+    } catch (error) {
+        console.error("❌ [DAO AgendaMedica] Error al buscar agenda por médico y fecha:", error);
+        throw new Error("No se pudo recuperar la agenda médica.");
+    }
+};

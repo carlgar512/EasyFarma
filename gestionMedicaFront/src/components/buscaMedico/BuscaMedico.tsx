@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useUser } from "../../context/UserContext";
 import { alertCircleOutline, arrowBackOutline, checkmarkOutline, close, listOutline, removeCircleOutline, searchOutline, trashOutline } from "ionicons/icons";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonBadge, IonButton, IonContent, IonHeader, IonIcon,IonModal, IonPage, IonSpinner  } from "@ionic/react";
+import { IonBadge, IonButton, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import React from "react";
 import MainFooter from "../mainFooter/MainFooter";
@@ -11,15 +11,17 @@ import './BuscaMedico.css'
 import { useHistory } from "react-router-dom";
 import MedicoCard from "../medicoCard/MedicoCard";
 import Paginacion from "../paginacion/Paginacion";
-import {  MapaProvincias, ModalFiltrosProps, ProvinciaMapa } from "./BuscaMedicoInterfaces";
+import { MapaProvincias, ModalFiltrosProps, ProvinciaMapa } from "./BuscaMedicoInterfaces";
 import { backendService } from "../../services/backendService";
 import SelectConBuscador from "../selectConBuscador/SelectConBuscador";
 import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 
 
+
+
 const BuscaMedico: React.FC = () => {
     const history = useHistory();
-    const { userData } = useUser();
+    const { userData, rehidratarUser } = useUser();
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState({
         show: false,
@@ -27,6 +29,8 @@ const BuscaMedico: React.FC = () => {
         color: "success",
         icon: checkmarkOutline,
     });
+    const [userDataLocal, setUserDataLocal] = useState(userData);
+
 
     const [filtrosAplicados, setFiltrosAplicados] = useState({
         provincia: "",
@@ -42,10 +46,11 @@ const BuscaMedico: React.FC = () => {
     const [centros, setCentros] = useState<CentroDTO[]>([]);
     const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
     const [provincias, setProvincias] = useState<ProvinciaMapa>({});
-    
+
 
     const cargarDatos = async () => {
         try {
+            setLoading(true);
             const data = await backendService.obtenerMapaFiltros();
 
             setMapa(data.mapa);
@@ -71,11 +76,11 @@ const BuscaMedico: React.FC = () => {
         }
     };
 
-   
-    useEffect(() => { 
-        cargarDatos();
-    }, []);
-
+    useEffect(() => {
+          cargarDatos();
+          setUserDataLocal(userData);
+ 
+      }, []);
 
     const [paginaActual, setPaginaActual] = useState(1);
     const medicosPorPagina = 5;
@@ -222,8 +227,8 @@ const BuscaMedico: React.FC = () => {
                                             medico={medico}
                                             especialidad={especialidad}
                                             centro={centro}
-                                            provincia={centro?.provincia || "Provincia no disponible"} 
-                                            esFavorito={userData.medicosFavoritos.includes(medico.uid)}                                            
+                                            provincia={centro?.provincia || "Provincia no disponible"}
+                                            esFavorito={userData.medicosFavoritos.includes(medico.uid)}
                                         />
                                     );
 
@@ -322,9 +327,6 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         setFiltrosLocales(filtrosAplicados);
     }, [filtrosAplicados]);
 
-
-
-
     const [loading, setLoading] = useState(false);
     const [filtrosLocales, setFiltrosLocales] = useState({
         provincia: "",
@@ -332,7 +334,6 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         centro: "",
         nombre: ""
     });
-
 
     const provinciasDisponibles = useMemo(() => {
         if (filtrosLocales.especialidad) {
