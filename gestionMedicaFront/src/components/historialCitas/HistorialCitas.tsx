@@ -44,11 +44,16 @@ const HistorialCitas: React.FC = () => {
             const [day, month, year] = fechaStr.split("-").map(Number);
             return new Date(year, month - 1, day);
         };
-
+    
         return citas.sort((a, b) => {
             const fechaA = parseFecha(a.fechaCita);
             const fechaB = parseFecha(b.fechaCita);
-            return fechaB.getTime() - fechaA.getTime(); // Fecha más futura primero
+    
+            if (tipoVista === "actuales") {
+                return fechaA.getTime() - fechaB.getTime(); // Más próxima primero
+            } else {
+                return fechaB.getTime() - fechaA.getTime(); // Más reciente primero
+            }
         });
     };
 
@@ -115,12 +120,24 @@ const HistorialCitas: React.FC = () => {
         paginaActual * tratamientosPorPagina
     );
 
+    const obtenerTitulo = () => {
+        switch (tipoParam) {
+          case "actuales":
+            return "Citas actuales";
+          case "archivados":
+            return "Citas archivadas";
+          case "todos":
+          default:
+            return "Historial de citas";
+        }
+      };
+      
   
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
-                <MainHeader tittle="Historial de citas" />
+                <MainHeader tittle={obtenerTitulo()} />
                 {!loading ? (
                     <IonContent fullscreen className="contentCitas">
                         <div className="contentCentralCitas">

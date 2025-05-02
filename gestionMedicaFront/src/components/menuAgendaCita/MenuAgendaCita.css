@@ -1,0 +1,127 @@
+.contentMAC {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
+.contentCentralMAC {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.buttonContainerMAC {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.buttonVolverMAC {
+    width: 90%;
+    max-width: 1000px;
+    --background: var(--ion-color-customRed);
+}
+
+.buttonTextMAC {
+    font-weight: bold;
+    width: 80%;
+}
+
+.buttonVolverMAC:hover
+{
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+/* CARDS */
+.cardsContainerMAC {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  
+    margin-top: 10px;
+}
+.cardMAC {
+    width: 100%;
+    max-width: 900px;
+    background: white;
+    border-radius: 18px;
+    padding: 24px 20px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: row; /* cambia de column a row */
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.cardMAC:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+.cardLeftMAC {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    max-width: 50%; /* limita ancho del contenido textual */
+}
+
+.iconMAC {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.cardTitleMAC {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--ion-color-customDark);
+}
+
+.cardDescriptionMAC {
+    font-size: 0.95rem;
+    color: var(--ion-color-customDark);
+    line-height: 1.4;
+}
+
+.cardRightMAC {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.cardImageMAC {
+    width: 140px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Colores según tipo */
+.cardMAC.general .iconMAC {
+    color: var(--ion-color-customHardDark);
+}
+
+.cardMAC.favoritos .iconMAC {
+    color: var(--ion-color-customYellow);
+}
+
+.cardMAC.recientes .iconMAC {
+    color: var(--ion-color-customRed);
+}

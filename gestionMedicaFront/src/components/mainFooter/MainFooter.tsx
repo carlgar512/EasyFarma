@@ -37,7 +37,7 @@ const MainFooter: React.FC = () => {
                 <IonButton shape="round" size="large" fill="outline" className="downButton" onClick={() => handleClick('citas')}>
                     <IonIcon slot="icon-only" ios={calendarOutline}></IonIcon>
                 </IonButton>
-                <span>Citas</span>
+                <span>Mis citas</span>
             </div>
             <div className="downItemContainer">
                 <IonButton shape="round" size="large" fill="outline" className="downButton" onClick={() => handleClick('medicos')}>

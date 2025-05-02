@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "../../context/UserContext";
-import { alertCircleOutline, arrowBackOutline, checkmarkOutline, close, listOutline, removeCircleOutline, searchOutline, trashOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, checkmarkOutline, close, earthOutline, listOutline, removeCircleOutline, searchOutline, starOutline, trashOutline } from "ionicons/icons";
 import SideMenu from "../sideMenu/SideMenu";
 import { IonBadge, IonButton, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
@@ -8,7 +8,7 @@ import React from "react";
 import MainFooter from "../mainFooter/MainFooter";
 import NotificationToast from "../notification/NotificationToast";
 import './BuscaMedico.css'
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import MedicoCard from "../medicoCard/MedicoCard";
 import Paginacion from "../paginacion/Paginacion";
 import { MapaProvincias, ModalFiltrosProps, ProvinciaMapa } from "./BuscaMedicoInterfaces";
@@ -20,8 +20,9 @@ import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/f
 
 
 const BuscaMedico: React.FC = () => {
+
     const history = useHistory();
-    const { userData, rehidratarUser } = useUser();
+    const { userData } = useUser();
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState({
         show: false,
@@ -29,8 +30,34 @@ const BuscaMedico: React.FC = () => {
         color: "success",
         icon: checkmarkOutline,
     });
-    const [userDataLocal, setUserDataLocal] = useState(userData);
 
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+
+    const [soloFavoritos, setSoloFavoritos] = useState(searchParams.get("favoritos") === "true");
+
+    const [soloRecientes, setsoloRecientes] = useState(searchParams.get("recientes") === "true");
+
+    useEffect(() => {
+        if (!soloFavoritos && !soloRecientes && location.search !== "") {
+            history.replace("/search-doctor");
+        }
+    }, [soloFavoritos, soloRecientes, location.search]);
+
+    useEffect(() => {
+        let path = "/search-doctor";
+        const params = new URLSearchParams();
+
+        if (soloFavoritos) params.set("favoritos", "true");
+        if (soloRecientes) params.set("recientes", "true");
+
+        const newUrl = params.toString() ? `${path}?${params.toString()}` : path;
+
+        // Solo actualiza si es diferente
+        if (location.pathname + location.search !== newUrl) {
+            history.replace(newUrl);
+        }
+    }, [soloFavoritos, soloRecientes]);
 
     const [filtrosAplicados, setFiltrosAplicados] = useState({
         provincia: "",
@@ -77,10 +104,10 @@ const BuscaMedico: React.FC = () => {
     };
 
     useEffect(() => {
-          cargarDatos();
-          setUserDataLocal(userData);
- 
-      }, []);
+        cargarDatos();
+
+    }, []);
+
 
     const [paginaActual, setPaginaActual] = useState(1);
     const medicosPorPagina = 5;
@@ -95,9 +122,20 @@ const BuscaMedico: React.FC = () => {
         const cumpleEspecialidad = especialidad === "" || medico.idEspecialidad === especialidad;
         const cumpleCentro = centro === "" || medico.idCentro === centro;
         const cumpleNombre = nombre === "" || medico.uid === nombre;
+        let esFavorito = false;
+        if (userData) {
+            esFavorito = userData.medicosFavoritos.includes(medico.uid);
+        }
 
-
-        return cumpleProvincia && cumpleEspecialidad && cumpleCentro && cumpleNombre;
+        //const esReciente = userData?.medicosVistosRecientemente?.includes(medico.uid) || false;
+        return (
+            cumpleProvincia &&
+            cumpleEspecialidad &&
+            cumpleCentro &&
+            cumpleNombre &&
+            (!soloFavoritos || esFavorito)
+            // &&(!soloRecientes || esReciente)
+        );
     });
 
     const totalPaginas = Math.ceil(medicosFiltrados.length / medicosPorPagina);
@@ -159,22 +197,37 @@ const BuscaMedico: React.FC = () => {
         }
     };
 
-
+    const obtenerTituloBusqueda = () => {
+        if (soloFavoritos) return "Médicos favoritos";
+        if (soloRecientes) return "Médicos visitados recientemente";
+        return "Búsqueda de especialistas";
+    };
 
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
-                <MainHeader tittle="Búsqueda de Especialistas" />
+                <MainHeader tittle={obtenerTituloBusqueda()} />
                 {userData && !loading && (
                     <IonContent fullscreen className="contentSD">
                         <div className="contentCentralSD">
                             <div className="filtrosIntroducidos">
                                 <div className="filtrosTittle">
-                                    <IonButton shape="round" size="large" className="filtroButtonSD" onClick={() => setModalAbierto(true)}>
-                                        <IonIcon icon={listOutline} slot={"icon-only"} size="large" />
+                                    <div className="filtrosTittleContent">
+                                        <IonButton shape="round" size="large" className="filtroButtonSD" onClick={() => setModalAbierto(true)}>
+                                            <IonIcon icon={listOutline} slot={"icon-only"} size="large" />
+                                        </IonButton>
+                                        <span>Filtros de Búsqueda</span>
+                                    </div>
+                                    <IonButton
+                                        className={soloFavoritos ? "buttonFiltroFav-on" : "buttonFiltroFav-off"}
+                                        shape="round"
+                                        size="default"
+                                        onClick={() => setSoloFavoritos(prev => !prev)}
+                                    >
+                                        <IonIcon icon={soloFavoritos ? earthOutline : starOutline} slot="icon-only" />
+                                        <span className="buttonTextFavButton">{soloFavoritos ? "Ver Todos" : "Solo Favoritos"}</span>
                                     </IonButton>
-                                    <span>Filtros de Búsqueda</span>
                                 </div>
                                 <div className="filtrosActuales">
                                     {Object.entries(filtrosAplicados).filter(([_, v]) => v !== "").length > 0 ? (
@@ -201,6 +254,7 @@ const BuscaMedico: React.FC = () => {
 
                             </div>
                             <div className="resultadosHeader">
+
                                 <hr />
                                 <h2>
                                     {medicos.length > 0
@@ -208,6 +262,7 @@ const BuscaMedico: React.FC = () => {
                                         : "No se han encontrado médicos con estos filtros"}
                                 </h2>
                                 <hr />
+
                             </div>
                             <div className="resultadosSD">
                                 {medicosPaginados.map((medico, index) => {
@@ -228,7 +283,6 @@ const BuscaMedico: React.FC = () => {
                                             especialidad={especialidad}
                                             centro={centro}
                                             provincia={centro?.provincia || "Provincia no disponible"}
-                                            esFavorito={userData.medicosFavoritos.includes(medico.uid)}
                                         />
                                     );
 
@@ -476,53 +530,56 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
                         <span className="spinnerTextModal">Procesando su búsqueda de especialistas según los filtros seleccionados. Un momento, por favor...</span>
                     </div>
                 ) : (
-                    <div className="filtrosContainer">
-                        {/* Provincia */}
-                        <SelectConBuscador
-                            label="Provincia"
-                            placeholder="Selecciona una provincia"
-                            items={provinciasDisponibles.map(id => ({
-                                value: id,
-                                label: provincias[id]
-                            }))}
-                            value={filtrosLocales.provincia}
-                            onChange={(val) => handleChange("provincia", val)}
-                        />
-
-                        <SelectConBuscador
-                            label="Especialidad"
-                            placeholder="Selecciona una especialidad"
-                            items={especialidadesDisponibles.map((e) => ({
-                                value: e.uid,
-                                label: e.nombre,
-                            }))}
-                            value={filtrosLocales.especialidad}
-                            onChange={(val) => handleChange("especialidad", val)}
-                        />
-
-                        <SelectConBuscador
-                            label="Centro"
-                            placeholder="Selecciona un centro"
-                            items={centrosDisponibles.map((e) => ({
-                                value: e.uid,
-                                label: e.nombreCentro,
-                            }))}
-                            value={filtrosLocales.centro}
-                            onChange={(val) => handleChange("centro", val)}
-                        />
-
-                        <SelectConBuscador
-                            label="Especialista"
-                            placeholder="Selecciona un especialista"
-                            items={medicosDisponibles.map((e) => ({
-                                value: e.uid,
-                                label: e.nombreMedico + " " + e.apellidosMedico,
-                            }))}
-                            value={filtrosLocales.nombre}
-                            onChange={(val) => handleChange("nombre", val)}
-                        />
+                    <div className="filtrosContainerGrid">
+                        <div className="filtrosContainer">
 
 
+                            {/* Provincia */}
+                            <SelectConBuscador
+                                label="Provincia"
+                                placeholder="Selecciona una provincia"
+                                items={provinciasDisponibles.map(id => ({
+                                    value: id,
+                                    label: provincias[id]
+                                }))}
+                                value={filtrosLocales.provincia}
+                                onChange={(val) => handleChange("provincia", val)}
+                            />
+
+                            <SelectConBuscador
+                                label="Especialidad"
+                                placeholder="Selecciona una especialidad"
+                                items={especialidadesDisponibles.map((e) => ({
+                                    value: e.uid,
+                                    label: e.nombre,
+                                }))}
+                                value={filtrosLocales.especialidad}
+                                onChange={(val) => handleChange("especialidad", val)}
+                            />
+
+                            <SelectConBuscador
+                                label="Centro"
+                                placeholder="Selecciona un centro"
+                                items={centrosDisponibles.map((e) => ({
+                                    value: e.uid,
+                                    label: e.nombreCentro,
+                                }))}
+                                value={filtrosLocales.centro}
+                                onChange={(val) => handleChange("centro", val)}
+                            />
+
+                            <SelectConBuscador
+                                label="Especialista"
+                                placeholder="Selecciona un especialista"
+                                items={medicosDisponibles.map((e) => ({
+                                    value: e.uid,
+                                    label: e.nombreMedico + " " + e.apellidosMedico,
+                                }))}
+                                value={filtrosLocales.nombre}
+                                onChange={(val) => handleChange("nombre", val)}
+                            />
+
+                        </div>
 
                         {/* Botones */}
                         <div className="modalBotones">

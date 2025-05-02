@@ -20,10 +20,6 @@ const DetalleTratamientoWrapper: React.FC = () => {
     const location = useLocation<{ tratamiento }>();
     const tratamiento = location.state?.tratamiento;
 
-    if (!tratamiento) {
-        // 🔙 Si se accede sin datos, redirige o muestra mensaje
-        return <Redirect to="/treatment-history?tipo=todos" />;
-    }
 
     return <DetalleTratamiento tratamiento={tratamiento} />;
 };
@@ -50,13 +46,13 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                 setLoading(true);
 
                 const data = await backendService.getTratamientoCompleto(tratamiento.uid);
-               
+
                 if (data.success) {
                     setTratamiento(data.tratamientoCompleto.tratamiento);
                     setLineas(data.tratamientoCompleto.lineas);
                     setMedico(data.tratamientoCompleto.medico);
                 }
-             
+
             } catch (err: any) {
                 setToast(
                     {
@@ -308,8 +304,8 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                                         medico={medico}
                                         especialidad={medico.especialidad}
                                         centro={medico.centro}
-                                        provincia={medico.centro.provincia || "Provincia no disponible"} 
-                                        esFavorito={userData.medicosFavoritos.includes(medico.uid)}                                   />
+                                        provincia={medico.centro.provincia || "Provincia no disponible"}
+                                    />
                                 ) : (
                                     <span className="text-notFoundInfo">No existe un médico asignado</span>
                                 )}

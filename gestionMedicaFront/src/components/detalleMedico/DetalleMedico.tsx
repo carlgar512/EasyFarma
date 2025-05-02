@@ -1,7 +1,7 @@
 import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { AgendaCitaProps, DetalleMedicoProps, ModalUbicacionProps } from "./DetalleMedicoInterfaces";
-import React, { useEffect, useState } from "react";
-import { AgendaMedicaDTO, CentroDTO, EspecialidadDTO, InfoUserDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
+import React, { useEffect, useRef, useState } from "react";
+import { AgendaMedicaDTO, CentroDTO, CitaDTO, EspecialidadDTO, InfoUserDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 import SideMenu from "../sideMenu/SideMenu";
 import { IonBadge, IonButton, IonContent, IonDatetime, IonHeader, IonIcon, IonModal, IonPage, IonSpinner, IonTitle } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
@@ -65,6 +65,13 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
             onConfirm: () => { },
         });
     };
+    const agendaRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (seccionAgendarCitaState && agendaRef.current) {
+            agendaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [seccionAgendarCitaState]);
 
     useEffect(() => {
         if (userData?.medicosFavoritos && medicoState?.uid) {
@@ -96,7 +103,21 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         if (medicoState && medicoState.uid) {  // 🔥 Nuevo chequeo aquí también
             cargarAgendas();
         }
+
     }, []);
+
+    useEffect(() => {
+        if (seccionAgendarCitaState) {
+            // Esperamos al próximo ciclo para asegurarnos que agendaRef ya está en el DOM
+            const scrollTimeout = setTimeout(() => {
+                if (agendaRef.current) {
+                    agendaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 100); // ajustable, pero 100ms suele bastar
+    
+            return () => clearTimeout(scrollTimeout);
+        }
+    }, [seccionAgendarCitaState, agendas]);
 
     const history = useHistory();
 
@@ -290,10 +311,13 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                             </div>
                             {
                                 seccionAgendarCitaState &&
-                                <AgendaCita
-                                    setSeccionAgendarCita={setSeccionAgendarCita}
-                                    agendas={agendas}
-                                    medico={medicoState} />
+                                <div ref={agendaRef} className="agendaContainerScroll">
+                                    <AgendaCita
+                                        setSeccionAgendarCita={setSeccionAgendarCita}
+                                        agendas={agendas}
+                                        medico={medicoState}
+                                        setLoading={() => setLoading} />
+                                </div>
                             }
 
                             <div className="buttonContainerMedico">
@@ -401,7 +425,8 @@ export const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
 };
 
 
-export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas, medico
+export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas, medico,
+    setLoading
 }) => {
     const [diasDisponibles, setDiasDisponibles] = useState<string[]>([]);
 
@@ -448,7 +473,7 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
         });
     };
 
-    const [citaOriginal, setCitaOriginal] = useState<{ uid: string, fecha: string, hora: string } | undefined>(undefined);
+    const [citaOriginal, setCitaOriginal] = useState<CitaDTO>();
 
     useEffect(() => {
         const citaGuardada = sessionStorage.getItem("citaOriginal");
@@ -528,7 +553,7 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
     const agendarNuevaCitaDobleCheck = () => {
         setDialogState({
             isOpen: true,
-            tittle: "Eliminar médico de favoritos",
+            tittle: "Agendar cita",
             message: `¿Desea confirmar la creación de una cita con el Dr./Dra. ${medico.nombreMedico} ${medico.apellidosMedico} el día ${agendaSeleccionada?.fecha} a las ${horarioSeleccionado}? La cita quedará registrada en su historial médico.`,
             img: "nuevaCita.svg",
             onConfirm: () => {
@@ -556,6 +581,7 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
             return;
         }
         try {
+            setLoading(true);
 
             await backendService.actualizarHorariosAgenda(agendaSeleccionada.uid, false, horarioSeleccionado);
 
@@ -566,7 +592,8 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
             if (citaOriginal?.uid) {
                 try {
                     await backendService.eliminarCitaPorId(citaOriginal.uid);
-                    await backendService.liberarHorario(medico.uid, citaOriginal.fecha, citaOriginal.hora);                
+                    console.log(citaOriginal);
+                    await backendService.liberarHorario(medico.uid, citaOriginal.fechaCita, citaOriginal.horaCita);
                 } catch (err) {
                     console.warn("No se pudo eliminar la cita anterior", err);
                     setToast({
@@ -577,7 +604,6 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
                     });
                 }
             }
-
             // 🔹 Mostrar toast de éxito
             setToast({
                 show: true,
@@ -592,12 +618,6 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
                 setSeccionAgendarCita(false);
             }, 2000); // Espera 2 segundos (2000 ms)
 
-            if (citaOriginal?.uid) {
-                history.replace('./appointment-history?tipo=todos');
-                window.location.reload();
-            } else {
-                window.location.reload();
-            }
 
         } catch (error: any) {
             const mensaje = error.message || "";
@@ -606,14 +626,21 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
             setToast({
                 show: true,
                 message: esConflicto
-                  ? "Este horario ya ha sido reservado por otro usuario. Recarga la página para ver los horarios disponibles actualizados."
-                  : mensaje || "Error inesperado al agendar cita.",
+                    ? "Este horario ya ha sido reservado por otro usuario. Recarga la página para ver los horarios disponibles actualizados."
+                    : mensaje || "Error inesperado al agendar cita.",
                 color: "danger",
                 icon: alertCircleOutline,
-              });
+            });
 
             return;
 
+        }
+        finally {
+            setLoading(false);
+            if (citaOriginal?.uid) {
+                history.replace('./appointment-history?tipo=todos');
+            }
+            window.location.reload();
         }
     }
 

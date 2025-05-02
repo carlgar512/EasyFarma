@@ -62,6 +62,7 @@ import BuscaMedico from './components/buscaMedico/BuscaMedico';
 import DetalleMedicoWrapper from './components/detalleMedico/DetalleMedico';
 import HistorialCitas from './components/historialCitas/HistorialCitas';
 import DetalleCitaWrapper from './components/detalleCita/DetalleCita';
+import MenuAgendaCita from './components/menuAgendaCita/MenuAgendaCita';
 
 
 
@@ -139,6 +140,11 @@ const App: React.FC = () => (
             <Route exact path="/appointment-detail">
               <UserProvider>
                 <DetalleCitaWrapper />
+              </UserProvider>
+            </Route>
+            <Route exact path="/new-appointment">
+              <UserProvider>
+                <MenuAgendaCita />
               </UserProvider>
             </Route>
 

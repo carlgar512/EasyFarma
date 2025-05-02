@@ -6,5 +6,4 @@ export interface MedicoCardProps {
     especialidad: EspecialidadDTO;
     centro: CentroDTO;
     provincia:string;
-    esFavorito: boolean;
   }

@@ -1,5 +1,5 @@
 import { Redirect, useHistory, useLocation } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DetalleCitaProps } from "./DetalleCitaInterfaces";
 import { AgendaMedicaDTO, CentroDTO, CitaDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/frontDTO";
 import SideMenu from "../sideMenu/SideMenu";
@@ -33,6 +33,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
     const [modalUbicacionAbierto, setModalUbicacionAbierto] = useState(false);
     const [seccionAgendarCitaState, setSeccionAgendarCita] = useState(false);
     const [agendas, setAgendas] = useState<AgendaMedicaDTO[]>([]);
+    const agendaRef = useRef<HTMLDivElement>(null);
 
     const [toast, setToast] = useState({
         show: false,
@@ -59,7 +60,11 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
         onConfirm: () => { },
     });
 
-
+    useEffect(() => {
+        if (seccionAgendarCitaState && agendaRef.current) {
+            agendaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, [seccionAgendarCitaState]);
 
     useEffect(() => {
         const fetchCitaCompleta = async () => {
@@ -117,7 +122,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
             });
         } finally {
             setLoading(false);
-            sessionStorage.setItem("citaOriginal", JSON.stringify(cita));
+            sessionStorage.setItem("citaOriginal", JSON.stringify(citaActual));
             setSeccionAgendarCita(true);
         }
     };
@@ -403,10 +408,14 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
                             </div>
                             {
                                 seccionAgendarCitaState && medico &&
+                                <div ref={agendaRef} className="agendaContainerScroll">
                                 <AgendaCita
                                     setSeccionAgendarCita={setSeccionAgendarCita}
                                     agendas={agendas}
-                                    medico={medico} />
+                                    medico={medico}
+                                    setLoading={() => setLoading}
+                                />
+                                </div>
                             }
                             <div className="buttonsContainerDC">
 

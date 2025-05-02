@@ -16,26 +16,17 @@ export const operations: Operation[] = [
         description: "Accede rápidamente a tu lista de médicos favoritos. Consulta su información, agenda citas con facilidad y gestiona tu lista añadiendo o eliminando profesionales según tus necesidades.",
         type: "Medicos",
         icon: "starOutline",
-        url: "/favorite-doctors",
+        url: "/search-doctor?favoritos=true",
         img: "misMedicos.svg"
     },
     {
-        id: 3,
-        title: "Historial de Citas",
-        description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado.",
+        id: 15,
+        title: "Mis citas",
+        description: "Consulta tus próximas citas médicas fácilmente. Accede a la información del especialista, fecha, hora y centro médico. Mantén un control eficiente de tus visitas médicas programadas.",
         type: "Citas",
         icon: "calendarOutline",
-        url: "/appointment-history?tipo=todos",
-        img: "historialCitas.svg"
-    },
-    {
-        id: 4,
-        title: "Encuentra a tu Médico Ideal",
-        description: "Busca y encuentra médicos según especialidad, ubicación o disponibilidad. Accede a perfiles detallados, consulta valoraciones y agenda tu cita con el especialista que mejor se adapte a tus necesidades.",
-        type: "Medicos",
-        icon: "searchCircleOutline",
-        url: "/search-doctor",
-        img: "encuentraMedico.svg"
+        url: "/appointment-history?tipo=actuales",
+        img: "misCitas.svg"
     },
     {
         id: 5,
@@ -47,8 +38,28 @@ export const operations: Operation[] = [
         img: "agendaCita.svg"
     },
     {
+        id: 3,
+        title: "Historial de Citas",
+        description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado.",
+        type: "Citas",
+        icon: "calendarOutline",
+        url: "/appointment-history?tipo=todos",
+        img: "historialCitas.svg"
+    },
+
+    {
+        id: 4,
+        title: "Encuentra a tu Médico Ideal",
+        description: "Busca y encuentra médicos según especialidad, ubicación o disponibilidad. Accede a perfiles detallados, consulta valoraciones y agenda tu cita con el especialista que mejor se adapte a tus necesidades.",
+        type: "Medicos",
+        icon: "searchCircleOutline",
+        url: "/search-doctor",
+        img: "encuentraMedico.svg"
+    },
+   
+    {
         id: 6,
-        title: "Mi Tratamiento en Curso",
+        title: "Mis Tratamientos en Curso",
         description: "Sigue tu tratamiento en tiempo real y accede a toda la información relevante sobre tu progreso y próximos pasos.",
         type: "Tratamientos",
         icon: "fitnessOutline",

@@ -18,4 +18,5 @@ export  interface AgendaCitaProps {
     setSeccionAgendarCita: (value: boolean) => void;
     agendas: AgendaMedicaDTO[];
     medico: MedicoDTO;
+    setLoading: (value: boolean) => void;
 }

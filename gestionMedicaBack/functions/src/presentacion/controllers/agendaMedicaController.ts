@@ -139,9 +139,6 @@ export const actualizarHorariosAgendaHandler = onRequest(async (req, res) => {
  */
 export const liberarHorarioHandler = onRequest(async (req, res) => {
   try {
-    if (req.method !== "PUT") {
-      res.status(405).json({ success: false, message: "Método no permitido" });
-    }
 
     const { idMedico, fecha, horario } = req.body;
 

@@ -15,12 +15,15 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
     especialidad,
     centro,
     provincia,
-    esFavorito,
+
 }) => {
 
     const history = useHistory();
     const { userData, setUserData } = useUser();
-    const [isFavorito, setIsFavorito] = useState<boolean>(esFavorito);
+    const [isFavorito, setIsFavorito] = useState<boolean>(() =>
+        userData?.medicosFavoritos.includes(medico.uid) ?? false
+    );
+
 
 
     const [toast, setToast] = useState({

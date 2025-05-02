@@ -261,3 +261,10 @@
     justify-content: center;
     width: 80%;
 }
+
+.agendaContainerScroll{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

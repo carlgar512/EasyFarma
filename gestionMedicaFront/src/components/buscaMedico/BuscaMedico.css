@@ -39,7 +39,8 @@
 }
 
 .buttonVolverSD:hover,
-.filtroButtonSD:hover {
+.filtroButtonSD:hover,
+.buttonFiltroFav:hover {
     transform: scale(1.02);
     transition: 0.3s ease-in-out;
 }
@@ -125,16 +126,22 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
 }
 
 .filtrosTittle {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--ion-color-customDark);
+}
+
+.filtrosTittleContent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 
@@ -246,7 +253,7 @@
     --background: var(--ion-color-customDark);
 }
 
-.buttonModalText{
+.buttonModalText {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -258,23 +265,32 @@
     margin-bottom: 8px;
     --padding-start: 12px;
     font-size: 0.9rem;
-  }
+}
 
-  .filaInputSelect {
+.filaInputSelect {
     display: flex;
     gap: 12px;
     align-items: center;
     margin-top: 8px;
-  }
-  
-  .filtrosContainer{
+}
+
+.filtrosContainerGrid{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+}
+.filtrosContainer {
     display: flex;
     justify-content: center;
     flex-direction: column;
     gap: 10px;
-  }
+    width: 100%;
+}
 
-  .select-end-wrapper {
+.select-end-wrapper {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -287,4 +303,31 @@
 .icono-borrar-seleccion {
     color: var(--ion-color-customRed);
     cursor: pointer;
+}
+
+
+.buttonFiltroFav-on {
+    --background: var(--ion-color-customMedium);
+    color: white;
+    width: 30%;
+}
+
+.buttonFiltroFav-off {
+    --background: var(--ion-color-customYellow);
+    color: black;
+    width: 30%;
+}
+
+.buttonTextFavButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+@media (max-width: 640px) {
+    .buttonTextFavButton {
+        display: none;
+    }
 }
