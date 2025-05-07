@@ -63,6 +63,9 @@ import DetalleMedicoWrapper from './components/detalleMedico/DetalleMedico';
 import HistorialCitas from './components/historialCitas/HistorialCitas';
 import DetalleCitaWrapper from './components/detalleCita/DetalleCita';
 import MenuAgendaCita from './components/menuAgendaCita/MenuAgendaCita';
+import CuentasTutorizadas from './components/cuentasTutorizadas/CuentasTutorizadas';
+import DetalleCuentaInfantilWrapper from './components/detalleCuentaInfantil/DetalleCuentaInfantil';
+import ChildAccountRegister from './components/childAccountRegister/ChildAccountRegister';
 
 
 
@@ -145,6 +148,21 @@ const App: React.FC = () => (
             <Route exact path="/new-appointment">
               <UserProvider>
                 <MenuAgendaCita />
+              </UserProvider>
+            </Route>
+            <Route exact path="/family-management">
+              <UserProvider>
+                <CuentasTutorizadas />
+              </UserProvider>
+            </Route>
+            <Route exact path="/infantilAcc-detail">
+              <UserProvider>
+                <DetalleCuentaInfantilWrapper />
+              </UserProvider>
+            </Route>
+            <Route exact path="/newChildAccount">
+              <UserProvider>
+                <ChildAccountRegister/>
               </UserProvider>
             </Route>
 

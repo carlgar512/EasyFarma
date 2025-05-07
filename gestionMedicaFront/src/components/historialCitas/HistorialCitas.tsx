@@ -245,7 +245,7 @@ const HistorialCitas: React.FC = () => {
 };
 
 
-const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
+export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
 
     const puedeArchivar = cita.estadoCita === "Completada" || cita.estadoCita === "Cancelada";
     const puedeEliminar = cita.estadoCita === "Cancelada";

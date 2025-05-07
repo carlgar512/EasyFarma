@@ -14,11 +14,13 @@ import { useHistory } from "react-router-dom";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import { checkmarkOutline } from "ionicons/icons";
+import { useUser } from "../../context/UserContext";
 
 
 
 
 const PerfilYPreferencias: React.FC = () => {
+     const { userData } = useUser();
     const history = useHistory();
     const handleVolver = () => {
         history.replace('/principal');
@@ -35,7 +37,7 @@ const PerfilYPreferencias: React.FC = () => {
                 <IonContent fullscreen className="contentPP">
                     <div className="contentPPCentral">
                         <div className="titleContainer">
-                            <span className="tittleText">Buenas tardes, Usuario</span>
+                            <span className="tittleText">Buenas tardes, {userData?.nombreUsuario}</span>
                         </div>
 
                         {orderOperationType.map((operation) => {
