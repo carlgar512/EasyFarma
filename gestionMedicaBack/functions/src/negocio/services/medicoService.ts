@@ -1,5 +1,7 @@
+import { getCitasUsuarioFromFirestore } from "../../persistencia/repositorios/citaDAO";
 import { getAllMedicosFromFirestore, getMedicoByIdFromFirestore, saveMedicoToFirestore } from "../../persistencia/repositorios/medicoDAO";
 import { logger } from "../../presentacion/config/logger";
+import { Cita } from "../modelos/Cita";
 import { Medico } from "../modelos/Medico";
 
 export class MedicoService {
@@ -56,5 +58,34 @@ export class MedicoService {
   
       logger.info(`✅ Médico "${medico.nombreMedico} ${medico.apellidosMedico}" encontrado.`);
       return medico;
+    }
+
+
+    static async obtenerMedicosRecientes(idUsuario: string): Promise<string[]> {
+      logger.info(`🔍 Obteniendo médicos recientes para usuario: ${idUsuario}`);
+    
+      const citasDocs = await getCitasUsuarioFromFirestore(idUsuario);
+    
+      if (!citasDocs || citasDocs.length === 0) {
+        logger.warn(`⚠️ No se encontraron citas para el usuario ${idUsuario}`);
+        return [];
+      }
+    
+      const citas = citasDocs.map((doc: any) => Cita.fromFirestore(doc.id, doc));
+    
+      // Ordenar de más futura a más pasada
+      citas.sort((a, b) => new Date(b.getFechaCita()).getTime() - new Date(a.getFechaCita()).getTime());
+    
+      // Extraer los ID de médicos únicos (máx. 5)
+      const medicosUnicos = new Set<string>();
+      for (const cita of citas) {
+        if (medicosUnicos.size >= 5) break;
+        medicosUnicos.add(cita.getIdMedico());
+      }
+    
+      const idsMedicos = Array.from(medicosUnicos);
+    
+      logger.info(`✅ IDs de médicos recientes encontrados: ${idsMedicos.join(', ')}`);
+      return idsMedicos;
     }
   }

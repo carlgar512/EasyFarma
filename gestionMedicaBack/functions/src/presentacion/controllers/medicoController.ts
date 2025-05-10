@@ -146,3 +146,34 @@ export const getInfoMedicoHandler = onRequest(async (req, res) => {
   }
 });
 
+/**
+ * 🔹 Obtener IDs de médicos recientes de un usuario
+ */
+export const medicosRecientesHandler = onRequest(async (req, res) => {
+  try {
+    const idUsuario = req.query.idUsuario as string;
+
+    if (!idUsuario) {
+      res.status(400).json({
+        success: false,
+        message: "Falta el parámetro 'idUsuario'"
+      });
+      return;
+    }
+
+    const idsMedicos = await MedicoService.obtenerMedicosRecientes(idUsuario);
+
+    res.status(200).json({
+      success: true,
+      data: idsMedicos
+    });
+
+  } catch (error: any) {
+    console.error("❌ Error en medicosRecientesHandler:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+

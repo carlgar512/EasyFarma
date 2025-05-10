@@ -276,8 +276,8 @@ const PaginaPrincipal: React.FC = () => {
 
                             {pantallaActiva === "asistencia" && (
                                 <>
-                                   <span className="tituloSeccion">Asistencia Directa</span>
-                                   <SoporteTelefonico />
+                                    <span className="tituloSeccion">Asistencia Directa</span>
+                                    <SoporteTelefonico />
                                     <IonButton
                                         size="large"
                                         expand="full"

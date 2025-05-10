@@ -473,21 +473,21 @@ const getCitasAll = async (idUsuario: string): Promise<any[]> => {
     return data.citas;
 };
 
-const actualizarCita = async (citaActualizada: CitaDTO): Promise<void> => {
+const actualizarCita = async (citaActualizada: CitaDTO, esCancelacion: boolean = false): Promise<void> => {
     const response = await fetch(`${BASE_URL}/actualizarCita?idCita=${citaActualizada.uid}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(citaActualizada),
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...citaActualizada, esCancelacion }), // 🔹 Incluye el flag
     });
-
+  
     const data = await response.json();
-
+  
     if (!response.ok || !data.success) {
-        throw new Error(data.message || "Error al actualizar la cita");
+      throw new Error(data.message || "Error al actualizar la cita");
     }
-};
+  };
 
 const eliminarCitaPorId = async (idCita: string): Promise<void> => {
     const response = await fetch(`${BASE_URL}/eliminarCitaPorId?idCita=${idCita}`, {
@@ -537,6 +537,24 @@ const liberarHorario = async (idMedico: string, fecha: string, horario: string):
     }
 };
 
+const obtenerMedicosRecientes = async (idUsuario: string): Promise<string[]> => {
+    const response = await fetch(`${BASE_URL}/medicosRecientes?idUsuario=${idUsuario}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener médicos recientes");
+    }
+  
+    return data.data;
+  };
+  
+
 export const backendService = {
     register,
     login,
@@ -564,6 +582,7 @@ export const backendService = {
     actualizarCita,
     eliminarCitaPorId,
     obtenerInfoMedicoPorId,
-    liberarHorario
+    liberarHorario,
+    obtenerMedicosRecientes
 };
 

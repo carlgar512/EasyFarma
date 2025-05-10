@@ -1,4 +1,5 @@
 
+import { getCentroByIdFromFirestore } from "../../persistencia/repositorios/centroDAO";
 import {
     saveCitaToFirestore,
     getCitasNoArchivadasUsuarioFromFirestore,
@@ -10,8 +11,14 @@ import {
     deleteCitasUsuarioFromFirestore,
     deleteCitaByIdFromFirestore
 } from "../../persistencia/repositorios/citaDAO";
+import { getMedicoByIdFromFirestore } from "../../persistencia/repositorios/medicoDAO";
+import { getUserById } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
+import { eventBus } from "../../serviciosComunes/event/event-emiter";
+import { Centro } from "../modelos/Centro";
 import { Cita } from "../modelos/Cita";
+import { Medico } from "../modelos/Medico";
+import { Usuario } from "../modelos/Usuario";
 // Ajusta si tienes logger
 
 export class CitaService {
@@ -22,7 +29,7 @@ export class CitaService {
     static async guardarCita(citaData: any | any[]): Promise<void> {
         logger.info("💾 Guardando cita(s)...");
 
-        const citasArray = Array.isArray(citaData) ? citaData : [citaData]; // Si es solo una, la ponemos como array
+        const citasArray = Array.isArray(citaData) ? citaData : [citaData];
 
         for (const citaRaw of citasArray) {
             const cita = new Cita(
@@ -31,11 +38,52 @@ export class CitaService {
                 citaRaw.estadoCita,
                 citaRaw.archivado,
                 citaRaw.idUsuario,
-                citaRaw.idMedico,
+                citaRaw.idMedico
             );
 
             await saveCitaToFirestore(cita.toFirestoreObject());
             logger.info(`✅ Cita guardada correctamente para usuario ${cita.getIdUsuario()}`);
+
+            try {
+                // 🔹 Obtener datos crudos desde Firestore
+                const usuarioData = await getUserById(cita.getIdUsuario());
+                const medicoData = await getMedicoByIdFromFirestore(cita.getIdMedico());
+
+                if (!usuarioData) {
+                    logger.warn(`⚠️ Usuario con ID ${cita.getIdUsuario()} no encontrado. Email no enviado.`);
+                    continue;
+                }
+
+                if (!medicoData) {
+                    logger.warn(`⚠️ Médico con ID ${cita.getIdMedico()} no encontrado. Email no enviado.`);
+                    continue;
+                }
+
+                const usuario = Usuario.fromFirestore(usuarioData);
+                const medico = Medico.fromFirestore(cita.getIdMedico(), medicoData);
+
+                const centroData = await getCentroByIdFromFirestore(medico.getIdCentro());
+
+                if (!centroData) {
+                    logger.warn(`⚠️ Centro con ID ${medico.getIdCentro()} no encontrado. Email no enviado.`);
+                    continue;
+                }
+
+                const centro = Centro.fromFirestore(medico.getIdCentro(), centroData);
+
+                // 🔹 Emitir evento si todo está correcto
+                eventBus.emit("send.cita.confirmation", {
+                    usuario,
+                    cita,
+                    medico,
+                    centro,
+                });
+
+                logger.info(`📨 Email de confirmación preparado para ${usuario.getEmail()}`);
+
+            } catch (err) {
+                logger.error(`❌ Error al preparar datos para email de cita del usuario ${cita.getIdUsuario()}:`, err);
+            }
         }
 
         logger.info(`✅ Se guardaron ${citasArray.length} cita(s) correctamente`);
@@ -94,7 +142,7 @@ export class CitaService {
     /**
      * 🔹 Actualiza los datos de una cita existente
      */
-    static async actualizarCita(idCita: string, updatedData: any): Promise<void> {
+    static async actualizarCita(idCita: string, updatedData: any, esCancelacion: boolean = false): Promise<void> {
         logger.info(`🔄 Actualizando cita con ID: ${idCita}`);
 
         // Crear instancia de Cita a partir de los datos actualizados
@@ -112,6 +160,34 @@ export class CitaService {
 
         // Ahora actualizamos en Firestore usando el objeto correcto
         await updateCitaInFirestore(idCita, citaActualizada.toFirestoreObject());
+
+        if (esCancelacion) {
+            try {
+                const usuarioData = await getUserById(citaActualizada.getIdUsuario());
+                const medicoData = await getMedicoByIdFromFirestore(citaActualizada.getIdMedico());
+
+                if (!usuarioData || !medicoData) {
+                    logger.warn(`⚠️ Datos incompletos para la cita cancelada con ID ${idCita}`);
+                    return;
+                }
+
+                const usuario = Usuario.fromFirestore(usuarioData);
+                const medico = Medico.fromFirestore(citaActualizada.getIdMedico(), medicoData);
+                const centroData = await getCentroByIdFromFirestore(medico.getIdCentro());
+                if (!centroData) {
+                    logger.warn(`⚠️ Centro no encontrado para médico ${medico.getIdCentro()}`);
+                    return;
+                }
+
+                const centro = Centro.fromFirestore(medico.getIdCentro(), centroData);
+
+                eventBus.emit("send.cita.cancelacion", { usuario, cita: citaActualizada, medico, centro });
+
+                logger.info(`📨 Email de cancelación emitido para cita ${idCita}`);
+            } catch (err) {
+                logger.error(`❌ Error al emitir email de cancelación para cita ${idCita}:`, err);
+            }
+        }
 
         logger.info(`✅ Cita ${idCita} actualizada correctamente`);
     }

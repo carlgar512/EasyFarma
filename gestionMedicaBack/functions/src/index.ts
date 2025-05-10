@@ -53,6 +53,7 @@ import {
     getInfoMedicoHandler,
     guardarMedicosHandler,
     mapaFiltrosHandler,
+    medicosRecientesHandler,
     obtenerMedicoPorIdHandler,
     obtenerMedicosHandler
 } from "./presentacion/controllers/medicoController";
@@ -143,6 +144,7 @@ export const obtenerMedicos = obtenerMedicosHandler;
 export const obtenerMedicoPorId = obtenerMedicoPorIdHandler;
 export const mapaFiltros = mapaFiltrosHandler;
 export const getInfoMedico = getInfoMedicoHandler;
+export const medicosRecientes = medicosRecientesHandler;
 
 // Exportación de funciones LineaTratamiento
 export const guardarLineasTratamiento = guardarLineasTratamientoHandler;

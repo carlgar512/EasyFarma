@@ -168,15 +168,16 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
         });
     };
     const handleOnCancelar = async () => {
-        setLoading(true);
         cerrarDialogo();
+        setLoading(true);
+      
         try {
             const citaActualizada: CitaDTO = {
                 ...citaActual,
                 estadoCita: "Cancelada",
             };
 
-            await backendService.actualizarCita(citaActualizada);
+            await backendService.actualizarCita(citaActualizada,true);
             if (medico) {
                 await backendService.liberarHorario(medico?.uid, citaActualizada.fechaCita, citaActualizada.horaCita);
             }
@@ -203,8 +204,9 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
     };
 
     const handleOnEliminar = async () => {
-        setLoading(true);
         cerrarDialogo();
+        setLoading(true);
+
         try {
             await backendService.eliminarCitaPorId(citaActual.uid);
             setToast({
@@ -230,8 +232,8 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
     };
 
     const handleOnDesarchivar = async () => {
-        setLoading(true);
         cerrarDialogo();
+        setLoading(true);
         try {
             const citaActualizada: CitaDTO = {
                 ...citaActual,
@@ -261,8 +263,9 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
     };
 
     const handleOnArchivar = async () => {
-        setLoading(true);
         cerrarDialogo();
+        setLoading(true);
+       
         try {
             const citaActualizada: CitaDTO = {
                 ...citaActual,
@@ -399,7 +402,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
                                         especialidad={especialidad}
                                         centro={centro}
                                         provincia={centro.provincia || "Provincia no disponible"}
-                                        esFavorito={userData!.medicosFavoritos.includes(medico.uid) || false} />
+                                        />
                                 ) : (
                                     <span className="text-notFoundInfoDC">No existe un médico asignado</span>
                                 )}

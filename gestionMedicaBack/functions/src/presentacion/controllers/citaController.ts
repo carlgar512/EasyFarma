@@ -125,8 +125,9 @@ export const guardarCitaHandler = onRequest(async (req, res) => {
       if (!updatedData || typeof updatedData !== "object") {
         throw new Error("Datos de actualización no válidos.");
       }
+      const esCancelacion = updatedData.esCancelacion === true;
   
-      await CitaService.actualizarCita(idCita, updatedData);
+      await CitaService.actualizarCita(idCita, updatedData, esCancelacion);
       res.status(200).json({ success: true, message: "Cita actualizada correctamente" });
     } catch (error: any) {
       console.error("❌ Error en actualizarCitaHandler:", error.message);

@@ -451,7 +451,7 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
     const [agendaSeleccionada, setAgendaSeleccionada] = useState<AgendaMedicaDTO | null>(null);
     const [horariosDisponibles, setHorariosDisponibles] = useState<string[]>([]);
     const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
-    const { userData, setUserData } = useUser();
+    const { userData } = useUser();
 
     const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
 

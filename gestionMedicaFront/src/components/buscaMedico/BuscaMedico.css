@@ -136,6 +136,7 @@
     font-size: 1.2rem;
     font-weight: 600;
     color: var(--ion-color-customDark);
+    flex-wrap: wrap;
 }
 
 .filtrosTittleContent {
@@ -331,3 +332,60 @@
         display: none;
     }
 }
+
+.segmentFiltro {
+    --background: #ffffff;
+    --indicator-color: var(--ion-color-primary);
+    --color: var(--ion-color-medium);
+    --color-checked: var(--ion-color-primary);
+    --border-radius: 12px;
+    --padding: 4px;
+    --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin: 8px auto;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 12px;
+    background: var(--ion-color-customUltraLight);
+  }
+  
+  .segmentFiltro ion-segment-button {
+    font-size: 15px;
+    text-transform: uppercase;
+    padding: 6px 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-weight: 500;
+    --indicator-height: 2px;
+    --indicator-color: var(--ion-color-primary);
+  }
+  
+  @media (max-width: 600px) {
+    .segmentFiltro {
+      width: 95%;
+      font-size: 14px;
+    }
+  
+    .segmentFiltro ion-segment-button {
+      font-size: 13px;
+    }
+  }
+
+  .medico-card-error {
+    background-color: #fff3cd; /* fondo suave tipo alerta */
+    border: 1px solid #ffecb5;
+    color: #856404;
+    padding: 16px;
+    margin: 12px auto;
+    border-radius: 12px;
+    max-width: 600px;
+    font-size: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .medico-card-error p {
+    margin: 0;
+    font-weight: 500;
+  }

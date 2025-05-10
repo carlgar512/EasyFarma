@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useUser } from "../../context/UserContext";
 import { alertCircleOutline, arrowBackOutline, checkmarkOutline, close, earthOutline, listOutline, removeCircleOutline, searchOutline, starOutline, trashOutline } from "ionicons/icons";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonBadge, IonButton, IonContent, IonHeader, IonIcon, IonModal, IonPage, IonSpinner } from "@ionic/react";
+import { IonBadge, IonButton, IonContent, IonHeader, IonIcon, IonLabel, IonModal, IonPage, IonSegment, IonSegmentButton, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import React from "react";
 import MainFooter from "../mainFooter/MainFooter";
@@ -20,7 +20,6 @@ import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/f
 
 
 const BuscaMedico: React.FC = () => {
-
     const history = useHistory();
     const { userData } = useUser();
     const [loading, setLoading] = useState(false);
@@ -34,36 +33,33 @@ const BuscaMedico: React.FC = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
 
-    const [soloFavoritos, setSoloFavoritos] = useState(searchParams.get("favoritos") === "true");
+    const initialFiltro = searchParams.get("favoritos") === "true"
+        ? "favoritos"
+        : searchParams.get("recientes") === "true"
+            ? "recientes"
+            : "todos";
 
-    const [soloRecientes, setsoloRecientes] = useState(searchParams.get("recientes") === "true");
-
-    useEffect(() => {
-        if (!soloFavoritos && !soloRecientes && location.search !== "") {
-            history.replace("/search-doctor");
-        }
-    }, [soloFavoritos, soloRecientes, location.search]);
+    const [modoFiltro, setModoFiltro] = useState<"todos" | "favoritos" | "recientes">(initialFiltro);
 
     useEffect(() => {
-        let path = "/search-doctor";
+        const path = "/search-doctor";
         const params = new URLSearchParams();
 
-        if (soloFavoritos) params.set("favoritos", "true");
-        if (soloRecientes) params.set("recientes", "true");
+        if (modoFiltro === "favoritos") params.set("favoritos", "true");
+        if (modoFiltro === "recientes") params.set("recientes", "true");
 
         const newUrl = params.toString() ? `${path}?${params.toString()}` : path;
 
-        // Solo actualiza si es diferente
         if (location.pathname + location.search !== newUrl) {
             history.replace(newUrl);
         }
-    }, [soloFavoritos, soloRecientes]);
+    }, [modoFiltro]);
 
     const [filtrosAplicados, setFiltrosAplicados] = useState({
         provincia: "",
         especialidad: "",
         centro: "",
-        nombre: ""
+        nombre: "",
     });
 
     const [modalAbierto, setModalAbierto] = useState(false);
@@ -73,13 +69,17 @@ const BuscaMedico: React.FC = () => {
     const [centros, setCentros] = useState<CentroDTO[]>([]);
     const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
     const [provincias, setProvincias] = useState<ProvinciaMapa>({});
-
+    const [recientes, setIdMedicosRecientes] = useState<any[]>([]);
 
     const cargarDatos = async () => {
+        if (!userData?.uid) return;
+
         try {
             setLoading(true);
             const data = await backendService.obtenerMapaFiltros();
+            const dataRecientes = await backendService.obtenerMedicosRecientes(userData.uid);
 
+            setIdMedicosRecientes(dataRecientes);
             setMapa(data.mapa);
             setMedicos(data.medicos);
             setCentros(data.centros);
@@ -104,13 +104,16 @@ const BuscaMedico: React.FC = () => {
     };
 
     useEffect(() => {
-        cargarDatos();
-
-    }, []);
-
+        if (userData?.uid) {
+            cargarDatos();
+        }
+    }, [userData?.uid]);
 
     const [paginaActual, setPaginaActual] = useState(1);
     const medicosPorPagina = 5;
+
+    const soloFavoritos = modoFiltro === "favoritos";
+    const soloRecientes = modoFiltro === "recientes";
 
     const medicosFiltrados = medicos.filter((medico) => {
         const { provincia, especialidad, centro, nombre } = filtrosAplicados;
@@ -122,19 +125,16 @@ const BuscaMedico: React.FC = () => {
         const cumpleEspecialidad = especialidad === "" || medico.idEspecialidad === especialidad;
         const cumpleCentro = centro === "" || medico.idCentro === centro;
         const cumpleNombre = nombre === "" || medico.uid === nombre;
-        let esFavorito = false;
-        if (userData) {
-            esFavorito = userData.medicosFavoritos.includes(medico.uid);
-        }
+        const esFavorito = userData?.medicosFavoritos.includes(medico.uid) || false;
+        const esReciente = recientes.includes(medico.uid);
 
-        //const esReciente = userData?.medicosVistosRecientemente?.includes(medico.uid) || false;
         return (
             cumpleProvincia &&
             cumpleEspecialidad &&
             cumpleCentro &&
             cumpleNombre &&
-            (!soloFavoritos || esFavorito)
-            // &&(!soloRecientes || esReciente)
+            (!soloFavoritos || esFavorito) &&
+            (!soloRecientes || esReciente)
         );
     });
 
@@ -143,8 +143,6 @@ const BuscaMedico: React.FC = () => {
         (paginaActual - 1) * medicosPorPagina,
         paginaActual * medicosPorPagina
     );
-
-
 
     const handleVolver = () => {
         history.replace("/principal");
@@ -156,50 +154,37 @@ const BuscaMedico: React.FC = () => {
             badge.classList.add("fade-out");
             setTimeout(() => {
                 setFiltrosAplicados(prev => ({ ...prev, [clave]: "" }));
-            }, 200); // Coincide con la duración del animation
+            }, 200);
         } else {
             setFiltrosAplicados(prev => ({ ...prev, [clave]: "" }));
         }
     };
 
     const obtenerNombreFiltro = (clave: string, valor: string): string => {
-
         switch (clave) {
-            case "provincia":
-                return provincias[valor] || valor;
-            case "especialidad":
-                const especialidad = especialidades.find((e) => e.uid === valor);
-                return especialidad?.nombre || valor;
-            case "centro":
-                const centro = centros.find((c) => c.uid === valor);
-                return centro?.nombreCentro || valor;
+            case "provincia": return provincias[valor] || valor;
+            case "especialidad": return especialidades.find((e) => e.uid === valor)?.nombre || valor;
+            case "centro": return centros.find((c) => c.uid === valor)?.nombreCentro || valor;
             case "nombre":
                 const medico = medicos.find((c) => c.uid === valor);
                 return medico?.nombreMedico + " " + medico?.apellidosMedico || valor;
-
-            default:
-                return valor; // Capitaliza si no está en la lista
+            default: return valor;
         }
-    }
+    };
 
     const obtenerNombreClave = (clave: string): string => {
         switch (clave) {
-            case "provincia":
-                return "Provincia";
-            case "especialidad":
-                return "Especialidad";
-            case "centro":
-                return "Centro";
-            case "nombre":
-                return "Nombre del Médico";
-            default:
-                return clave.charAt(0).toUpperCase() + clave.slice(1); // Capitaliza si no está en la lista
+            case "provincia": return "Provincia";
+            case "especialidad": return "Especialidad";
+            case "centro": return "Centro";
+            case "nombre": return "Nombre del Médico";
+            default: return clave.charAt(0).toUpperCase() + clave.slice(1);
         }
     };
 
     const obtenerTituloBusqueda = () => {
-        if (soloFavoritos) return "Médicos favoritos";
-        if (soloRecientes) return "Médicos visitados recientemente";
+        if (modoFiltro === "favoritos") return "Médicos favoritos";
+        if (modoFiltro === "recientes") return "Médicos recientes";
         return "Búsqueda de especialistas";
     };
 
@@ -215,46 +200,43 @@ const BuscaMedico: React.FC = () => {
                                 <div className="filtrosTittle">
                                     <div className="filtrosTittleContent">
                                         <IonButton shape="round" size="large" className="filtroButtonSD" onClick={() => setModalAbierto(true)}>
-                                            <IonIcon icon={listOutline} slot={"icon-only"} size="large" />
+                                            <IonIcon icon={listOutline} slot="icon-only" size="large" />
                                         </IonButton>
                                         <span>Filtros de Búsqueda</span>
                                     </div>
-                                    <IonButton
-                                        className={soloFavoritos ? "buttonFiltroFav-on" : "buttonFiltroFav-off"}
-                                        shape="round"
-                                        size="default"
-                                        onClick={() => setSoloFavoritos(prev => !prev)}
+                                    <IonSegment
+                                    color={"success"}
+                                        value={modoFiltro}
+                                        onIonChange={(e) => setModoFiltro(e.detail.value as "todos" | "favoritos" | "recientes")}
+                                        className="segmentFiltro"
                                     >
-                                        <IonIcon icon={soloFavoritos ? earthOutline : starOutline} slot="icon-only" />
-                                        <span className="buttonTextFavButton">{soloFavoritos ? "Ver Todos" : "Solo Favoritos"}</span>
-                                    </IonButton>
+                                        <IonSegmentButton value="todos">
+                                            <IonLabel>Ver Todos</IonLabel>
+                                        </IonSegmentButton>
+                                        <IonSegmentButton value="favoritos">
+                                            <IonLabel>Favoritos</IonLabel>
+                                        </IonSegmentButton>
+                                        <IonSegmentButton value="recientes">
+                                            <IonLabel>Recientes</IonLabel>
+                                        </IonSegmentButton>
+                                    </IonSegment>
                                 </div>
                                 <div className="filtrosActuales">
-                                    {Object.entries(filtrosAplicados).filter(([_, v]) => v !== "").length > 0 ? (
+                                    {Object.entries(filtrosAplicados).some(([_, v]) => v !== "") ? (
                                         Object.entries(filtrosAplicados)
-                                            .filter(([_, valor]) => valor !== "") // ¡Filtra primero!
+                                            .filter(([_, valor]) => valor !== "")
                                             .map(([clave, valor]) => (
-                                                <IonBadge
-                                                    id={`filtro-${clave}`}
-                                                    key={clave}
-                                                    className="badgeFiltro"
-                                                >
+                                                <IonBadge id={`filtro-${clave}`} key={clave} className="badgeFiltro">
                                                     {obtenerNombreClave(clave)}: {obtenerNombreFiltro(clave, valor)}
-                                                    <IonIcon
-                                                        icon={close}
-                                                        style={{ marginLeft: '8px', cursor: 'pointer' }}
-                                                        onClick={() => handleEliminarFiltro(clave)}
-                                                    />
+                                                    <IonIcon icon={close} style={{ marginLeft: '8px', cursor: 'pointer' }} onClick={() => handleEliminarFiltro(clave)} />
                                                 </IonBadge>
                                             ))
                                     ) : (
                                         <p className="sinFiltros">No se han aplicado filtros</p>
                                     )}
                                 </div>
-
                             </div>
                             <div className="resultadosHeader">
-
                                 <hr />
                                 <h2>
                                     {medicos.length > 0
@@ -262,16 +244,16 @@ const BuscaMedico: React.FC = () => {
                                         : "No se han encontrado médicos con estos filtros"}
                                 </h2>
                                 <hr />
-
                             </div>
                             <div className="resultadosSD">
                                 {medicosPaginados.map((medico, index) => {
                                     const especialidad = especialidades.find(e => e.uid === medico.idEspecialidad);
                                     const centro = centros.find(e => e.uid === medico.idCentro);
                                     if (!especialidad || !centro) {
+                                        console.log(medico.uid);
                                         return (
-                                            <div className="medico-card-error">
-                                                <p>⚠️ No se pudo mostrar este médico porque faltan datos de centro o especialidad.</p>
+                                            <div className="medico-card-error" key={index}>
+                                                <p>No se pudo mostrar este médico porque faltan datos de centro o especialidad.</p>
                                             </div>
                                         );
                                     }
@@ -285,7 +267,6 @@ const BuscaMedico: React.FC = () => {
                                             provincia={centro?.provincia || "Provincia no disponible"}
                                         />
                                     );
-
                                 })}
 
                                 {totalPaginas > 1 && (
@@ -295,8 +276,6 @@ const BuscaMedico: React.FC = () => {
                                         onPageChange={setPaginaActual}
                                     />
                                 )}
-
-
                             </div>
                             <div className="buttonContainerSD">
                                 <IonButton
@@ -313,14 +292,14 @@ const BuscaMedico: React.FC = () => {
                         </div>
                     </IonContent>
                 )}
-                {(loading || !userData) &&
+                {(loading || !userData) && (
                     <IonContent fullscreen className="contentSD">
                         <div className="contentCentralSDSpinner">
                             <div className="spinnerContainerSD">
                                 <IonSpinner className="spinner" name="circular"></IonSpinner>
                                 <span className="textSpinnerSD">Cargando su información. Un momento, por favor...</span>
                             </div>
-                            {!loading &&
+                            {!loading && (
                                 <div className="buttonContainerSD">
                                     <IonButton
                                         size="large"
@@ -333,10 +312,10 @@ const BuscaMedico: React.FC = () => {
                                         <span className="buttonTextSD">Volver</span>
                                     </IonButton>
                                 </div>
-                            }
+                            )}
                         </div>
                     </IonContent>
-                }
+                )}
                 <MainFooter />
             </IonPage>
             <NotificationToast
@@ -346,13 +325,10 @@ const BuscaMedico: React.FC = () => {
                 show={toast.show}
                 onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
-
             <ModalFiltros
                 isOpen={modalAbierto}
                 onClose={() => setModalAbierto(false)}
-                onAplicarFiltros={(filtros) => {
-                    setFiltrosAplicados(filtros);
-                }}
+                onAplicarFiltros={(filtros) => setFiltrosAplicados(filtros)}
                 provincias={provincias}
                 especialidades={especialidades}
                 centros={centros}
@@ -360,10 +336,10 @@ const BuscaMedico: React.FC = () => {
                 medicos={medicos}
                 filtrosAplicados={filtrosAplicados}
             />
-
         </>
     );
-}
+};
+
 
 const ModalFiltros: React.FC<ModalFiltrosProps> = ({
     isOpen,
