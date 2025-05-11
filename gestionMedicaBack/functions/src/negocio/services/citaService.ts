@@ -59,7 +59,7 @@ export class CitaService {
                     continue;
                 }
 
-                const usuario = Usuario.fromFirestore(usuarioData);
+                const usuario = Usuario.fromFirestore(usuarioData.id, usuarioData);
                 const medico = Medico.fromFirestore(cita.getIdMedico(), medicoData);
 
                 const centroData = await getCentroByIdFromFirestore(medico.getIdCentro());
@@ -171,7 +171,7 @@ export class CitaService {
                     return;
                 }
 
-                const usuario = Usuario.fromFirestore(usuarioData);
+                const usuario = Usuario.fromFirestore(usuarioData.id,usuarioData);
                 const medico = Medico.fromFirestore(citaActualizada.getIdMedico(), medicoData);
                 const centroData = await getCentroByIdFromFirestore(medico.getIdCentro());
                 if (!centroData) {

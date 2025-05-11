@@ -1,6 +1,6 @@
   export class Usuario {
     private uid: string = "";
-    private dni: string;
+    private dni: string = "";
     private email: string;
     private nombreUsuario: string;
     private apellidosUsuario: string;
@@ -14,7 +14,7 @@
     private tipoUsuario: "Regular" | "Infantil";
   
     constructor(
-      dni: string,
+      dni: string = "",
       email: string,
       nombreUsuario: string,
       apellidosUsuario: string,
@@ -41,8 +41,8 @@
       this.tipoUsuario = tipoUsuario;
     }
 
-    static fromFirestore(data: any): Usuario {
-      return new Usuario(
+    static fromFirestore(uid:string, data: any): Usuario {
+      const user = new Usuario(
         data.dni,
         data.email,
         data.nombreUsuario,
@@ -56,6 +56,8 @@
         data.operacionesFavoritas, 
         data.tipoUsuario
       );
+      user.setIdUsuario(uid);
+      return user;
     }
 
     toFirestoreObject(): Record<string, any> {

@@ -9,12 +9,15 @@ import MainFooter from "../mainFooter/MainFooter";
 import './ChildAccountRegister.css'
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import NotificationToast from "../notification/NotificationToast";
+import { backendService } from "../../services/backendService";
+import { useUser } from "../../context/UserContext";
 
 
 const ChildAccountRegister: React.FC = () => {
     const history = useHistory();
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [isOpenCalendar, setIsOpen] = useState(false);
+    const { userData } = useUser();
 
     const [form, setForm] = useState({
         name: "",
@@ -80,10 +83,10 @@ const ChildAccountRegister: React.FC = () => {
 
         const esMenor = edad < 18 || (edad === 18 && mesDiferencia < 0);
 
-        if (!dniValido) {
+        if (form.dni.trim() !== "" && !dniValido) {
             setToast({
                 show: true,
-                message: "El DNI debe ser válido.",
+                message: "El DNI debe ser válido (8 números y 1 letra).",
                 color: "danger",
                 icon: alertCircleOutline,
             });
@@ -101,22 +104,48 @@ const ChildAccountRegister: React.FC = () => {
         }
 
         // Actualiza el form con el DNI en mayúsculas antes de confirmar
-        setForm((prev) => ({ ...prev, dni: dniFormateado }));
+        if (form.dni.trim()) {
+            setForm((prev) => ({ ...prev, dni: dniFormateado }));
+        }
+        const fechaFormateada = form.dateNac ? new Date(form.dateNac).toLocaleDateString('es-ES') : "";
+
+
         setDialogState({
             isOpen: true,
             tittle: "Crear nueva cuenta infantil",
-            message: `Vas a crear una cuenta infantil para ${form.name} ${form.lastName}, con DNI ${form.dni} y fecha de nacimiento ${form.dateNac}. La gestión de esta cuenta estará asociada a tu usuario.`,
+            message: `Vas a crear una cuenta infantil para ${form.name} ${form.lastName}, con DNI ${form.dni} y fecha de nacimiento ${fechaFormateada}. La gestión de esta cuenta estará asociada a tu usuario.`,
             img: "register.svg",
             onConfirm: () => crearUsuarioInf(),
         })
     };
 
-    const crearUsuarioInf = async () => {
-        try {
-            // 🟢 Simulación o llamada real al backend
-            // await backendService.crearCuentaInfantil(form);
 
-            // Mostrar toast de éxito
+    const crearUsuarioInf = async () => {
+        cerrarDialogo();
+        setLoading(true);
+
+        if (!userData) {
+            setToast({
+                show: true,
+                message: "Ocurrió un error al cargar sus datos de usuario.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            setLoading(false); // Solo aquí
+            return;
+        }
+
+        try {
+            await backendService.crearCuentaInfantil({
+                name: form.name,
+                lastName: form.lastName,
+                dni: form.dni || "",
+                dateNac: form.dateNac,
+                email: userData.email,
+                tlf: userData.telefono,
+                idTutor: userData.uid,
+            });
+
             setToast({
                 show: true,
                 message: "Cuenta infantil creada correctamente.",
@@ -124,18 +153,21 @@ const ChildAccountRegister: React.FC = () => {
                 icon: checkmarkOutline,
             });
 
-            // Aquí puedes resetear el formulario o redirigir si lo deseas
-            // setForm({ name: "", lastName: "", dni: "", dateNac: "" });
+            setForm({ name: "", lastName: "", dni: "", dateNac: "" });
+
+            setTimeout(() => {
+                history.replace('/family-management');
+            }, 1000);
 
         } catch (error: any) {
-            console.error("❌ Error al crear la cuenta infantil:", error);
-
             setToast({
                 show: true,
                 message: error.message || "Ocurrió un error al crear la cuenta infantil.",
                 color: "danger",
                 icon: alertCircleOutline,
             });
+        } finally {
+            setLoading(false); // 🔒 Garantizado que se ejecuta
         }
     };
 
@@ -144,7 +176,7 @@ const ChildAccountRegister: React.FC = () => {
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Gestión familiar" />
-                {loading ? (
+                {!loading ? (
                     <IonContent fullscreen className="contentCAR">
                         <div className="contentCentralCAR">
                             <div className="titleContainerCAR">
@@ -199,7 +231,7 @@ const ChildAccountRegister: React.FC = () => {
                                     </IonItem>
 
                                     <IonItem className="form-itemCAR">
-                                        <label className="form-labelCAR">DNI:</label>
+                                        <label className="form-labelCAR">DNI (opcional):</label>
                                         <IonInput
                                             color={"success"}
                                             placeholder="DNI (8 números y 1 letra)"
@@ -215,7 +247,7 @@ const ChildAccountRegister: React.FC = () => {
                                         <IonInput
                                             color={"success"}
                                             name="dateNac"
-                                            value={form.dateNac}
+                                            value={form.dateNac ? new Date(form.dateNac).toLocaleDateString('es-ES') : ""}
                                             placeholder="Selecciona su fecha de nacimiento"
                                             readonly={true} // Hace que el campo no sea editable directamente
                                             onClick={() => setIsOpen(true)} // Abre el calendario cuando se hace clic
@@ -263,7 +295,6 @@ const ChildAccountRegister: React.FC = () => {
                                     disabled={
                                         !form.name.trim() ||
                                         !form.lastName.trim() ||
-                                        !form.dni.trim() ||
                                         !form.dateNac.trim()
                                     }
                                 >

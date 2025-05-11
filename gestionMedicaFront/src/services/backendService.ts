@@ -475,19 +475,19 @@ const getCitasAll = async (idUsuario: string): Promise<any[]> => {
 
 const actualizarCita = async (citaActualizada: CitaDTO, esCancelacion: boolean = false): Promise<void> => {
     const response = await fetch(`${BASE_URL}/actualizarCita?idCita=${citaActualizada.uid}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ...citaActualizada, esCancelacion }), // 🔹 Incluye el flag
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ...citaActualizada, esCancelacion }), // 🔹 Incluye el flag
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al actualizar la cita");
+        throw new Error(data.message || "Error al actualizar la cita");
     }
-  };
+};
 
 const eliminarCitaPorId = async (idCita: string): Promise<void> => {
     const response = await fetch(`${BASE_URL}/eliminarCitaPorId?idCita=${idCita}`, {
@@ -539,21 +539,53 @@ const liberarHorario = async (idMedico: string, fecha: string, horario: string):
 
 const obtenerMedicosRecientes = async (idUsuario: string): Promise<string[]> => {
     const response = await fetch(`${BASE_URL}/medicosRecientes?idUsuario=${idUsuario}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al obtener médicos recientes");
+        throw new Error(data.message || "Error al obtener médicos recientes");
     }
-  
+
     return data.data;
-  };
-  
+};
+
+const crearCuentaInfantil = async (formData: {
+    name: string;
+    lastName: string;
+    dni?: string;
+    dateNac: string;
+    email: string;
+    tlf: string;
+    idTutor: string;
+}) => {
+    const response = await fetch(`${BASE_URL}/registerChild`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+    });
+
+    let data;
+    try {
+        data = await response.json();
+    } catch {
+        data = null;
+    }
+
+    if (!response.ok || !data?.success) {
+        const message = data?.error || `Error ${response.status}: Error al crear cuenta infantil`;
+        throw new Error(message);
+    }
+
+    return data.user;
+};
+
 
 export const backendService = {
     register,
@@ -583,6 +615,7 @@ export const backendService = {
     eliminarCitaPorId,
     obtenerInfoMedicoPorId,
     liberarHorario,
-    obtenerMedicosRecientes
+    obtenerMedicosRecientes,
+    crearCuentaInfantil
 };
 

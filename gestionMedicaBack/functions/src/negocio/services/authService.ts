@@ -1,11 +1,13 @@
 import { getAltaActivaFromFirestore, saveAltaClienteToFirestore, updateAltaCliente } from "../../persistencia/repositorios/altaCienteDAO";
 import { generarTarjetaConContador } from "../../persistencia/repositorios/contadorTarjetaDAO";
 import { deleteExpirationCode, getExpirationCode, saveExpirationCodeToFirestore } from "../../persistencia/repositorios/expirationCodeDAO";
-import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI, updateUserInFirestore } from "../../persistencia/repositorios/userDAO";
+import { saveTutelaToFirestore } from "../../persistencia/repositorios/tutelaDAO";
+import { saveUserToFirestore, getEmailByDNI, getUserById, updateUserPassword, createUserInAuth, getUIDByDNI, updateUserInFirestore, saveChildUserToFirestore } from "../../persistencia/repositorios/userDAO";
 import { logger } from "../../presentacion/config/logger";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 import { AltaCliente } from "../modelos/AltaCliente";
 import { CodigoExpiracion } from "../modelos/CodigoExpiracion";
+import { Tutela } from "../modelos/Tutela";
 import { Usuario } from "../modelos/Usuario";
 
 
@@ -17,6 +19,13 @@ export class AuthService {
   static async registerUser(userData: any & { password: string }) {
     try {
       logger.info(`➡️ Registrando usuario: ${userData.email}`);
+      if (userData.dni) {
+        const existingId = await getUIDByDNI(userData.dni);
+        if (existingId) {
+          logger.warn(`⚠️ El DNI ${userData.dni} ya está registrado. Registro cancelado.`);
+          throw new Error("Ya existe un usuario registrado con este DNI.");
+        }
+      }
 
       const userRecord = await createUserInAuth(userData.email, userData.password);
       const tarjeta = await generarTarjetaConContador();
@@ -49,6 +58,56 @@ export class AuthService {
     }
   };
 
+
+  static async saveUsuarioInfantil(userData: any): Promise<Usuario> {
+    try {
+      logger.info(`👶 Registrando cuenta infantil para: ${userData.name} ${userData.lastName}`);
+
+      if (userData.dni) {
+        const existingId = await getUIDByDNI(userData.dni);
+        if (existingId) {
+          logger.warn(`⚠️ El DNI ${userData.dni} ya está registrado. Registro cancelado.`);
+          throw new Error("Ya existe un usuario registrado con este DNI.");
+        }
+      }
+  
+      const tarjeta = await generarTarjetaConContador();
+  
+      const user = new Usuario(
+        userData.dni || "",
+        userData.email,
+        userData.name,
+        userData.lastName,
+        userData.dateNac,
+        userData.tlf,
+        tarjeta,
+        "",
+        false,
+        [],
+        [],
+        "Infantil"
+      );
+  
+      // Guardar usuario infantil (Firestore genera el ID)
+      const userId = await saveChildUserToFirestore(user);
+      user.setIdUsuario(userId);
+      await updateUserInFirestore(userId, user.toFirestoreObject())
+  
+      const alta = new AltaCliente(userId, new Date());
+      await saveAltaClienteToFirestore(alta.toFirestoreObject());
+  
+      logger.info(`🧷 Creando vínculo de tutela con tutor: ${userData.idTutor}`);
+      const fechaActual = new Date().toISOString();
+      const tutela = new Tutela(fechaActual, null, userData.idTutor, userId);
+      await saveTutelaToFirestore(tutela.toFirestoreObject());
+  
+      logger.info(`✅ Usuario infantil y tutela guardados correctamente`);
+      return user;
+    } catch (error: any) {
+      logger.error(`❌ Error en saveUsuarioInfantil: ${error.message}`);
+      throw error;
+    }
+  }
 
   /**
    * Busca un usuario por DNI y devuelve su información desde Firebase Auth
@@ -143,7 +202,7 @@ export class AuthService {
         throw new Error("Datos del usuario no disponibles");
       }
 
-      const usuario = Usuario.fromFirestore(userData);
+      const usuario = Usuario.fromFirestore(userData.id, userData);
       usuario.setIdUsuario(uid); // 👈 Añadimos el UID al modelo
 
       return usuario;

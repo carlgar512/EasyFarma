@@ -14,6 +14,7 @@ import {
     getUserInfoHandler,
     passwordResetHandler,
     recoveryRequestHandler,
+    registerChildHandler,
     registerHandler,
     updateUserInfoHandler
 } from "./presentacion/controllers/authController";
@@ -107,6 +108,7 @@ export const passwordReset = passwordResetHandler;
 export const bajaUsuario = bajaUsuarioHandler;
 export const getUserInfo = getUserInfoHandler;
 export const updateUserInfo = updateUserInfoHandler;
+export const registerChild = registerChildHandler;
 
 // Exportación de funciones Alergia
 export const getAlergias = getAlergiasHandler;
@@ -171,6 +173,3 @@ export const obtenerCitaPorId = obtenerCitaPorIdHandler;
 export const actualizarCita = actualizarCitaHandler;
 export const eliminarCitasUsuario = eliminarCitasUsuarioHandler;
 export const eliminarCitaPorId = eliminarCitaPorIdHandler;
-
-
-

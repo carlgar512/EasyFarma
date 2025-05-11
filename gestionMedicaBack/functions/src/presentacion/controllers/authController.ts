@@ -158,3 +158,31 @@ export const updateUserInfoHandler = onRequest(async (req, res) => {
     });
   }
 });
+
+
+export const registerChildHandler = onRequest(async (req, res) => {
+  try {
+    const data = req.body;
+
+    if (!data.idTutor) {
+      res.status(400).json({
+        success: false,
+        error: "Falta el ID del tutor (idTutor).",
+      });
+    }
+
+    const newChild = await AuthService.saveUsuarioInfantil(data);
+
+    res.status(201).json({
+      success: true,
+      message: "Cuenta infantil y vínculo de tutela registrados correctamente.",
+      user: newChild.toFirestoreObject(),
+    });
+  } catch (error) {
+    console.error("❌ Error en registerChildHandler:", error);
+    res.status(500).json({
+      success: false,
+      error: "Error al registrar cuenta infantil.",
+    });
+  }
+});
