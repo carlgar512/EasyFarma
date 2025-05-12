@@ -1,0 +1,54 @@
+.tutor-banner {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: linear-gradient(to right, #ffa500, #ff8c00);
+    color: white;
+    border-radius: 16px;
+    padding: 10px 14px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    max-width: 320px;
+    gap: 10px;
+    min-width: 260px;
+    animation: popIn 0.3s ease-out;
+  }
+  
+  .tutor-icon {
+    font-size: 20px;
+    color: white;
+  }
+  
+  .tutor-text {
+    font-size: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: ellipsis;
+  }
+  
+  .tutor-exit-btn {
+    --background: white;
+    --color: #ffa500;
+    --background-hover: #f0f0f0;
+    --border-radius: 10px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-weight: 500;
+  }
+
+
+  @keyframes popIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }

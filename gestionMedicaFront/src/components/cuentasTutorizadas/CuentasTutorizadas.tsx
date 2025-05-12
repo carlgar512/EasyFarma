@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import SideMenu from "../sideMenu/SideMenu";
 import { IonButton, IonCard, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
-import { alertCircleOutline, arrowBackOutline, checkmarkOutline, eyeOutline, logInOutline, peopleOutline, personAddOutline, trashOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, checkmarkOutline, eyeOutline, logInOutline, navigate, peopleOutline, personAddOutline, trashOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
 import './CuentasTutorizadas.css'
 import { CuentaInfantilCardProps } from "./CuentasTutorizadasInterfaces";
@@ -145,6 +145,7 @@ const CuentasTutorizadas: React.FC = () => {
 const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoading }) => {
     const iniciales = `${usuario.nombreUsuario.charAt(0)}${usuario.apellidosUsuario.charAt(0)}`.toUpperCase();
     const history = useHistory();
+    const { userData, setUserData } = useUser();
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
     const cerrarDialogo = () => {
         setDialogState({
@@ -169,9 +170,20 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
         message: "",
         img: "",
         onConfirm: () => { },
-    });
+    })
+
 
     const onAcceder = () => {
+        // Guardar datos actuales (tutor)
+        if (userData) {
+            localStorage.setItem('tutorData', JSON.stringify(userData));
+        }
+
+        // Establecer usuario infantil en el contexto
+        setUserData(usuario);
+
+        // Recargar página para que persista y todo se refresque
+        window.location.replace('/principal');
     };
 
     const onVerDetalle = () => {

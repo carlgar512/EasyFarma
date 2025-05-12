@@ -20,6 +20,7 @@ import { useHistory } from "react-router-dom";
 import { CitaCard } from "../historialCitas/HistorialCitas";
 
 
+
 const PaginaPrincipal: React.FC = () => {
     const [orderOperationType] = useState(sortOperations(operations, "type"));
     const [operacionesFavoritas, setOperacionesFavoritas] = useState<Operation[]>([]);

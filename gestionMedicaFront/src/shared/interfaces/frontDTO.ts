@@ -81,3 +81,8 @@ export interface CitaDTO {
   idUsuario: string;
   idMedico: string;
 }
+
+export enum UserType {
+  REGULAR = 'Regular',
+  INFANTIL = 'Infantil',
+}

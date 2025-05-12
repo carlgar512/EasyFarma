@@ -19,9 +19,13 @@ import { MainHeaderProps } from "./MainHeaderInterfaces";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useAuth } from "../../context/AuthContext";
 import { useHistory } from 'react-router-dom';
+import TutorBanner from "../tutorBanner/TutorBanner";
+import { useUser } from "../../context/UserContext";
+import { UserType } from "../../shared/interfaces/frontDTO";
 
 const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent | null>(null);
+    const { userData } = useUser();
 
     return (
         <>
@@ -47,6 +51,7 @@ const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
                 </IonButton>
 
                 <UserMenu event={popoverEvent} onDismiss={() => setPopoverEvent(null)} />
+                {userData?.tipoUsuario === UserType.INFANTIL && <TutorBanner />}
             </IonHeader>
         </>
     );
