@@ -10,7 +10,7 @@ import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
 import NotificationToast from "../notification/NotificationToast";
 import MapComponent from "../mapComponent/MapComponent";
 import { useUser } from "../../context/UserContext";
-import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
+import { InfoUserDTO, UserType } from "../../shared/interfaces/frontDTO";
 import { backendService } from "../../services/backendService";
 
 const ModificaPerfil: React.FC = () => {
@@ -40,19 +40,19 @@ const ModificaPerfil: React.FC = () => {
         if (campo === "email") {
             try {
                 await backendService.updateEmailFirebaseAuth(nuevoValor);
-              } catch (error) {
+            } catch (error) {
                 console.error("❌ Error al actualizar email en Firebase Auth:", error);
                 return false;
-              }
+            }
         }
 
         else if (campo === "password") {
             try {
                 await backendService.passwordReset(userData.dni, nuevoValor);
-              } catch (error) {
+            } catch (error) {
                 console.error("❌ Error al actualizar la contraseña:", error);
                 return false;
-              }
+            }
         }
 
         try {
@@ -94,14 +94,63 @@ const ModificaPerfil: React.FC = () => {
                                 <span className="tittleTextMP">Buenas tardes, {userData?.nombreUsuario}</span>
                             </div>
                             <div className="infoContainer">
-                                <DatoUsuario label="Nombre:" value={userData?.nombreUsuario} editable={false} setIsModalOpen={() => setIsModalCheckOpen(true)} />
-                                <DatoUsuario label="Apellidos:" value={userData?.apellidosUsuario} editable={false} setIsModalOpen={() => setIsModalCheckOpen(true)} />
-                                <DatoUsuario label="Dni:" value={userData?.dni} editable={false} setIsModalOpen={() => setIsModalCheckOpen(true)} />
-                                <DatoUsuario label="Fecha de nacimiento:" value={userData?.fechaNacimiento} editable={false} setIsModalOpen={() => setIsModalCheckOpen(true)} />
-                                <DatoUsuario label="Email:" value={userData?.email} editable={true} setIsModalOpen={() => { setCampoEditando("email"); setIsModalCheckOpen(true); }} />
-                                <DatoUsuario label="Dirección:" value={userData?.direccion} editable={true} setIsModalOpen={() => { setCampoEditando("direccion"); setIsModalCheckOpen(true); }} />
-                                <DatoUsuario label="Teléfono:" value={userData?.telefono} editable={true} setIsModalOpen={() => { setCampoEditando("telefono"); setIsModalCheckOpen(true); }} />
-                                <DatoUsuario label="Tipo de usuario:" value={userData?.tipoUsuario} editable={false} setIsModalOpen={() => setIsModalCheckOpen(true)} />
+
+                                <DatoUsuario
+                                    label="Nombre:"
+                                    value={userData?.nombreUsuario}
+                                    editable={false}
+                                    setIsModalOpen={() => setIsModalCheckOpen(true)}
+                                />
+
+                                <DatoUsuario
+                                    label="Apellidos:"
+                                    value={userData?.apellidosUsuario}
+                                    editable={false}
+                                    setIsModalOpen={() => setIsModalCheckOpen(true)}
+                                />
+
+                                <DatoUsuario
+                                    label="Dni:"
+                                    value={userData?.dni}
+                                    editable={userData?.dni === ""}
+                                    setIsModalOpen={() => { setCampoEditando("dni"); setIsModalCheckOpen(true); }}
+                                />
+
+                                <DatoUsuario
+                                    label="Fecha de nacimiento:"
+                                    value={userData?.fechaNacimiento}
+                                    editable={false}
+                                    setIsModalOpen={() => setIsModalCheckOpen(true)}
+                                />
+
+                                <DatoUsuario
+                                    label="Email:"
+                                    value={userData?.email}
+                                    editable={userData?.tipoUsuario !== UserType.INFANTIL}
+                                    setIsModalOpen={() => { setCampoEditando("email"); setIsModalCheckOpen(true); }}
+                                />
+
+                                <DatoUsuario
+                                    label="Dirección:"
+                                    value={userData?.direccion}
+                                    editable={true}
+                                    setIsModalOpen={() => { setCampoEditando("direccion"); setIsModalCheckOpen(true); }}
+                                />
+
+                                <DatoUsuario
+                                    label="Teléfono:"
+                                    value={userData?.telefono}
+                                    editable={true}
+                                    setIsModalOpen={() => { setCampoEditando("telefono"); setIsModalCheckOpen(true); }}
+                                />
+
+                                <DatoUsuario
+                                    label="Tipo de usuario:"
+                                    value={userData?.tipoUsuario}
+                                    editable={false}
+                                    setIsModalOpen={() => setIsModalCheckOpen(true)}
+                                />
+
                                 <IonButton
                                     onClick={handleCambiarContraseña}
                                     expand="block"
@@ -334,6 +383,11 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
 
+    const esDniValido = (dni: string) => {
+        // DNI español: 8 dígitos + letra
+        return /^[0-9]{8}[A-Za-z]$/.test(dni);
+      };
+
     const esTelefonoValido = (telefono: string) => {
         return /^[0-9]{9}$/.test(telefono); // 9 dígitos, solo números
     };
@@ -341,6 +395,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     const esValorValido = () => {
         if (campo === "email") return esEmailValido(nuevoValor.trim());
         if (campo === "telefono") return esTelefonoValido(nuevoValor.trim());
+        if (campo === "dni") return esDniValido(nuevoValor.trim());
         if (campo === "password") return nuevaPassword.trim() !== "" && nuevaPassword === confirmPassword;
         if (campo === "direccion") return nuevaDireccion.trim() !== "" && nuevaDireccion.trim() !== valor.trim();
         return true;
@@ -498,7 +553,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
                                             <div className="dataContainer">
                                                 <div className="campoAnterior">
                                                     <strong>Valor actual:</strong>
-                                                    <p>{valor}</p>
+                                                    <p><p>{valor?.trim() ? valor : "No hay valor registrado"}</p></p>
                                                 </div>
                                                 <IonInput
                                                     placeholder={`Introduce nuevo ${campo}`}

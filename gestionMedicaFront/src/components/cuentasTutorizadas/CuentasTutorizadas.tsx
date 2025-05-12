@@ -12,6 +12,7 @@ import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { backendService } from "../../services/backendService";
 import { useUser } from "../../context/UserContext";
 import NotificationToast from "../notification/NotificationToast";
+import { UserType } from "../../shared/interfaces/frontDTO";
 
 
 const CuentasTutorizadas: React.FC = () => {
@@ -56,6 +57,43 @@ const CuentasTutorizadas: React.FC = () => {
 
         fetchUsuariosTutelados();
     }, [userData?.uid]);
+
+    if (userData?.tipoUsuario === UserType.INFANTIL) {
+        return (
+            <>
+                <SideMenu />
+                <IonPage id="main-content">
+                    <MainHeader tittle="Gestión familiar" />
+                    <IonContent fullscreen className="contentGF advertenciaInfantilUI">
+                        <div className="contentCentralGF">
+                            <div className="warningContainerUI">
+                                <IonIcon icon={alertCircleOutline} size="large" color="warning" />
+                                <h2 className="warningTitleUI">Gestión desactivada</h2>
+                                <p className="warningMessageUI">
+                                    Esta funcionalidad no está disponible en cuentas infantiles. Por favor, vuelve a la cuenta del tutor para gestionar cuentas tuteladas.
+                                </p>
+
+                            </div>
+                            <div className="buttonsContainerGF">
+                            <IonButton
+                                className="buttonReturnGF"
+                                shape="round"
+                                size="large"
+                                expand="full"
+                                onClick={handleVolver}
+                            >
+                                <IonIcon icon={arrowBackOutline} />
+                                <span className="buttonTextGF">Volver</span>
+                            </IonButton>
+                            </div>
+                        </div>
+
+                    </IonContent>
+                    <MainFooter />
+                </IonPage>
+            </>
+        );
+    }
 
     return (
         <>

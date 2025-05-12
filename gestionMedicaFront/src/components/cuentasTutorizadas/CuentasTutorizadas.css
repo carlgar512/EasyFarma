@@ -243,3 +243,44 @@
     margin-bottom: 30px;
     min-height: 90%;
 }
+
+/* Usertype Infanti */
+.advertenciaInfantilUI {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #f5f7fa;
+}
+
+.warningContainerUI {
+  text-align: center;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
+  background-color: #fffbea;
+  border: 1px solid #ffe58f;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.warningIconUI {
+  font-size: 2.5rem;
+  color: #ffc107;
+  margin-bottom: 1rem;
+}
+
+.warningTitleUI {
+  font-size: 1.6rem;
+  color: #d39e00;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.warningMessageUI {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}

@@ -6,6 +6,7 @@ import './ModalPasswordCheck.css'
 import { useUser } from "../../context/UserContext";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
+import { UserType } from "../../shared/interfaces/frontDTO";
 
 const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsModalOpen, dni, onSuccess }) => {
 
@@ -36,39 +37,79 @@ const ModalPasswordCheck: React.FC<ModalPasswordCheckProps> = ({ isOpen, setIsMo
         }
         setLoading(true);
         try {
-            const response = await backendService.login({ dni: userData!.dni, password });
-
+            let response;
+          
+            if (userData?.tipoUsuario === UserType.INFANTIL) {
+              const tutorData = localStorage.getItem('tutorData');
+          
+              if (!tutorData) {
+                setToast({
+                  show: true,
+                  message: "Pérdida de la conexión con el usuario tutor.",
+                  color: "danger",
+                  icon: alertCircleOutline,
+                });
+                setLoading(false);
+                return;
+              }
+          
+              const parsedTutor = JSON.parse(tutorData);
+              if (!parsedTutor?.dni) {
+                setToast({
+                  show: true,
+                  message: "Los datos del tutor no son válidos.",
+                  color: "danger",
+                  icon: alertCircleOutline,
+                });
+                setLoading(false);
+                return;
+              }
+          
+              response = await backendService.login({ dni: parsedTutor.dni, password });
+            } else {
+              if (!userData?.dni) {
+                setToast({
+                  show: true,
+                  message: "Datos del usuario inválidos.",
+                  color: "danger",
+                  icon: alertCircleOutline,
+                });
+                setLoading(false);
+                return;
+              }
+          
+              response = await backendService.login({ dni: userData.dni, password });
+            }
+          
             if (!response.success) {
-                setToast({
-                    show: true,
-                    message: "La contraseña introducida no es válida.",
-                    color: "danger",
-                    icon: alertCircleOutline,
-                });
-                setLoading(false);
-            }
-            else {
-                setToast({
-                    show: true,
-                    message: "Autenticación realizada con exito",
-                    color: "success",
-                    icon: checkmarkOutline,
-                });
-                setPassword("");
-                onSuccess();
-                setLoading(false);
-                setShowPassword(false);
-            }
-
-        } catch (error: any) {
-            setToast({
+              setToast({
                 show: true,
-                message: `Error al verificar contraseña: ${error.message || error}`,
+                message: "La contraseña introducida no es válida.",
                 color: "danger",
                 icon: alertCircleOutline,
+              });
+            } else {
+              setToast({
+                show: true,
+                message: "Autenticación realizada con éxito.",
+                color: "success",
+                icon: checkmarkOutline,
+              });
+              setPassword("");
+              onSuccess();
+              setShowPassword(false);
+            }
+          
+            setLoading(false);
+          } catch (error: any) {
+            setToast({
+              show: true,
+              message: `Error al verificar contraseña: ${error.message || error}`,
+              color: "danger",
+              icon: alertCircleOutline,
             });
             setLoading(false);
-        }
+          }
     };
 
     return (

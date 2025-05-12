@@ -14,7 +14,6 @@ import { useUser } from "../../context/UserContext"; // ajustá la ruta si es ne
 const TarjetaSeguro: React.FC = () => {
     const { userData, altaClienteData } = useUser();
 
-
     const formatearFecha = (fechaTexto: string): string => {
         const fecha = new Date(fechaTexto);
 
@@ -32,7 +31,7 @@ const TarjetaSeguro: React.FC = () => {
         window.history.back();
     };
     const [Open, setIsOpen] = useState(false);
-
+    
     return (
         <>
             <SideMenu />
