@@ -70,6 +70,7 @@ export const login = async ({ dni, password }: LoginDTO) => {
                 error: data.error || "No se pudo obtener el email asociado al DNI",
             };
         }
+
         const email = data.email;
         // 2. Hacer login con Firebase
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -586,6 +587,134 @@ const crearCuentaInfantil = async (formData: {
     return data.user;
 };
 
+const getUsuariosTutelados = async (idTutor: string): Promise<any[]> => {
+    const response = await fetch(`${BASE_URL}/getUsuariosTutelados?idTutor=${idTutor}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Error al obtener los usuarios tutelados");
+    }
+  
+    return data.data;
+  };
+
+  const getTutoresPorTutelado = async (idTutelado: string): Promise<any[]> => {
+    const response = await fetch(`${BASE_URL}/getTutoresPorTutelado?idTutelado=${idTutelado}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Error al obtener los tutores del usuario tutelado");
+    }
+  
+    return data.data;
+  };
+
+  const finalizarTutela = async (idTutela: string): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/finalizarTutela?idTutela=${idTutela}`, {
+      method: "POST", // O "GET" si el handler lo permite, pero lo ideal es POST para una acción que modifica datos
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al finalizar la tutela");
+    }
+  };
+
+  const getTutelaActivaEntreDos = async (idTutor: string, idTutelado: string): Promise<any | null> => {
+    const response = await fetch(`${BASE_URL}/getTutelaActivaEntreDos?idTutor=${idTutor}&idTutelado=${idTutelado}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al obtener la tutela activa entre tutor y tutelado");
+    }
+  
+    return data.data; // puede ser null o un objeto de tutela
+  };
+
+
+  const comprobarNuevoTutor = async (dni: string, tarjeta: string): Promise<any> => {
+    const response = await fetch(`${BASE_URL}/comprobarNuevoTutor`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ dni, tarjeta }),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al comprobar el tutor.");
+    }
+  
+    return data.data; // Devuelve el usuario verificado
+  };
+
+
+  const guardarTutela = async (idTutor: string, idTutelado: string): Promise<void> => {
+    const fechaVinculacion = new Date().toISOString();
+  
+    const body = [
+      {
+        idTutor,
+        idTutelado,
+        fechaVinculacion,
+        fechaDesvinculacion: null,
+      },
+    ];
+  
+    const response = await fetch(`${BASE_URL}/guardarTutelas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al guardar la tutela");
+    }
+  };
+
+  const bajaUsuarioComoTutelado = async (idUsuario: string): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/bajaUsuarioComoTutelado?idUsuario=${idUsuario}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || "Error al dar de baja al usuario como tutelado");
+    }
+  };
+  
 
 export const backendService = {
     register,
@@ -616,6 +745,13 @@ export const backendService = {
     obtenerInfoMedicoPorId,
     liberarHorario,
     obtenerMedicosRecientes,
-    crearCuentaInfantil
+    crearCuentaInfantil,
+    getUsuariosTutelados,
+    getTutoresPorTutelado,
+    finalizarTutela,
+    getTutelaActivaEntreDos,
+    comprobarNuevoTutor,
+    guardarTutela,
+    bajaUsuarioComoTutelado
 };
 

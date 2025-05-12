@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
 import { useHistory, useLocation } from "react-router-dom";
 import SideMenu from "../sideMenu/SideMenu";
@@ -11,6 +11,8 @@ import { DetalleCuentaInfantilProps, NuevoTutorProps, TutorCardProps } from "./D
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
 import NotificationToast from "../notification/NotificationToast";
+import { useUser } from "../../context/UserContext";
+import { backendService } from "../../services/backendService";
 
 
 
@@ -23,60 +25,41 @@ const DetalleCuentaInfantilWrapper: React.FC = () => {
     return <DetalleCuentaInfantil usuario={user} />;
 };
 const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }) => {
-    const iniciales = `${usuario.nombreUsuario.charAt(0)}${usuario.apellidosUsuario.charAt(0)}`.toUpperCase();
+
+    const [usuarioState, setUsuarioState] = useState(usuario);
+    const iniciales = `${usuarioState.nombreUsuario.charAt(0)}${usuarioState.apellidosUsuario.charAt(0)}`.toUpperCase();
     const [loading, setLoading] = useState(true);
     const history = useHistory();
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
     const [isNuevoTutorOpen, setNuevoTutorOpen] = useState<boolean>(false);
 
+    const [tutores, setTutores] = useState<any[]>([]);
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+    useEffect(() => {
+        const fetchTutores = async () => {
+            try {
+                setLoading(true);
+                const result = await backendService.getTutoresPorTutelado(usuarioState.uid);
+                setTutores(result);
+            } catch (error: any) {
+                setToast({
+                    show: true,
+                    message: error.message || "Error al cargar los tutores.",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const tutores: InfoUserDTO[] = [
-        {
-            uid: "user1",
-            dni: "12345678A",
-            email: "juan.perez@example.com",
-            nombreUsuario: "Juan",
-            apellidosUsuario: "Pérez García",
-            fechaNacimiento: "2000-05-15",
-            telefono: "600123456",
-            direccion: "Calle Mayor 12, Madrid",
-            numTarjeta: "1234-5678-9012-3456",
-            modoAccesibilidad: false,
-            medicosFavoritos: ["medico1", "medico3"],
-            operacionesFavoritas: ["4", "7"],
-            tipoUsuario: "adulto",
-        },
-        {
-            uid: "user2",
-            dni: "98765432B",
-            email: "maria.lopez@example.com",
-            nombreUsuario: "María",
-            apellidosUsuario: "López Díaz",
-            fechaNacimiento: "2015-09-21",
-            telefono: "600654321",
-            direccion: "Av. de América 25, Valencia",
-            numTarjeta: "4321-8765-2109-6543",
-            modoAccesibilidad: true,
-            medicosFavoritos: ["medico2"],
-            operacionesFavoritas: ["3"],
-            tipoUsuario: "infantil",
-        },
-        {
-            uid: "user3",
-            dni: "11223344C",
-            email: "carlos.martin@example.com",
-            nombreUsuario: "Carlos",
-            apellidosUsuario: "Martín Ruiz",
-            fechaNacimiento: "1980-01-10",
-            telefono: "600789123",
-            direccion: "C/ Luna 7, Sevilla",
-            numTarjeta: "5678-1234-9876-5432",
-            modoAccesibilidad: false,
-            medicosFavoritos: [],
-            operacionesFavoritas: [],
-            tipoUsuario: "adulto",
-        }
-    ];
+        fetchTutores();
+    }, [usuarioState.uid]);
 
     const cerrarDialogo = () => {
         setDialogState({
@@ -97,34 +80,63 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
     });
 
     const handleVolver = () => {
-        history.goBack();
+        history.replace('/family-management');
+
+
     };
 
     const bajaUsuarioDobleConf = () => {
         setDialogState({
             isOpen: true,
             tittle: "Baja de cuenta infantil",
-            message: `¿Estás seguro de que deseas dar de baja la cuenta infantil de ${usuario.nombreUsuario} ${usuario.apellidosUsuario}? No podrás seguir gestionando esta cuenta.`,
+            message: `¿Estás seguro de que deseas dar de baja la cuenta infantil de ${usuarioState.nombreUsuario} ${usuarioState.apellidosUsuario}? No podrás seguir gestionando esta cuenta.`,
             img: "bajaCuenta.svg",
             onConfirm: () => bajaUsuarioInf(),
         })
     };
 
-    const bajaUsuarioInf = () => { }
+    const bajaUsuarioInf = async () => {
+        setLoading(true);
+        cerrarDialogo();
+        try {
+            await backendService.bajaUsuarioComoTutelado(usuario.uid);
 
+            setToast({
+                show: true,
+                message: "Cuenta infantil dada de baja correctamente.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+
+            setTimeout(() => {
+                history.replace("/family-management");
+                window.location.reload();
+            }, 1000);
+        } catch (error: any) {
+            setToast({
+                show: true,
+                message: error.message || "Error al dar de baja la cuenta infantil.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
+        finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Detalle de cuenta infantil" />
-                {loading ? (
+                {!loading ? (
                     <IonContent fullscreen className="contentDAI">
                         <div className="contentCentralDAI">
                             <div className="seccionCuentaDAI">
                                 <div className="avatarCuentaDAI">{iniciales}</div>
                                 <div className="infoNombreDAI">
-                                    <span className="tituloCuentaDAI" >{usuario.nombreUsuario} {usuario.apellidosUsuario}</span>
+                                    <span className="tituloCuentaDAI" >{usuarioState.nombreUsuario} {usuarioState.apellidosUsuario}</span>
                                     <span className="subtituloCuentaDAI">(Cuenta tutorizada)</span>
                                 </div>
                                 <IonButton className="buttonBajaDAI" shape="round" size="large" onClick={() => setIsModalCheckOpen(true)}>
@@ -142,15 +154,17 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
 
                                 <div className="lineaInfoDAI">
                                     <span className="atributeDAIText">Dni:</span>
-                                    <span className="valueDAIText">{usuario.dni}</span>
+                                    <span className="valueDAIText">
+                                        {usuarioState.dni?.trim() ? usuarioState.dni : "Dni no registrado para este usuario."}
+                                    </span>
                                 </div>
                                 <div className="lineaInfoDAI">
                                     <span className="atributeDAIText">Nº de tarjeta:</span>
-                                    <span className="valueDAIText">{usuario.numTarjeta}</span>
+                                    <span className="valueDAIText">{usuarioState.numTarjeta}</span>
                                 </div>
                                 <div className="lineaInfoDAI">
                                     <span className="atributeDAIText">Fecha de nacimiento:</span>
-                                    <span className="valueDAIText">{usuario.fechaNacimiento}</span>
+                                    <span className="valueDAIText">{usuarioState.fechaNacimiento}</span>
                                 </div>
                             </div>
 
@@ -170,7 +184,12 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
                                 <div className="tutoresContainerDAI">
                                     {tutores.length > 0 ? (
                                         tutores.map((tutor) => (
-                                            <TutorCard key={tutor.uid} tutor={tutor} tutelado={usuario} />
+                                            <TutorCard
+                                                key={tutor.uid}
+                                                tutor={tutor}
+                                                tutelado={usuarioState}
+                                                setLoading={setLoading}
+                                            />
                                         ))
                                     ) : (
                                         <div className="sinCuentasGF">
@@ -247,19 +266,104 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
                     bajaUsuarioDobleConf();
                 }}
             />
-            <NuevoTutor isOpen={isNuevoTutorOpen} onClose={() => setNuevoTutorOpen(false)} />
+            <NuevoTutor
+                isOpen={isNuevoTutorOpen}
+                onClose={() => setNuevoTutorOpen(false)}
+                idTutelado={usuarioState.uid}
+                setLoading={setLoading}
+            />
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
         </>
     );
 
 };
 
 
-const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado }) => {
+const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) => {
     const iniciales = `${tutor.nombreUsuario.charAt(0)}${tutor.apellidosUsuario.charAt(0)}`.toUpperCase();
-    const [showConfirm, setShowConfirm] = useState(false);
-    const onEliminaTutor = () => {
-        //TODO tutor eliminar 
+    const { userData } = useUser();
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+
+    const cerrarDialogo = () => {
+        setDialogState({
+            isOpen: false,
+            tittle: "",
+            message: "",
+            img: "",
+            onConfirm: () => { },
+        });
     };
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+
+    const onEliminaTutor = async () => {
+        setLoading(true);
+        cerrarDialogo();
+        try {
+            const tutela = await backendService.getTutelaActivaEntreDos(tutor.uid, tutelado.uid);
+
+            if (!tutela) {
+                setToast({
+                    show: true,
+                    message: "No existe una tutela activa entre este tutor y tutelado.",
+                    color: "warning",
+                    icon: alertCircleOutline,
+                });
+                return;
+            }
+
+            await backendService.finalizarTutela(tutela.idTutela);
+
+            setToast({
+                show: true,
+                message: "Tutela finalizada correctamente.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+
+        } catch (error: any) {
+            setToast({
+                show: true,
+                message: error.message || "Error al finalizar la tutela.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
+        finally {
+            setTimeout(() => {
+                setLoading(false);
+                window.location.reload();
+            }, 1000);
+        }
+    };
+
+    const onEliminaTutorDobleCheck = () => {
+        setDialogState({
+            isOpen: true,
+            tittle: "Eliminar tutor",
+            message: `¿Estás seguro de que deseas eliminar al tutor ${tutor.nombreUsuario} ${tutor.apellidosUsuario} de la cuenta infantil de ${tutelado.nombreUsuario} ${tutelado.apellidosUsuario}? El tutor eliminado no podrá volver a gestionar esta cuenta, aunque podrás volver a añadirlo si lo deseas.`,
+            img: "bajaCuenta.svg",
+            onConfirm: () => onEliminaTutor()
+        })
+    }
 
     return (
         <>
@@ -278,27 +382,36 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado }) => {
                     </div>
                 </div>
                 <div className="buttonContainerTutorCardDAI">
-                    <IonButton className="eliminarTutorBtnDAI" onClick={() => setShowConfirm(true)}>
-                        <IonIcon icon={trashBinOutline} />
-                        <span className="buttonTextEliminaTutDAI">Eliminar tutor</span>
-                    </IonButton>
+                    {userData && tutor.uid !== userData.uid && (
+                        <IonButton className="eliminarTutorBtnDAI" onClick={() => onEliminaTutorDobleCheck()}>
+                            <IonIcon icon={trashBinOutline} />
+                            <span className="buttonTextEliminaTutDAI">Eliminar tutor</span>
+                        </IonButton>
+                    )}
                 </div>
-            </div>
+            </div >
 
             <DobleConfirmacion
-                isOpen={showConfirm}
-                tittle="Eliminar tutor"
-                message={`¿Estás seguro de que deseas eliminar al tutor ${tutor.nombreUsuario} ${tutor.apellidosUsuario} de la cuenta infantil de ${tutelado.nombreUsuario} ${tutelado.apellidosUsuario}? El tutor eliminado no podrá volver a gestionar esta cuenta, aunque podrás volver a añadirlo si lo deseas.`}
-                img="bajaCuenta.svg"
-                onConfirm={() => onEliminaTutor()}
-                onCancel={() => setShowConfirm(false)}
+                isOpen={dialogState.isOpen}
+                tittle={dialogState.tittle}
+                message={dialogState.message}
+                img={dialogState.img}
+                onConfirm={dialogState.onConfirm}
+                onCancel={() => cerrarDialogo()}
+            />
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
         </>
     );
 };
 
 
-const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose }) => {
+const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose, idTutelado, setLoading }) => {
     const [nuevoTutor, setNuevoTutor] = useState({
         dni: "",
         numTarjeta: "",
@@ -312,59 +425,117 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose }) => {
     });
 
     const dniValido = /^[0-9]{8}[A-Z]$/.test(nuevoTutor.dni.trim().toUpperCase());
-    const tarjetaValida = /^\d{4}-\d{4}-\d{4}-\d{4}$/.test(nuevoTutor.numTarjeta.trim());
+    const tarjetaValida = /^\d{4} \d{4} \d{4} \d{4}$/.test(nuevoTutor.numTarjeta.trim());
 
-    const handleAgregar = () => {
+    const cerrarDialogo = () => {
+        setDialogState({
+            isOpen: false,
+            tittle: "",
+            message: "",
+            img: "",
+            onConfirm: () => { },
+        });
+    };
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+    const handleAgregar = async () => {
         const tutorFormateado = {
             dni: nuevoTutor.dni.trim().toUpperCase(),
             numTarjeta: nuevoTutor.numTarjeta.trim(),
         };
-        try {
-            const exito = buscaExistenciaTutor();
-            if (exito) {
-                onAgregarTutor();
-                setToast({
-                    show: true,
-                    message: "Tutor añadido correctamente",
-                    color: "success",
-                    icon: checkmarkOutline,
-                });
 
-                setNuevoTutor({ dni: "", numTarjeta: "" });
-                
-                setTimeout(() => {
-                    onClose();
-                    location.reload();
-                }, 1000);
-                
-            }
-            else {
+        try {
+            // 1. Comprobar tutor por DNI + tarjeta
+            const tutor = await backendService.comprobarNuevoTutor(
+                tutorFormateado.dni,
+                tutorFormateado.numTarjeta
+            );
+
+            if (!tutor) {
                 setToast({
                     show: true,
-                    message: "No se ha encontrado un usuasuario con los datos proporcionados",
+                    message: "No se ha encontrado un usuario con los datos proporcionados.",
                     color: "danger",
                     icon: alertCircleOutline,
                 });
+                return;
             }
 
-        } catch (error) {
+            // 2. Comprobar si ya hay tutela activa
+            const tutelaActiva = await backendService.getTutelaActivaEntreDos(tutor.uid, idTutelado);
+
+            if (tutelaActiva) {
+                setToast({
+                    show: true,
+                    message: "Este tutor ya tiene una tutela activa con el usuario.",
+                    color: "warning",
+                    icon: alertCircleOutline,
+                });
+                return;
+            }
+
+            // 3. Mostrar confirmación
+            setDialogState({
+                isOpen: true,
+                tittle: "Añadir nuevo tutor",
+                message: `¿Estás seguro de que deseas añadir al usuario con DNI: ${tutorFormateado.dni} como tutor de esta cuenta? Este usuario tendrá acceso y permisos de edición sobre la cuenta tutelada. Esta acción podrá ser modificada más adelante.`,
+                img: "addTutor.svg",
+                onConfirm: () => confirmarAgregarTutor(tutor.uid),
+            });
+            setNuevoTutor({ dni: "", numTarjeta: "" });
+
+        } catch (error: any) {
             setToast({
                 show: true,
-                message: "Error a la hora de añadir el nuevo tutor",
+                message: error.message || "Error al añadir el nuevo tutor.",
                 color: "danger",
                 icon: alertCircleOutline,
             });
-            setNuevoTutor({ dni: "", numTarjeta: "" }); // limpiar después
-            onClose();
         }
     };
 
-    const buscaExistenciaTutor = () => {
-        return true;
-    }
-    const onAgregarTutor = () => {
 
-    }
+    const confirmarAgregarTutor = async (tutorUid: string) => {
+        onClose();
+        cerrarDialogo();
+        setLoading(true);
+        try {
+            // Guardar nueva tutela
+            await backendService.guardarTutela(tutorUid, idTutelado);
+
+            setToast({
+                show: true,
+                message: "Tutor añadido correctamente.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+
+            setNuevoTutor({ dni: "", numTarjeta: "" });
+
+
+        } catch (error: any) {
+            setToast({
+                show: true,
+                message: error.message || "Error al guardar la nueva tutela.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
+        finally {
+            setTimeout(() => {
+                onClose();
+                location.reload();
+                setLoading(false);
+            }, 1000);
+        }
+    };
 
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onClose}>
@@ -413,16 +584,14 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose }) => {
                                     const raw = e.detail.value!.replace(/\D/g, ""); // quitar todo lo que no sea dígito
                                     const formatted = raw
                                         .match(/.{1,4}/g) // agrupar de 4 en 4
-                                        ?.join("-")       // unir con guiones
+                                        ?.join(" ")       // unir con guiones
                                         .slice(0, 19) || ""; // limitar a 19 caracteres: 16 dígitos + 3 guiones
-                                
+
                                     setNuevoTutor({ ...nuevoTutor, numTarjeta: formatted });
                                 }}
                             />
                         </div>
                     </IonList>
-
-
 
                     {/* Botones */}
                     <div className="botonesModalTutor">
@@ -455,6 +624,14 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose }) => {
                 message={toast.message}
                 show={toast.show}
                 onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
+            <DobleConfirmacion
+                isOpen={dialogState.isOpen}
+                tittle={dialogState.tittle}
+                message={dialogState.message}
+                img={dialogState.img}
+                onConfirm={dialogState.onConfirm}
+                onCancel={() => cerrarDialogo()}
             />
         </IonModal>
     );

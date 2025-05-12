@@ -124,3 +124,16 @@ export const deleteAllTutelas = async () => {
     throw error;
   }
 };
+
+
+export const getTutelasPorTutorYTutelado = async (idTutor: string, idTutelado: string) => {
+  const snapshot = await db.collection("tutelas")
+    .where("idTutor", "==", idTutor)
+    .where("idTutelado", "==", idTutelado)
+    .get();
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};

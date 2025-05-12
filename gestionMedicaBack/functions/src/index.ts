@@ -8,8 +8,10 @@
  */
 
 import {
+    bajaUsuarioComoTuteladoHandler,
     bajaUsuarioHandler,
     checkCodeHandler,
+    comprobarNuevoTutorHandler,
     getEmailByDniHandler,
     getUserInfoHandler,
     passwordResetHandler,
@@ -85,6 +87,16 @@ import {
     obtenerCitasNoArchivadasUsuarioHandler,
     obtenerCitasPendientesUsuarioHandler
 } from "./presentacion/controllers/citaController";
+import {
+    guardarTutelasHandler,
+    obtenerTutelasPorIdTutorHandler,
+    obtenerTutelasPorIdTuteladoHandler,
+    actualizarTutelaHandler,
+    getUsuariosTuteladosHandler,
+    getTutoresPorTuteladoHandler,
+    finalizarTutelaHandler,
+    getTutelaActivaEntreDosHandler,
+  } from "./presentacion/controllers/tutelaController"; 
 
 
 
@@ -109,6 +121,9 @@ export const bajaUsuario = bajaUsuarioHandler;
 export const getUserInfo = getUserInfoHandler;
 export const updateUserInfo = updateUserInfoHandler;
 export const registerChild = registerChildHandler;
+export const comprobarNuevoTutor = comprobarNuevoTutorHandler;
+export const bajaUsuarioComoTutelado = bajaUsuarioComoTuteladoHandler;
+
 
 // Exportación de funciones Alergia
 export const getAlergias = getAlergiasHandler;
@@ -173,3 +188,13 @@ export const obtenerCitaPorId = obtenerCitaPorIdHandler;
 export const actualizarCita = actualizarCitaHandler;
 export const eliminarCitasUsuario = eliminarCitasUsuarioHandler;
 export const eliminarCitaPorId = eliminarCitaPorIdHandler;
+
+// Tutelas
+export const guardarTutelas = guardarTutelasHandler;
+export const obtenerTutelasPorIdTutor = obtenerTutelasPorIdTutorHandler;
+export const obtenerTutelasPorIdTutelado = obtenerTutelasPorIdTuteladoHandler;
+export const actualizarTutela = actualizarTutelaHandler;
+export const getUsuariosTutelados = getUsuariosTuteladosHandler;
+export const getTutoresPorTutelado = getTutoresPorTuteladoHandler;
+export const finalizarTutela = finalizarTutelaHandler;
+export const getTutelaActivaEntreDos = getTutelaActivaEntreDosHandler;

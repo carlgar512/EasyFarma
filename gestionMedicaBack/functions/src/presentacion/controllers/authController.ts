@@ -112,6 +112,33 @@ export const bajaUsuarioHandler = onRequest(async (req, res) => {
 });
 
 
+export const bajaUsuarioComoTuteladoHandler = onRequest(async (req, res) => {
+  try {
+    const idUsuario = req.query.idUsuario as string;
+
+    if (!idUsuario) {
+      res.status(400).json({
+        success: false,
+        error: "Falta el parámetro 'idUsuario'",
+      });
+      return;
+    }
+
+    await AuthService.bajaUsuarioComoTutelado(idUsuario);
+
+    res.status(200).json({
+      success: true,
+      message: `El usuario ${idUsuario} ha sido dado de baja correctamente como tutelado.`,
+    });
+  } catch (error: any) {
+    console.error("❌ Error en bajaUsuarioComoTuteladoHandler:", error);
+    res.status(500).json({
+      success: false,
+      error: error.message || "Error al dar de baja al usuario como tutelado.",
+    });
+  }
+});
+
 export const getUserInfoHandler = onRequest(async (req, res) => {
   try {
     const { idUsuario } = req.query;
@@ -183,6 +210,33 @@ export const registerChildHandler = onRequest(async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Error al registrar cuenta infantil.",
+    });
+  }
+});
+
+export const comprobarNuevoTutorHandler = onRequest(async (req, res) => {
+  try {
+    const { dni, tarjeta } = req.body;
+
+    if (!dni || !tarjeta) {
+      res.status(400).json({
+        success: false,
+        message: "Faltan los campos 'dni' o 'tarjeta' en la solicitud.",
+      });
+    }
+
+    const usuario = await AuthService.compruebaNuevoTutor(dni, tarjeta);
+
+    res.status(200).json({
+      success: true,
+      data: usuario,
+    });
+
+  } catch (error: any) {
+    console.error("❌ Error en comprobarNuevoTutorHandler:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Error al comprobar tutor.",
     });
   }
 });

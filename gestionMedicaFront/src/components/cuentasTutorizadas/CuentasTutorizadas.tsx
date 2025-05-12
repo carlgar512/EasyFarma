@@ -1,20 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
+import { IonButton, IonCard, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
-import { arrowBackOutline, eyeOutline, logInOutline, peopleOutline, personAddOutline, trashOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, checkmarkOutline, eyeOutline, logInOutline, peopleOutline, personAddOutline, trashOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
-import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
 import './CuentasTutorizadas.css'
 import { CuentaInfantilCardProps } from "./CuentasTutorizadasInterfaces";
 import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
+import { backendService } from "../../services/backendService";
+import { useUser } from "../../context/UserContext";
+import NotificationToast from "../notification/NotificationToast";
 
 
 const CuentasTutorizadas: React.FC = () => {
     const history = useHistory();
-    const [loading, setLoading] = useState(true);
+    const { userData } = useUser();
+    const [loading, setLoading] = useState<boolean>();
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
 
     const handleVolver = () => {
         history.replace('/principal');
@@ -22,61 +31,38 @@ const CuentasTutorizadas: React.FC = () => {
     const handleNewChildAccount = () => {
         history.replace('/newChildAccount');
     };
+    const [usuariosTutelados, setUsuariosTutelados] = useState<any[]>([]);
 
-    const mockUsuarios: InfoUserDTO[] = [
-        {
-            uid: "user1",
-            dni: "12345678A",
-            email: "juan.perez@example.com",
-            nombreUsuario: "Juan",
-            apellidosUsuario: "Pérez García",
-            fechaNacimiento: "2000-05-15",
-            telefono: "600123456",
-            direccion: "Calle Mayor 12, Madrid",
-            numTarjeta: "1234-5678-9012-3456",
-            modoAccesibilidad: false,
-            medicosFavoritos: ["medico1", "medico3"],
-            operacionesFavoritas: ["4", "7"],
-            tipoUsuario: "adulto",
-        },
-        {
-            uid: "user2",
-            dni: "98765432B",
-            email: "maria.lopez@example.com",
-            nombreUsuario: "María",
-            apellidosUsuario: "López Díaz",
-            fechaNacimiento: "2015-09-21",
-            telefono: "600654321",
-            direccion: "Av. de América 25, Valencia",
-            numTarjeta: "4321-8765-2109-6543",
-            modoAccesibilidad: true,
-            medicosFavoritos: ["medico2"],
-            operacionesFavoritas: ["3"],
-            tipoUsuario: "infantil",
-        },
-        {
-            uid: "user3",
-            dni: "11223344C",
-            email: "carlos.martin@example.com",
-            nombreUsuario: "Carlos",
-            apellidosUsuario: "Martín Ruiz",
-            fechaNacimiento: "1980-01-10",
-            telefono: "600789123",
-            direccion: "C/ Luna 7, Sevilla",
-            numTarjeta: "5678-1234-9876-5432",
-            modoAccesibilidad: false,
-            medicosFavoritos: [],
-            operacionesFavoritas: [],
-            tipoUsuario: "adulto",
-        }
-    ];
+    useEffect(() => {
+        const fetchUsuariosTutelados = async () => {
+            if (!userData?.uid) return;
+
+            try {
+                setLoading(true);
+                const result = await backendService.getUsuariosTutelados(userData.uid);
+                setUsuariosTutelados(result);
+            } catch (error: any) {
+                setToast({
+                    show: true,
+                    message: error.message || "Error al cargar los usuarios tutelados.",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+            }
+            finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUsuariosTutelados();
+    }, [userData?.uid]);
 
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Gestión familiar" />
-                {loading ? (
+                {!loading ? (
                     <IonContent fullscreen className="contentGF">
                         <div className="contentCentralGF">
                             <div className="titleContainerGF">
@@ -84,9 +70,9 @@ const CuentasTutorizadas: React.FC = () => {
                                 <span className="tittleTextGF">Cuentas tutorizadas</span>
                             </div>
                             <div className="cuentasContainerGF">
-                                {mockUsuarios.length > 0 ? (
-                                    mockUsuarios.map((user) => (
-                                        <CuentaInfantilCard key={user.uid} usuario={user} />
+                                {usuariosTutelados.length > 0 ? (
+                                    usuariosTutelados.map((user) => (
+                                        <CuentaInfantilCard key={user.uid} usuario={user} setLoading={setLoading} />
                                     ))
                                 ) : (
                                     <div className="sinCuentasGF">
@@ -143,13 +129,20 @@ const CuentasTutorizadas: React.FC = () => {
                 )}
                 <MainFooter />
             </IonPage>
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
         </>
     );
 
 };
 
 
-const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario }) => {
+const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoading }) => {
     const iniciales = `${usuario.nombreUsuario.charAt(0)}${usuario.apellidosUsuario.charAt(0)}`.toUpperCase();
     const history = useHistory();
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
@@ -162,6 +155,13 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario }) => {
             onConfirm: () => { },
         });
     };
+
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
 
     const [dialogState, setDialogState] = useState({
         isOpen: false,
@@ -192,7 +192,34 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario }) => {
         })
     };
 
-    const bajaUsuarioInf = () => { }
+    const bajaUsuarioInf = async () => {
+        setLoading(true);
+        cerrarDialogo();
+        try {
+            await backendService.bajaUsuarioComoTutelado(usuario.uid);
+
+            setToast({
+                show: true,
+                message: "Cuenta infantil dada de baja correctamente.",
+                color: "success",
+                icon: checkmarkOutline,
+            });
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch (error: any) {
+            setToast({
+                show: true,
+                message: error.message || "Error al dar de baja la cuenta infantil.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        }
+        finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -217,7 +244,7 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario }) => {
                             <span className="cardButtonTextGF">Ver detalle</span>
                         </IonButton>
 
-                        <IonButton expand="block" shape="round" className="boton-cuenta baja" onClick={()=> setIsModalCheckOpen(true)}>
+                        <IonButton expand="block" shape="round" className="boton-cuenta baja" onClick={() => setIsModalCheckOpen(true)}>
                             <IonIcon slot="start" icon={trashOutline} />
                             <span className="cardButtonTextGF">Baja de cuenta</span>
                         </IonButton>
@@ -240,6 +267,13 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario }) => {
                     setIsModalCheckOpen(false);
                     bajaUsuarioDobleConf();
                 }}
+            />
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
         </>
     );

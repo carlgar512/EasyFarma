@@ -1017,9 +1017,11 @@ export const AgendaPaciente: React.FC<AgendaPacienteProps> = ({ citas, onActuali
 
     if (!citas || citas.length === 0) {
         return (
+            
             <div className="cardCarouselContainer empty">
                 <div className="emptyCarouselContent">
-                    <p className="emptyMessage">No tienes citas pendientes.</p>
+                    <IonImg src="NoData.svg" alt="Sin elementos" className="emptyIcon" />
+                    <p className="emptyMessage">No hay elementos disponibles para mostrar.</p>
                 </div>
             </div>
         );

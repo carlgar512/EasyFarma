@@ -7,8 +7,10 @@ import { logger } from "../../presentacion/config/logger";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 import { AltaCliente } from "../modelos/AltaCliente";
 import { CodigoExpiracion } from "../modelos/CodigoExpiracion";
+import { TipoUsuario } from "../modelos/enums/TipoUsuario";
 import { Tutela } from "../modelos/Tutela";
 import { Usuario } from "../modelos/Usuario";
+import { TutelaService } from "./tutelaService";
 
 
 
@@ -70,9 +72,9 @@ export class AuthService {
           throw new Error("Ya existe un usuario registrado con este DNI.");
         }
       }
-  
+
       const tarjeta = await generarTarjetaConContador();
-  
+
       const user = new Usuario(
         userData.dni || "",
         userData.email,
@@ -85,22 +87,22 @@ export class AuthService {
         false,
         [],
         [],
-        "Infantil"
+        TipoUsuario.Infantil
       );
-  
+
       // Guardar usuario infantil (Firestore genera el ID)
       const userId = await saveChildUserToFirestore(user);
       user.setIdUsuario(userId);
       await updateUserInFirestore(userId, user.toFirestoreObject())
-  
+
       const alta = new AltaCliente(userId, new Date());
       await saveAltaClienteToFirestore(alta.toFirestoreObject());
-  
+
       logger.info(`🧷 Creando vínculo de tutela con tutor: ${userData.idTutor}`);
       const fechaActual = new Date().toISOString();
       const tutela = new Tutela(fechaActual, null, userData.idTutor, userId);
       await saveTutelaToFirestore(tutela.toFirestoreObject());
-  
+
       logger.info(`✅ Usuario infantil y tutela guardados correctamente`);
       return user;
     } catch (error: any) {
@@ -110,34 +112,45 @@ export class AuthService {
   }
 
   /**
-   * Busca un usuario por DNI y devuelve su información desde Firebase Auth
-   */
+  * Busca un usuario por DNI y devuelve su email, validando su estado y tipo de cuenta.
+  */
   static async getEmailFromDNI(dni: string): Promise<string> {
     logger.info(`🔍 Buscando email asociado al DNI: ${dni}`);
 
+    // 1. Obtener email
     const email = await getEmailByDNI(dni);
-
     if (!email) {
       logger.warn(`⚠️ No se encontró ningún email para el DNI: ${dni}`);
       throw new Error("DNI no encontrado");
     }
-    // Obtener UID
+
+    // 2. Obtener UID
     const uid = await getUIDByDNI(dni);
     if (!uid) {
       logger.error(`❌ No se encontró UID para el DNI: ${dni}`);
       throw new Error("Usuario no encontrado en el sistema");
     }
 
+    // 3. Obtener datos del usuario
+    const userData = await getUserById(uid);
+    if (userData) {
+      const usuario = Usuario.fromFirestore(userData.id, userData);
+      if (usuario.getTipoUsuario() === TipoUsuario.Infantil) {
+        logger.error(`⛔ El DNI ${dni} pertenece a una cuenta infantil.`);
+        throw new Error("Para loggear una cuenta infantil acceda desde la de su tutor");
+      }
+    }
+
+    // 4. Validar que tenga alta activa
     const altaActiva = await getAltaActivaFromFirestore(uid);
     if (!altaActiva) {
       logger.warn(`⛔ El usuario con DNI ${dni} está dado de baja`);
       throw new Error("El usuario actualmente está dado de baja");
     }
 
-
     logger.info(`✅ Email encontrado: ${email}`);
     return email;
-  };
+  }
 
 
   /**
@@ -320,23 +333,81 @@ export class AuthService {
         logger.warn(`⚠️ No se encontró alta activa para el usuario con ID: ${idUsuario}`);
         throw new Error("No hay alta activa para este usuario");
       }
+
       const { id, ...datosAlta } = altaActiva;
-
       const altaUsuario = AltaCliente.fromFirestoreObject(datosAlta);
-      // 2. Preparar la actualización con fecha de baja
-      altaUsuario.setFechaBaja(new Date());
 
-      // 3. Actualizar el documento en Firestore
+      // 2. Establecer fecha de baja
+      const fechaBaja = new Date();
+      altaUsuario.setFechaBaja(fechaBaja);
+
+      // 3. Actualizar alta en Firestore
       await updateAltaCliente(id, altaUsuario.toFirestoreObject());
 
       logger.info(`✅ Usuario con ID ${idUsuario} dado de baja correctamente en alta ID ${altaActiva.id}`);
+
+      // 4. Finalizar tutelas activas donde es tutor
+      const tutelas = await TutelaService.obtenerTutelasPorIdTutor(idUsuario);
+      const activas = tutelas.filter(t => !t.fechaDesvinculacion);
+
+      for (const tutela of activas) {
+        try {
+          await TutelaService.finalizarTutela(tutela.idTutela);
+          logger.info(`🔚 Tutela finalizada: ${tutela.idTutela}`);
+        } catch (e: any) {
+          logger.warn(`⚠️ No se pudo finalizar la tutela ${tutela.idTutela}: ${e.message}`);
+        }
+      }
       return true;
 
     } catch (error: any) {
-      logger.error(`❌ Error en bajaUserService para ID ${idUsuario}: ${error.message}`);
+      logger.error(`❌ Error en bajaUsuario para ID ${idUsuario}: ${error.message}`);
       throw error;
     }
-  };
+  }
+
+  static async bajaUsuarioComoTutelado(idUsuario: string): Promise<boolean> {
+    try {
+      // 1. Obtener el alta activa
+      const altaActiva = await getAltaActivaFromFirestore(idUsuario);
+  
+      if (!altaActiva) {
+        logger.warn(`⚠️ No se encontró alta activa para el usuario con ID: ${idUsuario}`);
+        throw new Error("No hay alta activa para este usuario");
+      }
+  
+      const { id, ...datosAlta } = altaActiva;
+      const altaUsuario = AltaCliente.fromFirestoreObject(datosAlta);
+  
+      // 2. Establecer fecha de baja
+      const fechaBaja = new Date();
+      altaUsuario.setFechaBaja(fechaBaja);
+  
+      // 3. Actualizar alta en Firestore
+      await updateAltaCliente(id, altaUsuario.toFirestoreObject());
+  
+      logger.info(`✅ Usuario con ID ${idUsuario} dado de baja correctamente en alta ID ${altaActiva.id}`);
+  
+      // 4. Finalizar tutelas activas donde es tutelado
+      const tutelas = await TutelaService.obtenerTutelasPorIdTutelado(idUsuario);
+      const activas = tutelas.filter(t => !t.fechaDesvinculacion);
+  
+      for (const tutela of activas) {
+        try {
+          await TutelaService.finalizarTutela(tutela.idTutela);
+          logger.info(`🔚 Tutela finalizada: ${tutela.idTutela}`);
+        } catch (e: any) {
+          logger.warn(`⚠️ No se pudo finalizar la tutela ${tutela.idTutela}: ${e.message}`);
+        }
+      }
+  
+      return true;
+  
+    } catch (error: any) {
+      logger.error(`❌ Error en bajaUsuarioComoTutelado para ID ${idUsuario}: ${error.message}`);
+      throw error;
+    }
+  }
 
 
   static async getCurrentUserLastAlta(userId: string) {
@@ -371,5 +442,37 @@ export class AuthService {
       throw new Error("Error al actualizar los datos del usuario.");
     }
   };
+
+
+  static async compruebaNuevoTutor(dni: string, tarjeta: string): Promise<Usuario> {
+    try {
+      const uid = await getUIDByDNI(dni);
+
+      if (!uid) {
+        throw new Error("No se encontró ningún usuario con ese DNI.");
+      }
+      console.log(uid);
+
+      const rawUser = await getUserById(uid);
+
+      if (!rawUser) {
+        throw new Error("No se pudo recuperar el usuario asociado al DNI.");
+      }
+      const usuario = Usuario.fromFirestore(rawUser.id, rawUser);
+      if (usuario.getTipoUsuario() === TipoUsuario.Infantil) {
+        throw new Error("Un usuario Infantil no puede ser tutor.");
+      }
+
+      if (usuario.getNumTarjeta() !== tarjeta) {
+        throw new Error("El número de tarjeta no coincide con el usuario.");
+      }
+
+      return usuario;
+
+    } catch (error: any) {
+      console.error("❌ Error en compruebaNuevoTutor:", error.message);
+      throw error;
+    }
+  }
 
 }
