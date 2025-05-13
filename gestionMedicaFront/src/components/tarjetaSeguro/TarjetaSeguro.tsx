@@ -10,10 +10,32 @@ import { QRCodeSVG } from 'qrcode.react';
 import { useUser } from "../../context/UserContext"; // ajustá la ruta si es necesario
 
 
-
+/**
+ * Componente principal `TarjetaSeguro`
+ *
+ * Este componente representa la vista de la tarjeta del asegurado.
+ * Su función principal es mostrar al usuario los datos básicos de su seguro,
+ * tales como nombre, fecha de alta y número de tarjeta.
+ * 
+ * Además, incluye funcionalidades para:
+ * - Visualizar un diseño gráfico de la tarjeta personalizada.
+ * - Generar y mostrar un código QR con el número de tarjeta del asegurado.
+ * - Permitir la navegación de regreso a la pantalla anterior.
+ * 
+ * Si los datos del usuario o de alta no están disponibles, se presenta un
+ * spinner de carga con un mensaje informativo.
+ */
 const TarjetaSeguro: React.FC = () => {
-    const { userData, altaClienteData } = useUser();
 
+    /**
+     * VARIABLES
+     */
+    const { userData, altaClienteData } = useUser();
+    const [isOpen, setIsOpen] = useState(false);
+
+    /**
+     * FUNCIONALIDAD
+     */
     const formatearFecha = (fechaTexto: string): string => {
         const fecha = new Date(fechaTexto);
 
@@ -27,11 +49,14 @@ const TarjetaSeguro: React.FC = () => {
     const handleGenerarQR = () => {
         setIsOpen(true);
     };
+
     const handleVolver = () => {
         window.history.back();
     };
-    const [Open, setIsOpen] = useState(false);
-    
+
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -78,7 +103,7 @@ const TarjetaSeguro: React.FC = () => {
                                 </IonButton>
                             </div>
                         </div>
-                        <IonModal isOpen={Open}>
+                        <IonModal isOpen={isOpen}>
                             <IonContent className="ion-padding">
                                 <div className="modalContent">
                                     <div className="tittleContainerModal">
@@ -89,7 +114,14 @@ const TarjetaSeguro: React.FC = () => {
                                     </div>
 
                                     <QRCodeSVG value={userData.numTarjeta} size={250} />
-                                    <IonButton expand="full" shape="round" className="cardButton2" onClick={() => setIsOpen(false)}>Cerrar</IonButton>
+                                    <IonButton
+                                        expand="full"
+                                        shape="round"
+                                        className="cardButton2"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        Cerrar
+                                    </IonButton>
                                 </div>
                             </IonContent>
                         </IonModal>
@@ -123,11 +155,31 @@ const TarjetaSeguro: React.FC = () => {
     );
 };
 
+/**
+ * Componente `Card`
+ *
+ * Este subcomponente se encarga de representar gráficamente la tarjeta de seguro
+ * del usuario. Su diseño imita una tarjeta física, incluyendo detalles como:
+ * - Nombre completo del asegurado.
+ * - Fecha de alta del seguro.
+ * - Número de tarjeta asociado.
+ * - Iconografía decorativa (chip, contacto NFC y logotipo institucional).
+ * 
+ * Recibe las siguientes propiedades:
+ * - `name`: Nombre y apellidos del usuario.
+ * - `dateInit`: Fecha de inicio del seguro, en formato 'DD / MM / AAAA'.
+ * - `numTarjeta`: Número identificativo de la tarjeta del usuario.
+ */
 const Card: React.FC<CardProps> = ({ name, dateInit, numTarjeta }) => {
+
+    /**
+    * RENDER
+    */
     return (
         <div className="creditCard">
             <span className="heading">EASYFARMA</span>
-            <svg version="1.1" className="chip" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30px" height="30px" viewBox="0 0 50 50">
+            <svg version="1.1" className="chip" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30px"
+                height="30px" viewBox="0 0 50 50">
                 <image id="image0" width="50" height="50" x="0" y="0"
                     href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAABGdBTUEAALGPC/xhBQAAACBjSFJN
               AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAB6VBMVEUAAACNcTiVeUKVeUOY
@@ -156,7 +208,8 @@ const Card: React.FC<CardProps> = ({ name, dateInit, numTarjeta }) => {
               MjMtMDItMTNUMDg6MTU6MjkrMDA6MDA0eo8JAAAAKHRFWHRkYXRlOnRpbWVzdGFtcAAyMDIzLTAy
               LTEzVDA4OjE1OjI5KzAwOjAwY2+u1gAAAABJRU5ErkJggg=="/>
             </svg>
-            <svg version="1.1" className="contactless" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20px" height="20px" viewBox="0 0 50 50">
+            <svg version="1.1" className="contactless" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                width="20px" height="20px" viewBox="0 0 50 50">
                 <image id="image0" width="50" height="50" x="0" y="0"
                     href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAQAAAC0NkA6AAAABGdBTUEAALGPC/xhBQAAACBjSFJN
               AAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QA/4ePzL8AAAAJcEhZ

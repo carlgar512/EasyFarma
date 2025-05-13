@@ -4,8 +4,20 @@ import { warningOutline } from "ionicons/icons";
 import React from "react";
 import { DobleConfirmacionProps } from "./DobleConfirmacionInterfaces";
 
-
+/**
+ * Componente DobleConfirmacion
+ * Modal reutilizable que solicita una confirmación final antes de realizar acciones sensibles o destructivas.
+ * Incluye:
+ * - Título e ícono de advertencia
+ * - Mensaje informativo
+ * - Imagen decorativa
+ * - Botones para confirmar o cancelar la acción
+ */
 const DobleConfirmacion: React.FC<DobleConfirmacionProps> = ({ isOpen, tittle, message, img, onConfirm, onCancel }) => {
+
+    /**
+     * RENDER
+     */
     return (
         <IonModal isOpen={isOpen} onDidDismiss={() => onCancel()} >
             <IonHeader>

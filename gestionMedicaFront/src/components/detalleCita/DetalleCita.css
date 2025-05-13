@@ -6,7 +6,7 @@
 }
 
 .contentDetalleCita {
-    --background: var(--ion-color-VerdePastel)!important;
+    --background: var(--ion-color-VerdePastel) !important;
 }
 
 .cabeceraDC {
@@ -15,7 +15,6 @@
     width: 90%;
     justify-content: space-between;
     margin-bottom: 10px;
-
 }
 
 .tituloDC {
@@ -138,7 +137,6 @@
     text-align: center;
 }
 
-
 .badgeEstadoDC.PendienteDC {
     background-color: var(--ion-color-customYellow);
     color: black;
@@ -196,35 +194,36 @@
     align-items: center;
     flex-grow: 1;
     justify-content: flex-end;
-  }
-  
-  
-  .btnDC.cancelar {
+}
+
+
+.btnDC.cancelar {
     --background: var(--ion-color-customRed);
     width: 40%;
-  }
-  
-  .btnDC.eliminar {
+}
+
+.btnDC.eliminar {
     --background: var(--ion-color-customRed);
-  }
-  
-  .btnDC.archivar {
+}
+
+.btnDC.archivar {
     --background: var(--ion-color-customYellow);
     color: black;
-  }
-  
-  .btnDC.desarchivar {
+}
+
+.btnDC.desarchivar {
     --background: var(--ion-color-customYellow);
     color: black;
-  }
-  .buttonTextDC{
+}
+
+.buttonTextDC {
     font-size: 1rem;
     font-weight: bold;
     width: 80%;
-    
-  }
 
-  .buttonActionDC {
+}
+
+.buttonActionDC {
     margin-left: auto;
     --border-radius: 12px;
     --padding-start: 10px;
@@ -239,13 +238,13 @@
     margin-left: 10px;
 }
 
-.fechasContainerDC{
+.fechasContainerDC {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.fechaContentContDC{
+.fechaContentContDC {
     min-height: 50px;
     display: flex;
     gap: 10px;
@@ -254,7 +253,7 @@
     color: var(--ion-color-customDark);
 }
 
-.buttonTextDCMain{
+.buttonTextDCMain {
     display: flex;
     font-weight: bold;
     align-items: center;
@@ -262,9 +261,15 @@
     width: 80%;
 }
 
-.agendaContainerScroll{
+.agendaContainerScroll {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (max-width: 480px) {
+    .buttonTextDC {
+        display: none;
+    }
 }

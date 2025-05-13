@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
 import { useHistory, useLocation } from "react-router-dom";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, IonSpinner, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonContent, IonHeader, IonIcon, IonInput, IonList, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import { addCircleOutline, alertCircleOutline, arrowBackOutline, checkmarkOutline, closeCircleOutline, informationCircleOutline, personAddOutline, trashBinOutline, trashOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
@@ -14,25 +13,57 @@ import NotificationToast from "../notification/NotificationToast";
 import { useUser } from "../../context/UserContext";
 import { backendService } from "../../services/backendService";
 
-
-
-
+/**
+ * DetalleCuentaInfantilWrapper.tsx
+ *
+ * Este componente actúa como wrapper para redirigir a `DetalleCuentaInfantil`,
+ * extrayendo el usuario infantil desde el estado de la navegación (`location.state`).
+ * Se utiliza al seleccionar una cuenta tutelada desde la vista de gestión familiar.
+ *
+ * Props:
+ * - No recibe props directas. El usuario infantil se obtiene desde `useLocation`.
+ *
+ * Renderiza:
+ * - El componente `DetalleCuentaInfantil` pasando el usuario recibido como prop.
+ */
 const DetalleCuentaInfantilWrapper: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const location = useLocation<{ usuario }>();
     const user = location.state?.usuario;
 
-
+    /**
+     * RENDER
+     */
     return <DetalleCuentaInfantil usuario={user} />;
 };
+
+/**
+ * DetalleCuentaInfantilWrapper.tsx
+ *
+ * Este componente actúa como wrapper para redirigir a `DetalleCuentaInfantil`,
+ * extrayendo el usuario infantil desde el estado de la navegación (`location.state`).
+ * Se utiliza al seleccionar una cuenta tutelada desde la vista de gestión familiar.
+ *
+ * Props:
+ * - No recibe props directas. El usuario infantil se obtiene desde `useLocation`.
+ *
+ * Renderiza:
+ * - El componente `DetalleCuentaInfantil` pasando el usuario recibido como prop.
+ */
 const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }) => {
 
+    /**
+     * VARIABLES
+     */
     const [usuarioState, setUsuarioState] = useState(usuario);
     const iniciales = `${usuarioState.nombreUsuario.charAt(0)}${usuarioState.apellidosUsuario.charAt(0)}`.toUpperCase();
     const [loading, setLoading] = useState(true);
     const history = useHistory();
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
     const [isNuevoTutorOpen, setNuevoTutorOpen] = useState<boolean>(false);
-
     const [tutores, setTutores] = useState<any[]>([]);
     const [toast, setToast] = useState({
         show: false,
@@ -40,6 +71,17 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
         color: "success",
         icon: checkmarkOutline,
     });
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+
+    /**
+     * FUNCIONALIDAD
+     */
     useEffect(() => {
         const fetchTutores = async () => {
             try {
@@ -71,18 +113,8 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
         });
     };
 
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
-
     const handleVolver = () => {
         history.replace('/family-management');
-
-
     };
 
     const bajaUsuarioDobleConf = () => {
@@ -125,6 +157,9 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
         }
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -143,7 +178,6 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
                                     <IonIcon icon={trashOutline} size="large" slot="icon-only" />
                                 </IonButton>
                             </div>
-
 
                             <div className="detalleCuentaDAI">
 
@@ -164,10 +198,15 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
                                 </div>
                                 <div className="lineaInfoDAI">
                                     <span className="atributeDAIText">Fecha de nacimiento:</span>
-                                    <span className="valueDAIText">{usuarioState.fechaNacimiento}</span>
+                                    <span className="valueDAIText">{usuarioState.fechaNacimiento
+                                        ? new Date(usuarioState.fechaNacimiento).toLocaleDateString('es-ES', {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric'
+                                        })
+                                        : "Fecha no disponible"}</span>
                                 </div>
                             </div>
-
 
                             <div className="tutoresSectionDAI">
                                 <div className="tittleDetalleContainerDAI">
@@ -281,11 +320,29 @@ const DetalleCuentaInfantil: React.FC<DetalleCuentaInfantilProps> = ({ usuario }
             />
         </>
     );
-
 };
 
+/**
+ * Componente TutorCard
+ *
+ * Muestra la información básica de un tutor vinculado a una cuenta infantil,
+ * incluyendo nombre, número de tarjeta y fecha de nacimiento.
+ *
+ * Si el tutor mostrado no es el usuario actual, se habilita un botón para eliminarlo
+ * de la relación de tutela. La eliminación está protegida con una confirmación doble
+ * y notificaciones visuales.
+ *
+ * Props:
+ * - tutor: Usuario tutor a mostrar
+ * - tutelado: Usuario infantil asociado
+ * - setLoading: Función para activar/desactivar el estado de carga
+ */
 
 const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) => {
+
+    /**
+     * VARIABLES
+     */
     const iniciales = `${tutor.nombreUsuario.charAt(0)}${tutor.apellidosUsuario.charAt(0)}`.toUpperCase();
     const { userData } = useUser();
     const [toast, setToast] = useState({
@@ -294,7 +351,17 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) =>
         color: "success",
         icon: checkmarkOutline,
     });
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
 
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -304,15 +371,6 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) =>
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
-
 
     const onEliminaTutor = async () => {
         setLoading(true);
@@ -365,6 +423,9 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) =>
         })
     }
 
+    /**
+     * RENDER
+     */
     return (
         <>
 
@@ -378,7 +439,15 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) =>
                     </div>
                     <div className="lineaInfoDAI">
                         <span className="atributeDAIText">Fecha de nacimiento:</span>
-                        <span className="valueDAIText">{tutor.fechaNacimiento}</span>
+                        <span className="valueDAIText">
+                            {tutor.fechaNacimiento
+                                ? new Date(tutor.fechaNacimiento).toLocaleDateString('es-ES',
+                                    {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                    })
+                                : "Fecha no disponible"}</span>
                     </div>
                 </div>
                 <div className="buttonContainerTutorCardDAI">
@@ -390,7 +459,6 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) =>
                     )}
                 </div>
             </div >
-
             <DobleConfirmacion
                 isOpen={dialogState.isOpen}
                 tittle={dialogState.tittle}
@@ -410,23 +478,47 @@ const TutorCard: React.FC<TutorCardProps> = ({ tutor, tutelado, setLoading }) =>
     );
 };
 
-
+/**
+ * Componente modal `NuevoTutor`
+ * 
+ * Permite agregar un nuevo tutor a una cuenta infantil. El usuario debe proporcionar el DNI y número de tarjeta
+ * del tutor que se desea añadir. Se valida si el tutor existe y si no tiene ya una tutela activa con el tutelado.
+ * 
+ * En caso de validación positiva, se muestra una confirmación antes de registrar la nueva tutela.
+ * 
+ * Props:
+ * - `isOpen`: controla si el modal está abierto.
+ * - `onClose`: función para cerrar el modal.
+ * - `idTutelado`: UID del usuario infantil al que se le añadirá el tutor.
+ * - `setLoading`: función para controlar el estado de carga desde el componente padre.
+ */
 const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose, idTutelado, setLoading }) => {
+
+    /**
+     * VARIABLES
+     */
     const [nuevoTutor, setNuevoTutor] = useState({
         dni: "",
         numTarjeta: "",
     });
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
-
     const dniValido = /^[0-9]{8}[A-Z]$/.test(nuevoTutor.dni.trim().toUpperCase());
     const tarjetaValida = /^\d{4} \d{4} \d{4} \d{4}$/.test(nuevoTutor.numTarjeta.trim());
-
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -436,14 +528,6 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose, idTutelado, se
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     const handleAgregar = async () => {
         const tutorFormateado = {
@@ -501,7 +585,6 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose, idTutelado, se
         }
     };
 
-
     const confirmarAgregarTutor = async (tutorUid: string) => {
         onClose();
         cerrarDialogo();
@@ -537,6 +620,9 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose, idTutelado, se
         }
     };
 
+    /**
+     * RENDER
+     */
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onClose}>
             <IonHeader className="headerModalNewTutor">
@@ -636,6 +722,5 @@ const NuevoTutor: React.FC<NuevoTutorProps> = ({ isOpen, onClose, idTutelado, se
         </IonModal>
     );
 };
-
 
 export default DetalleCuentaInfantilWrapper;

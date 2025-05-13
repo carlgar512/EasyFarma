@@ -10,26 +10,43 @@ import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useHistory } from 'react-router-dom';
 import { menuController } from "@ionic/core";
 
+/**
+ * Componente SideMenu
+ * Menú lateral de navegación con operaciones agrupadas por tipo.
+ * Permite navegar por las secciones de la app, mostrar badges personalizados y cerrar sesión con confirmación doble.
+ */
 const SideMenu: React.FC = () => {
 
-    const [isDoubleConfOpen, setDoubleConfOpen] = useState(false);
+    /**
+     * VARIABLES
+     */
+    const history = useHistory();
     const { logout } = useAuth();
-    const [orderOperationType, setOperation] = useState(sortOperations(operations, "type"));
+    const [isDoubleConfOpen, setDoubleConfOpen] = useState(false);
+    const [orderOperationType] = useState(sortOperations(operations, "type"));
+   
+    /**
+      * FUNCIONALIDAD
+      */
+
+    // Cerrar sesión con confirmación
     const logOut = () => {
         setDoubleConfOpen(false);
         logout();
         window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
     };
-    const history = useHistory();
+    
+    // Navegar a una operación y cerrar el menú
     const handleOperation = async (url: string) => {
         await menuController.close("mainMenu");
         history.push(url);
     }
 
+    // Mostrar badges dinámicos según la operación
     const getOperationBadge = (operationId: number): JSX.Element | null => {
         let badgeText = "";
         let badgeClass = "";
-    
+
         switch (operationId) {
             case 2:
                 badgeText = "Favoritos";
@@ -53,8 +70,10 @@ const SideMenu: React.FC = () => {
         }
         return <div className={`customBadge ${badgeClass}`} slot="end">{badgeText}</div>;
     };
-    
 
+    /**
+      * RENDER
+      */
     return (
         <>
             <IonMenu menuId="mainMenu" className="sideMenu" type="overlay" contentId="main-content">

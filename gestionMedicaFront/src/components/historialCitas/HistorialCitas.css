@@ -15,6 +15,7 @@
     min-height: 90%;
     justify-content: space-between;
     align-items: center;
+    min-height: 90%;
 }
 
 .buttonContainerCitas {
@@ -161,13 +162,10 @@
     gap: 8px;
 }
 
-
-
 .cita-card-body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
     gap: 12px;
 }
 
@@ -190,7 +188,8 @@
     font-size: 1rem;
     --background: var(--ion-color-customDark);
 }
-.verDetalleContainer{
+
+.verDetalleContainer {
     height: 100%;
     display: flex;
     justify-content: center;
@@ -205,7 +204,6 @@
     display: inline-block;
     text-align: center;
 }
-
 
 /* Estilos según estado */
 .Pendiente {
@@ -222,23 +220,25 @@
 }
 
 .Archivado {
-    background-color: #d9d9d9; /* Gris claro */
-  color: #595959;           /* Gris oscuro para el texto */
+    background-color: #d9d9d9;
+    /* Gris claro */
+    color: #595959;
+    /* Gris oscuro para el texto */
 }
 
-.citaButtonArchive{
+.citaButtonArchive {
     --background: var(--ion-color-customYellow);
     color: black;
 }
 
-.cita-buttonElim{
+.cita-buttonElim {
     --background: var(--ion-color-customRed);
 
 }
+
 .cita-buttonElim:hover,
 .citaButtonArchive:hover,
-.ver-detalle-btn:hover
- {
+.ver-detalle-btn:hover {
     transform: scale(1.02);
     transition: 0.3s ease-in-out;
 }
@@ -250,17 +250,16 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
-   
 }
 
-.buttonTextCitasArchivados{
-   font-weight:  bold;
-   display: flex;
-   justify-content: center;
-   width: 80%;
+.buttonTextCitasArchivados {
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    width: 80%;
 }
 
-.buttonCitasArchivadas{
+.buttonCitasArchivadas {
     --background: var(--ion-color-customYellow);
     color: black;
     width: 90%;

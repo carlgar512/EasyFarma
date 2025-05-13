@@ -13,11 +13,36 @@ import { useUser } from "../../context/UserContext";
 import { InfoUserDTO, UserType } from "../../shared/interfaces/frontDTO";
 import { backendService } from "../../services/backendService";
 
+
+/**
+ * Componente `ModificaPerfil`
+ *
+ * Este componente permite al usuario visualizar y modificar algunos de sus datos personales,
+ * tales como dirección, teléfono, correo electrónico y contraseña. Además, permite confirmar la
+ * identidad del usuario mediante una verificación de contraseña antes de realizar cualquier cambio sensible.
+ *
+ * Funcionalidades clave:
+ * - Visualización de los datos personales del usuario.
+ * - Edición controlada de campos modificables.
+ * - Autenticación previa mediante modal antes de permitir cambios.
+ * - Llamadas al backend para persistir cambios y actualización del contexto de usuario.
+ * - Gestión de dos modales: uno para verificación de contraseña y otro para editar el valor.
+ * - Muestra feedback de carga si los datos no están listos.
+ */
 const ModificaPerfil: React.FC = () => {
 
+    /**
+     * VARIABLES
+     */
     const { userData, setUserData } = useUser();
     const [loading, setLoading] = useState(false);
+    const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
+    const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+    const [campoEditando, setCampoEditando] = useState<keyof InfoUserDTO | null | "password">(null);
 
+    /**
+     * FUNCIONALIDAD
+     */
     const handleCambiarContraseña = () => {
         setCampoEditando("password");
         setIsModalCheckOpen(true);
@@ -70,12 +95,9 @@ const ModificaPerfil: React.FC = () => {
         }
     };
 
-
-    const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
-    const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
-    const [campoEditando, setCampoEditando] = useState<keyof InfoUserDTO | null | "password">(null);
-
-
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -118,7 +140,15 @@ const ModificaPerfil: React.FC = () => {
 
                                 <DatoUsuario
                                     label="Fecha de nacimiento:"
-                                    value={userData?.fechaNacimiento}
+                                    value={
+                                        userData?.fechaNacimiento
+                                            ? new Date(userData.fechaNacimiento).toLocaleDateString('es-ES', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                            })
+                                            : ''
+                                    }
                                     editable={false}
                                     setIsModalOpen={() => setIsModalCheckOpen(true)}
                                 />
@@ -237,10 +267,25 @@ const ModificaPerfil: React.FC = () => {
 };
 
 
-
+/**
+ * Componente DatoUsuario
+ * 
+ * Este componente representa un campo informativo del perfil de usuario,
+ * mostrando una etiqueta (`label`) y su valor (`value`). Si el campo es editable,
+ * se muestra un botón con un icono de edición que permite lanzar una acción externa
+ * definida por `setIsModalOpen`.
+ * 
+ * Props:
+ * - label: nombre del campo (ej. "Nombre", "Email").
+ * - value: valor actual del campo.
+ * - editable: booleano que indica si se permite la edición.
+ * - setIsModalOpen: función que se ejecuta al hacer clic en el botón de edición.
+ */
 const DatoUsuario: React.FC<DatoUsuarioProps> = ({ label, value, editable, setIsModalOpen }) => {
 
-
+    /**
+     * RENDER
+     */
     return (
         <div className="form-itemMP">
             <label className="form-labelMP">{label}</label>
@@ -256,14 +301,31 @@ const DatoUsuario: React.FC<DatoUsuarioProps> = ({ label, value, editable, setIs
                     </IonButton>
                 )}
             </div>
-
         </div>
-
     );
 };
 
 
-
+/**
+ * Componente ModalCambioDatoRegular
+ *
+ * Este componente representa un modal reutilizable destinado a modificar diferentes campos del perfil del usuario,
+ * tales como dirección, email, teléfono, contraseña, entre otros. Gestiona la validación, confirmación y envío de los
+ * nuevos valores, así como la lógica específica según el tipo de dato a modificar.
+ *
+ * Props:
+ * - isOpen: controla si el modal está abierto.
+ * - setIsModalOpen: función para cerrar el modal.
+ * - campo: campo del perfil a modificar ("email", "telefono", "direccion", etc.).
+ * - valor: valor actual del campo.
+ * - onGuardar: función que se ejecuta al confirmar la actualización; debe devolver un booleano de éxito.
+ *
+ * Características clave:
+ * - Incluye validación personalizada por tipo de dato.
+ * - Presenta una segunda pantalla de confirmación antes de actualizar.
+ * - Admite campos especiales como contraseñas y direcciones (con soporte de selección desde mapa).
+ * - Muestra feedback visual (toasts) según el resultado de la operación.
+ */
 const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     isOpen,
     setIsModalOpen,
@@ -271,6 +333,10 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     valor,
     onGuardar
 }) => {
+
+    /**
+     * VARIABLES
+     */
     const [nuevoValor, setNuevoValor] = useState(valor);
     const [cargando, setCargando] = useState(false);
     const [nuevaPassword, setNuevaPassword] = useState("");
@@ -278,12 +344,6 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     const [showPassword, setShowPassword] = useState(false);
     const [nuevaDireccion, setNuevaDireccion] = useState("");
     const [finalCheck, setfinalCheck] = useState(false);
-
-
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -291,6 +351,9 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
         icon: checkmarkOutline,
     });
 
+    /**
+     * FUNCIONALIDADES
+     */
     useEffect(() => {
         if (campo === "direccion") {
             setNuevaDireccion(valor);
@@ -302,6 +365,9 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
         setConfirmPassword("");
     }, [valor]);
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleActualizar = async () => {
         setfinalCheck(false);
@@ -360,7 +426,6 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
         }
     };
 
-
     const handleCerrar = () => {
         setfinalCheck(false);
         setNuevoValor(valor); // Resetea
@@ -386,7 +451,7 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
     const esDniValido = (dni: string) => {
         // DNI español: 8 dígitos + letra
         return /^[0-9]{8}[A-Za-z]$/.test(dni);
-      };
+    };
 
     const esTelefonoValido = (telefono: string) => {
         return /^[0-9]{9}$/.test(telefono); // 9 dígitos, solo números
@@ -426,6 +491,9 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
         );
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <IonModal isOpen={isOpen} onDidDismiss={handleCerrar}>

@@ -222,7 +222,7 @@
 
 /*  CREDIT CARD #########################################################*/
 
-.contentTACentralTC{
+.contentTACentralTC {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -232,7 +232,7 @@
 
 }
 
-.spinnerContainerTC{
+.spinnerContainerTC {
     background: var(--ion-color-customUltraLight);
     display: flex;
     justify-content: center;
@@ -245,7 +245,7 @@
     max-width: 1000px;
 }
 
-.textSpinner{
+.textSpinner {
     font-size: 1.1rem;
     color: var(--ion-color-customDark);
     font-weight: bold;

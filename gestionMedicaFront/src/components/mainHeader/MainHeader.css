@@ -6,7 +6,6 @@
     justify-content: center;
 }
 
-
 .principalBar {
     display: flex;
     flex-direction: column;
@@ -25,9 +24,19 @@
     padding-top: 20px;
     color: var(--ion-color-customUltraLight);
     --border-color: var(--ion-color-customUltraLight) !important;
+    transition: transform 0.2s ease;
 }
 
-.tittleBarText{
+.tittleBarText {
     font-size: 1.2rem;
     font-weight: bold;
+}
+
+.upperButton:hover {
+    transform: scale(1.08);
+    filter: brightness(1.2);
+}
+
+.upperButton:active {
+    transform: scale(0.95);
 }

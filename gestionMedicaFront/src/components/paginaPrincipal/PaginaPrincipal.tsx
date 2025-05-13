@@ -18,14 +18,37 @@ import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import { useHistory } from "react-router-dom";
 import { CitaCard } from "../historialCitas/HistorialCitas";
+import { TELEFONOS } from "../../shared/telefonos";
 
 
+/**
+ * Componente `PaginaPrincipal`
+ *
+ * Este componente representa la vista principal del usuario tras iniciar sesión. Su función es servir como panel de control personalizado
+ * mostrando diferentes secciones según el tipo de usuario (modo estándar o modo accesibilidad).
+ *
+ * Funcionalidades principales:
+ * - Mostrar un saludo inicial al usuario.
+ * - Renderizar un carrusel de operaciones disponibles y sus favoritas.
+ * - Mostrar las citas médicas próximas (agenda).
+ * - Listar los médicos favoritos del usuario con detalles de centro y especialidad.
+ * - Proporcionar acceso directo al soporte telefónico.
+ * - Cambiar entre secciones adaptadas al modo de accesibilidad.
+ *
+ * También maneja:
+ * - Lógica para cargar citas, médicos, centros y especialidades desde el backend.
+ * - Visualización de errores mediante `NotificationToast`.
+ * - Renderización condicional de secciones basada en el modo de accesibilidad del usuario.
+ */
 
 const PaginaPrincipal: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const [orderOperationType] = useState(sortOperations(operations, "type"));
     const [operacionesFavoritas, setOperacionesFavoritas] = useState<Operation[]>([]);
     const [loadingCitas, setLoadingCitas] = useState(true);
-
     const { userData } = useUser();
     const [medicos, setMedicos] = useState<MedicoDTO[]>([]);
     const [medicosFavoritos, setMedicosFavoritos] = useState<MedicoDTO[]>([]);
@@ -38,8 +61,11 @@ const PaginaPrincipal: React.FC = () => {
         color: "success",
         icon: checkmarkOutline,
     });
+    const [pantallaActiva, setPantallaActiva] = useState<"operaciones" | "medicos" | "asistencia" | null>(null);
 
-
+    /**
+     * FUNCIONALIDAD
+     */
     const fetchCitas = async () => {
         if (!userData?.uid) return;
         setLoadingCitas(true);
@@ -119,8 +145,9 @@ const PaginaPrincipal: React.FC = () => {
         return [...operacionesFavoritas, ...noFavoritas];
     };
 
-    const [pantallaActiva, setPantallaActiva] = useState<"operaciones" | "medicos" | "asistencia" | null>(null);
-
+    /**
+     * RENDER
+     */
     if (!userData) {
         return (
             <>
@@ -309,13 +336,27 @@ const PaginaPrincipal: React.FC = () => {
 };
 
 
-
+/**
+ * Componente `OperationCard`
+ *
+ * Este componente representa una tarjeta visual e interactiva para una operación del sistema.
+ * Muestra el icono, imagen, título y descripción de la operación, permitiendo al usuario:
+ *
+ * - Acceder directamente a la URL asociada a la operación (redirección al hacer clic en la tarjeta).
+ * - Marcar o desmarcar la operación como favorita mediante un botón con icono de estrella.
+ * - Confirmar la eliminación de una operación de favoritos mediante un diálogo de doble confirmación.
+ * - Ver notificaciones emergentes (toast) al realizar acciones sobre favoritos.
+ *
+ * También sincroniza el estado de favoritos con el backend y actualiza el contexto del usuario tras cada cambio.
+ */
 const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
+
+    /**
+     * VARIABLES
+     */
     const [isLiked, setIsLiked] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const { userData, setUserData } = useUser();
-
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -323,6 +364,9 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
         icon: checkmarkOutline,
     });
 
+    /**
+    * FUNCIONALIDAD
+    */
     useEffect(() => {
         if (userData?.operacionesFavoritas?.includes(operation.id.toString())) {
             setIsLiked(true);
@@ -330,7 +374,6 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
             setIsLiked(false);
         }
     }, [userData, operation.id]);
-
 
     const onFavoritoOperacionClick = async () => {
         if (!userData || !userData.operacionesFavoritas) return;
@@ -389,10 +432,12 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
         window.location.assign(operation.url);
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <div className="operationCard" onClick={redirectTo}>
-
                 <IonCardHeader className="cardHeader">
                     <IonCardTitle className="cardTitle">
                         <IonIcon
@@ -444,15 +489,33 @@ const OperationCard: React.FC<OperationCardProps> = ({ operation }) => {
                 onCancel={() => setShowConfirm(false)}
             />
         </>
-
     );
 };
 
-
+/**
+ * Componente `EmergecyCall`
+ *
+ * Este componente proporciona una funcionalidad de acceso rápido para llamadas de emergencia.
+ * Se renderiza como un botón flotante "S.O.S" en la parte inferior de la pantalla.
+ *
+ * Funcionalidades clave:
+ * - Al hacer clic, despliega un panel con un botón para iniciar una llamada de emergencia.
+ * - Solo permite realizar la llamada si el dispositivo es móvil (verificado por `userAgent`).
+ * - Si no es móvil, muestra una alerta indicando el número a llamar manualmente.
+ * - El panel se cierra automáticamente al hacer clic fuera de su área.
+ *
+ * Uso común en la pantalla principal o en vistas accesibles, ofreciendo asistencia rápida.
+ */
 const EmergecyCall: React.FC = () => {
+    /**
+     * VARIABLES
+     */
     const [showEmergency, setShowEmergency] = useState(false);
     const panelRef = useRef<HTMLDivElement>(null);
 
+    /**
+     * FUNCIONALIDAD
+     */
     const handleEmergencyCall = () => {
         if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
             window.location.href = 'tel:+34679761132';
@@ -482,6 +545,9 @@ const EmergecyCall: React.FC = () => {
         };
     }, [showEmergency]);
 
+    /**
+     * RENDER
+     */
     return (
         <>
             {showEmergency && (
@@ -495,7 +561,6 @@ const EmergecyCall: React.FC = () => {
                     </div>
                 </>
             )}
-
             <IonFab horizontal="center" vertical="bottom" slot="fixed">
                 <IonFabButton
                     className="emergencyButton"
@@ -509,17 +574,30 @@ const EmergecyCall: React.FC = () => {
                 </IonFabButton>
             </IonFab>
         </>
-
     );
 };
 
-
+/**
+ * Componente `Bienvenida`
+ *
+ * Este componente muestra un mensaje personalizado de saludo al usuario, adaptado a la hora del día
+ * (mañana, tarde o noche), junto con la fecha actual y una cita motivacional relacionada con la salud.
+ *
+ * Funcionalidades clave:
+ * - Detecta la hora local para mostrar "Buenos días", "Buenas tardes" o "Buenas noches".
+ * - Recupera el nombre del usuario desde el contexto (`useUser`).
+ * - Muestra dinámicamente una frase aleatoria de una lista de citas inspiradoras de salud.
+ * - Visualmente presenta el logo de la app junto a un diseño dividido en izquierda (texto) y derecha (imagen).
+ *
+ * Este componente está diseñado para mejorar la experiencia del usuario al entrar en la página principal.
+ */
 const Bienvenida: React.FC = () => {
-
+    /**
+     * VARIABLES
+     */
     const fecha = new Date();
     const hora = fecha.getHours();
     const { userData } = useUser();
-
     const healthQuotes = [
         { quote: "Cuida tu cuerpo. Es el único lugar que tienes para vivir.", author: "Jim Rohn" },
         { quote: "La salud es la mayor posesión. La alegría es el mayor tesoro.", author: "Lao Tse" },
@@ -542,7 +620,6 @@ const Bienvenida: React.FC = () => {
         { quote: "La felicidad es la forma más elevada de la salud.", author: "Dalai Lama" },
         { quote: "Invertir en salud no es un gasto, es una inversión.", author: "Desconocido" }
     ];
-
     const saludo =
         hora < 12
             ? "Buenos días"
@@ -553,12 +630,15 @@ const Bienvenida: React.FC = () => {
     const diaSemana = fecha.toLocaleDateString("es-ES", { weekday: "long" });
     const dia = fecha.getDate();
     const mes = fecha.toLocaleDateString("es-ES", { month: "long" });
+    const [quote, setQuote] = useState<{ quote: string; author: string } | null>(null);
+
+    /**
+     * FUNCIONALIDAD
+     */
     const getRandomHealthQuote = () => {
         const randomIndex = Math.floor(Math.random() * healthQuotes.length);
         return healthQuotes[randomIndex];
     };
-
-    const [quote, setQuote] = useState<{ quote: string; author: string } | null>(null);
 
     useEffect(() => {
         setQuote(getRandomHealthQuote());
@@ -567,6 +647,10 @@ const Bienvenida: React.FC = () => {
     const nombreCompleto = userData?.nombreUsuario || userData?.apellidosUsuario
         ? `${userData?.nombreUsuario || ""} ${userData?.apellidosUsuario || ""}`.trim()
         : "Usuario";
+
+    /**
+     * RENDER
+     */
     return (
         <div className="bienvenidaCard">
             <div className="topBienvenida">
@@ -579,14 +663,12 @@ const Bienvenida: React.FC = () => {
                     <IonImg src="EasyFarmaLogo.png" className="logoImgPrincipal"></IonImg>
                 </div>
             </div>
-
             {quote && (
                 <div className="motivationalQuote">
                     <p>“{quote.quote}”</p>
                     <span>– {quote.author}</span>
                 </div>
             )}
-
         </div>
     );
 };
@@ -596,29 +678,49 @@ const soporteData: SoporteTelefonicoCard[] = [
     {
         icon: callOutline,
         title: "Atención al Cliente",
-        phone: "900123456",
+        phone: TELEFONOS.SOPORTE,
+        phoneVisible: TELEFONOS.SOPORTEVISIBLE,
         description: "Resuelve tus dudas administrativas",
     },
     {
         icon: medkitOutline,
         title: "Ambulancia Urgente",
-        phone: "112",
+        phone: TELEFONOS.TEL112,
+        phoneVisible: TELEFONOS.TEL112VISIBLE,
         description: "Emergencias médicas inmediatas",
     },
     {
         icon: shieldCheckmarkOutline,
         title: "Seguro Médico",
-        phone: "902765432",
+        phone: TELEFONOS.SEGURO,
+        phoneVisible: TELEFONOS.SOPORTEVISIBLE,
         description: "Contacta con tu aseguradora",
     },
     {
         icon: informationCircleOutline,
         title: "Soporte Farmacéutico",
-        phone: "911223344",
+        phone: TELEFONOS.FARMACIA,
+        phoneVisible: TELEFONOS.SOPORTEVISIBLE,
         description: "Consulta sobre tratamientos y medicación",
     },
 ];
 
+/**
+ * SoporteTelefonico.tsx
+ *
+ * Este componente muestra un grid de tarjetas con accesos rápidos a teléfonos de soporte,
+ * incluyendo atención al cliente, emergencias, aseguradora y soporte farmacéutico.
+ * 
+ * Los datos se centralizan en `soporteData`, donde cada tarjeta incluye:
+ * - Un icono representativo
+ * - Un título
+ * - Descripción breve del servicio
+ * - Número telefónico real (`phone`) y visible (`phoneVisible`)
+ *
+ * Cada tarjeta permite hacer una llamada directa desde dispositivos compatibles,
+ * utilizando enlaces `tel:`. Los teléfonos están referenciados desde constantes centralizadas (`TELEFONOS`)
+ * para facilitar su mantenimiento.
+ */
 const SoporteTelefonico: React.FC = () => (
     <div className="soporteTelefonoGrid">
         {soporteData.map((item, index) => (
@@ -627,7 +729,7 @@ const SoporteTelefonico: React.FC = () => (
                 <div className="telefonoInfo">
                     <h4>{item.title}</h4>
                     {item.description && <p>{item.description}</p>}
-                    <span>{item.phone}</span>
+                    <span>{item.phoneVisible}</span>
                 </div>
             </a>
         ))}
@@ -635,14 +737,20 @@ const SoporteTelefonico: React.FC = () => (
 );
 
 const CarouselSection: React.FC<CarouselSectionProps> = ({ data, CardComponent, propMapper, loading }) => {
+
+    /**
+     * VARIABLES
+     */
     const sliderRef = useRef<HTMLDivElement>(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [itemsPerPage, setItemsPerPage] = useState<number | null>(null);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
     const cardWidth = 336; // 320 + 16
 
+    /**
+     * FUNCIONALIDAD
+     */
     // Detectar cambio de tamaño de pantalla
     useEffect(() => {
         const handleResize = () => {
@@ -740,6 +848,9 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ data, CardComponent, 
         }
     }, [itemsPerBlock]);
 
+    /**
+     * RENDER
+     */
     if (loading) {
         return (
             <div className="cardCarouselContainer empty">
@@ -808,23 +919,51 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({ data, CardComponent, 
     );
 };
 
+
+/**
+ * Componente CarouselSection
+ *
+ * Este componente renderiza una sección en forma de carrusel horizontal adaptable, que muestra tarjetas (cards)
+ * con contenido variable definido por un componente hijo (`CardComponent`) y una lista de datos (`data`).
+ * 
+ * Características principales:
+ * - Calcula automáticamente cuántos elementos caben por página dependiendo del tamaño de pantalla.
+ * - Muestra navegación por botones en escritorio y barra de progreso en móvil.
+ * - Soporta mapeo de props personalizados a través de `propMapper`.
+ * - Permite mostrar estados de carga o vacío.
+ * 
+ * Props:
+ * - `data`: array de elementos a mostrar.
+ * - `CardComponent`: componente de tarjeta a renderizar por cada ítem.
+ * - `propMapper` (opcional): función para transformar cada item a props del `CardComponent`.
+ * - `loading` (opcional): si está activo, se muestra un spinner en lugar del contenido.
+ */
 const MedicoCardSimplified: React.FC<MedicoCardSimplifiedProps> = ({ medico, especialidad, centro }) => {
 
+    /**
+     * VARIABLES
+     */
     const history = useHistory();
     const { userData, setUserData } = useUser();
     const [isFavorito, setIsFavorito] = useState<boolean>(() =>
         userData?.medicosFavoritos.includes(medico.uid) ?? false
     );
-
-
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
-
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -834,14 +973,6 @@ const MedicoCardSimplified: React.FC<MedicoCardSimplifiedProps> = ({ medico, esp
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     const onFavoritoDobleCheck = () => {
         if (!userData || !userData.medicosFavoritos) return;
@@ -929,6 +1060,9 @@ const MedicoCardSimplified: React.FC<MedicoCardSimplifiedProps> = ({ medico, esp
         });
     };
 
+    /**
+     * RENDER
+     */
     return (
         <div className="medicoCardSimplified">
             <div className="medicoTopRow">
@@ -987,7 +1121,34 @@ const MedicoCardSimplified: React.FC<MedicoCardSimplifiedProps> = ({ medico, esp
 };
 
 
+/**
+ * Componente AgendaPaciente
+ *
+ * Este componente muestra al usuario su próxima cita médica de forma destacada.
+ * También incluye un acceso directo a la sección "Mis Citas" para ver el historial completo.
+ *
+ * Funcionalidades:
+ * - Ordena todas las citas cronológicamente por fecha (formato dd-mm-yyyy).
+ * - Muestra un estado de carga si `loading` es true.
+ * - Muestra una cita destacada (la más próxima) si existen citas.
+ * - Muestra un mensaje amigable si no hay citas disponibles.
+ * - Integra una tarjeta interactiva (`CitaCard`) para mostrar la próxima cita.
+ *
+ * Props:
+ * - `citas`: lista de citas médicas asociadas al usuario.
+ * - `onActualizar`: callback para refrescar datos tras acciones internas.
+ * - `loading`: estado de carga para manejar UI mientras se obtiene la información.
+ */
 export const AgendaPaciente: React.FC<AgendaPacienteProps> = ({ citas, onActualizar, loading }) => {
+
+    /**
+     * VARIABLES
+     */
+
+
+    /**
+     * FUNCIONALIDAD
+     */
 
     // Ordenar las citas por fecha (más próximas primero)
     // Ordenar las citas por fecha real (si vienen como "dd-mm-yyyy")
@@ -1005,6 +1166,9 @@ export const AgendaPaciente: React.FC<AgendaPacienteProps> = ({ citas, onActuali
     // Tomamos la siguiente cita (la más próxima)
     const siguienteCita = citasOrdenadas[0];
 
+    /**
+     * RENDER
+     */
     if (loading) {
         return (
             <div className="cardCarouselContainer empty">
@@ -1018,7 +1182,7 @@ export const AgendaPaciente: React.FC<AgendaPacienteProps> = ({ citas, onActuali
 
     if (!citas || citas.length === 0) {
         return (
-            
+
             <div className="cardCarouselContainer empty">
                 <div className="emptyCarouselContent">
                     <IonImg src="NoData.svg" alt="Sin elementos" className="emptyIcon" />
@@ -1058,8 +1222,29 @@ export const AgendaPaciente: React.FC<AgendaPacienteProps> = ({ citas, onActuali
     );
 };
 
-
+/**
+ * Componente ModoAccesibilidad
+ *
+ * Este componente muestra una interfaz simplificada y adaptada para usuarios en modo de accesibilidad.
+ * Presenta botones grandes y claros que permiten acceder a funciones clave del sistema.
+ *
+ * Funcionalidades:
+ * - Muestra un saludo personalizado al usuario.
+ * - Ofrece accesos directos a:
+ *   - Agenda de citas
+ *   - Operaciones frecuentes
+ *   - Lista de médicos
+ *   - Asistencia telefónica
+ * - Cambia la pantalla activa cuando se selecciona una opción sin navegación (`onClick`).
+ *
+ * Props:
+ * - `setPantallaActiva`: función que permite cambiar la sección visible según la acción del usuario.
+ */
 const ModoAccesibilidad: React.FC<ModoAccesibilidadProps> = ({ setPantallaActiva }) => {
+
+    /**
+     * VARIABLES
+     */
     const { userData } = useUser();
     const botones = [
         { label: "Ver mi agenda", icon: calendarOutline, class: "btn-agenda", route: "/appointment-history?tipo=actuales" },
@@ -1068,6 +1253,9 @@ const ModoAccesibilidad: React.FC<ModoAccesibilidadProps> = ({ setPantallaActiva
         { label: "Llamar a asistencia", icon: callOutline, class: "btn-asistencia", onClick: () => setPantallaActiva("asistencia") },
     ];
 
+    /**
+     * RENDER
+     */
     return (
         <div className="modoAccesibilidadContainer">
             <div className="topAccesibilidadPrincipal">

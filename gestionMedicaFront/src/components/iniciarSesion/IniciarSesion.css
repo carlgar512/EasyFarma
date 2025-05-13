@@ -1,155 +1,179 @@
 .top-BarBackgroundSes {
-    --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
-    --width: 100%;
-  }
+  --background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
+  --width: 100%;
+}
 
-  .topBarSes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    color: white;
-    font-family: var(--font-primary);
-  }
-  .left-contentSes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    flex-grow: 1; /* Esto hace que ocupe el espacio central */
-    margin-left: 10px;
-  }
-  .leaveButtonSes{
-    width: 7%;
-    margin-right: 10px;
-  }
+.topBarSes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: white;
+  font-family: var(--font-primary);
+}
 
-  .titleSes {
-    font-size: 1rem;
-   
-  }
-  .spinnerBackground{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 60%;
-    height: 40%;
-    gap: 20px;
-    align-items: center;
-    background: var(--ion-color-customUltraLight);
-    padding: 10px;
-    border-radius: 36px;;
-  }
+.left-contentSes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-grow: 1;
+  /* Esto hace que ocupe el espacio central */
+  margin-left: 10px;
+}
 
-  .mensajeSpinner{
-    font-family: var(--font-primary);
-    font-weight: bold;
-    color: var(--ion-color-customDark);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
+.leaveButtonSes {
+  width: 7%;
+  margin-right: 10px;
+}
 
-  .spinner{
-    height:25%;
-    width:25%;
-    --color:var(--ion-color-customMedium);
-  }
-  
-  .contentSes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
-  }
+.titleSes {
+  font-size: 1rem;
 
-  .form-containerSes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    gap: 10px;
-    flex-direction: column;
-  }
+}
 
-  .sesImg{
-    max-width: 260px;
-  }
+.spinnerBackground {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: min(90%, 400px);
+  height: auto;
+  padding: 2rem;
+  gap: 1.5rem;
+  background: var(--ion-color-customUltraLight);
+  border-radius: 36px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
 
-  .form-cardSes {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 90%;
-    max-width: 1000px;
-    height: auto;
-    background: var(--ion-color-customUltraLight);
-    padding: 20px;
-    margin: 10px;
-    border-radius: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
+.mensajeSpinner {
+  font-family: var(--font-primary);
+  font-weight: bold;
+  color: var(--ion-color-customDark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
-  .form-itemSes {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    gap: 100px;
-    border-radius: 36px;
-  }
+.spinner {
+  height: 25%;
+  width: 25%;
+  --color: var(--ion-color-customMedium);
+}
 
-  .form-labelSes {
-    display: flex;
-    width: 100%;
-    text-align: center;
-    font-family: var(--font-primary);
-  }
+.contentSes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
 
-  .titleSes {
-    text-align: center;
-    font-size: 1.2rem;
-    padding: 15px;
-  }
+.form-containerSes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  gap: 10px;
+  flex-direction: column;
+}
 
+.sesImg {
+  max-width: 260px;
+}
 
-  .custom-buttonSes {
-    --background: var(--ion-color-customDark);
-    --color: white;
-  
- 
-    border-radius: 16px;
-    font-weight: bold;
-  }
-  .custom-button2Ses {
-    --background: var(--ion-color-customMedium);
-    --color: white;
-    border-radius: 16px;
-    font-weight: bold;
-  }
+.form-cardSes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 90%;
+  max-width: 1000px;
+  height: auto;
+  background: var(--ion-color-customUltraLight);
+  padding: 20px;
+  margin: 10px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
-  .custom-button3Ses {
-    --background: var(--ion-color-customYellow);
-    --color: black;
-    border-radius: 16px;
-    font-weight: bold;
-  }
+.form-itemSes {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  border-radius: 36px;
+}
+
+.form-labelSes {
+  display: flex;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-primary);
+}
+
+.titleSes {
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 15px;
+}
 
 
-.buttonText{
+.custom-buttonSes {
+  --background: var(--ion-color-customDark);
+  --color: white;
+
+
+  border-radius: 16px;
+  font-weight: bold;
+}
+
+.custom-button2Ses {
+  --background: var(--ion-color-customMedium);
+  --color: white;
+  border-radius: 16px;
+  font-weight: bold;
+}
+
+.custom-button3Ses {
+  --background: var(--ion-color-customYellow);
+  --color: black;
+  border-radius: 16px;
+  font-weight: bold;
+}
+
+
+.buttonText {
+  display: inline;
   width: 80%;
   font-weight: 600;
 }
 
-.custom-buttonSes:hover, 
-.custom-button2Ses:hover, 
+.buttonTextMobile {
+  display: none;
+  width: 80%;
+  font-weight: 600;
+}
+
+.custom-buttonSes:hover,
+.custom-button2Ses:hover,
 .custom-button3Ses:hover,
 .leaveButtonSes:hover {
   transform: scale(1.02);
   transition: 0.3s ease-in-out;
+}
+
+@media (max-width: 600px) {
+  .buttonText {
+    display: none;
+  }
+
+  .buttonTextMobile {
+    display: inline;
+  }
 }

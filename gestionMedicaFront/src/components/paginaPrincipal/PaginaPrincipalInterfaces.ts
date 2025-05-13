@@ -9,6 +9,7 @@ export interface SoporteTelefonicoCard {
     icon: string;
     title: string;
     phone: string;
+    phoneVisible:string;
     description?: string;
 }
 

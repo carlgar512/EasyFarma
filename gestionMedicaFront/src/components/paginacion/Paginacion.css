@@ -8,6 +8,7 @@
     width: 100%;
     max-width: 100%;
 }
+
 .paginationContainer {
     display: flex;
     justify-content: center;
@@ -64,10 +65,33 @@
     cursor: not-allowed;
 }
 
-.bigContainer{
+.bigContainer {
     display: flex;
     gap: 20px;
     width: 90%;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
+    /* permite caída pero controlada */
+    padding: 0 1rem;
+}
+
+@media (max-width: 600px) {
+    .paginationWrapper {
+        padding: 0 0.5rem;
+    }
+
+    .bigContainer {
+        gap: 3px;
+    }
+
+    .paginationButton {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .paginationButton.nav {
+        padding: 6px 8px;
+        font-size: 1rem;
+    }
 }

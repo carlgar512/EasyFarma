@@ -15,7 +15,29 @@ import { useUser } from "../../context/UserContext";
 import { backendService } from "../../services/backendService";
 
 
+/**
+ * Componente: DetalleMedicoWrapper
+ *
+ * Descripción:
+ * Componente contenedor encargado de recibir los datos del médico seleccionados desde 
+ * la navegación previa (mediante `location.state`) y pasarlos al componente 
+ * `DetalleMedico`. Facilita el enrutamiento y garantiza que los datos necesarios
+ * (médico, centro, especialidad y sección activa) se transmitan correctamente.
+ *
+ * Funcionalidad:
+ * - Extrae desde `location.state` los objetos `MedicoDTO`, `CentroDTO`, `EspecialidadDTO`,
+ *   y un flag opcional `seccionAgendarCita`.
+ * - Renderiza el componente `DetalleMedico` con las props obtenidas.
+ *
+ * Consideraciones:
+ * - Este componente asume que la navegación anterior proporciona los datos necesarios en `location.state`.
+ * - En caso de que no se pasen correctamente, `DetalleMedico` debe manejar la validación y fallback apropiado.
+ */
 const DetalleMedicoWrapper: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const location = useLocation<{
         medico: MedicoDTO;
         centro: CentroDTO;
@@ -25,11 +47,43 @@ const DetalleMedicoWrapper: React.FC = () => {
 
     const { medico, centro, especialidad, seccionAgendarCita } = location.state || {};
 
+    /**
+     * RENDER
+     */
     return <DetalleMedico medico={medico} centro={centro} especialidad={especialidad} seccionAgendarCita={seccionAgendarCita} />;
 };
 
+/**
+ * Componente: DetalleMedico
+ *
+ * Descripción:
+ * Este componente muestra la información detallada de un médico, incluyendo su especialidad,
+ * centro de atención, datos de contacto, ubicación y la posibilidad de agendar una cita.
+ * También permite marcar o desmarcar al médico como favorito.
+ *
+ * Props:
+ * - medico: objeto `MedicoDTO` con los datos básicos del médico.
+ * - centro: objeto `CentroDTO` con la información del centro médico asociado.
+ * - especialidad: objeto `EspecialidadDTO` que describe la especialidad del médico.
+ * - seccionAgendarCita: bandera booleana para mostrar directamente la sección de agenda médica.
+ *
+ * Funcionalidad:
+ * - Carga las agendas médicas del profesional.
+ * - Permite agendar nuevas citas médicas.
+ * - Habilita el marcado del médico como favorito, con lógica de confirmación.
+ * - Muestra opciones adicionales como llamada directa al centro (en dispositivos móviles) y visualización en mapa.
+ *
+ * Consideraciones:
+ * - La sección de agenda se desplaza automáticamente a la vista si la prop `seccionAgendarCita` es `true`.
+ * - La información incompleta o ausente se muestra con una indicación visual apropiada.
+ * - Se incluye feedback mediante `IonToast` y diálogos de confirmación (`DobleConfirmacion`).
+ */
 const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especialidad, seccionAgendarCita }) => {
 
+    /**
+     * VARIABLES
+     */
+    const history = useHistory();
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -56,6 +110,9 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         onConfirm: () => { },
     });
 
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -114,12 +171,10 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
                     agendaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100); // ajustable, pero 100ms suele bastar
-    
+
             return () => clearTimeout(scrollTimeout);
         }
     }, [seccionAgendarCitaState, agendas]);
-
-    const history = useHistory();
 
     const handleVolver = () => {
         history.replace("./search-doctor");
@@ -226,6 +281,9 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
         }
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -396,11 +454,36 @@ const DetalleMedico: React.FC<DetalleMedicoProps> = ({ medico, centro, especiali
 }
 
 
+/**
+ * Componente: ModalUbicacion
+ *
+ * Descripción:
+ * Este componente representa un modal que muestra la ubicación de un centro médico
+ * en un mapa interactivo, basado en una dirección proporcionada. Es útil para visualizar
+ * geográficamente dónde se encuentra un médico o centro al que el usuario desea acudir.
+ *
+ * Props:
+ * - isOpen (boolean): indica si el modal debe mostrarse o no.
+ * - onClose (function): función que se ejecuta al cerrar el modal.
+ * - ubicacion (string): dirección textual que se utiliza como referencia para centrar el mapa.
+ *
+ * Funcionalidad:
+ * - Renderiza un componente de mapa centrado en la dirección proporcionada.
+ * - Permite al usuario cerrar el modal mediante un botón claramente identificado.
+ *
+ * Consideraciones:
+ * - El mapa se muestra con una altura fija de 400px para mantener consistencia visual.
+ * - No permite modificar la dirección; es una visualización únicamente informativa.
+ */
 export const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
     isOpen,
     onClose,
     ubicacion,
 }) => {
+
+    /**
+     * RENDER
+     */
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onClose}>
             <IonHeader className="modalUbicacionHeader">
@@ -425,10 +508,68 @@ export const ModalUbicacion: React.FC<ModalUbicacionProps> = ({
 };
 
 
+/**
+ * Componente: AgendaCita
+ *
+ * Descripción:
+ * Este componente permite al usuario seleccionar una fecha y un horario disponibles
+ * para agendar una cita con un médico específico. Es utilizado dentro de la vista de
+ * detalle de médico y permite también modificar citas ya existentes.
+ *
+ * Props:
+ * - setSeccionAgendarCita (function): función para alternar la visibilidad de la sección de agendamiento.
+ * - agendas (AgendaMedicaDTO[]): listado de agendas médicas con fechas y horarios disponibles.
+ * - medico (MedicoDTO): datos del médico asociado a la agenda.
+ * - setLoading (function): función para mostrar un estado de carga durante operaciones asíncronas.
+ *
+ * Funcionalidades:
+ * - Muestra un calendario con fechas disponibles en verde.
+ * - Permite seleccionar un horario para una fecha específica.
+ * - Gestiona la creación de una nueva cita médica, incluyendo validaciones y confirmaciones.
+ * - Si existe una cita anterior (almacenada en sesión), la reemplaza tras confirmar la nueva.
+ * - Ofrece mensajes de error y éxito mediante toasts.
+ * - Incluye un modal de confirmación antes de guardar una cita.
+ *
+ * Consideraciones:
+ * - Las fechas están limitadas al intervalo entre hoy y dos meses en adelante.
+ * - El calendario solo permite seleccionar fechas con disponibilidad real.
+ * - Si no hay fechas disponibles, se informa al usuario con un mensaje explicativo.
+ */
 export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, agendas, medico,
     setLoading
 }) => {
+
+    /**
+     * VARIABLES
+     */
     const [diasDisponibles, setDiasDisponibles] = useState<string[]>([]);
+    const history = useHistory();
+    const [fechaCita, setFechaCita] = useState<string>("");
+    const [agendaSeleccionada, setAgendaSeleccionada] = useState<AgendaMedicaDTO | null>(null);
+    const [horariosDisponibles, setHorariosDisponibles] = useState<string[]>([]);
+    const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
+    const { userData } = useUser();
+
+    const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
+
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+    const [citaOriginal, setCitaOriginal] = useState<CitaDTO>();
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+
+    /**
+     * FUNCIONALIDAD
+     */
 
     useEffect(() => {
         if (agendas.length > 0) {
@@ -447,21 +588,6 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
         }
     }, [agendas]);
 
-    const [fechaCita, setFechaCita] = useState<string>("");
-    const [agendaSeleccionada, setAgendaSeleccionada] = useState<AgendaMedicaDTO | null>(null);
-    const [horariosDisponibles, setHorariosDisponibles] = useState<string[]>([]);
-    const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
-    const { userData } = useUser();
-
-    const [isOpenCalendar, setIsOpenCalendar] = useState<boolean>(false);
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     const cerrarDialogo = () => {
         setDialogState({
@@ -472,8 +598,6 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
             onConfirm: () => { },
         });
     };
-
-    const [citaOriginal, setCitaOriginal] = useState<CitaDTO>();
 
     useEffect(() => {
         const citaGuardada = sessionStorage.getItem("citaOriginal");
@@ -487,14 +611,7 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
         }
     }, []);
 
-    const [toast, setToast] = useState({
-        show: false,
-        message: "",
-        color: "success",
-        icon: checkmarkOutline,
-    });
-
-
+    //AUX
     const today = new Date();
     const twoMonthsLater = new Date();
     twoMonthsLater.setMonth(today.getMonth() + 2);
@@ -510,8 +627,6 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
         textColor: '#ffffff',         // Texto blanco
         backgroundColor: '#28a745',    // Fondo verde
     }));
-
-    //FUNCIONES
 
     const handleChangeDate = (e: CustomEvent) => {
         const selectedDate = e.detail.value;
@@ -568,7 +683,6 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
         setAgendaSeleccionada(null);
         setHorariosDisponibles([]);
     };
-    const history = useHistory();
 
     const onAgendarNuevaCita = async () => {
         if (!agendaSeleccionada || !horarioSeleccionado) {
@@ -631,9 +745,7 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
                 color: "danger",
                 icon: alertCircleOutline,
             });
-
             return;
-
         }
         finally {
             setLoading(false);
@@ -657,6 +769,9 @@ export const AgendaCita: React.FC<AgendaCitaProps> = ({ setSeccionAgendarCita, a
         return dateObj.toLocaleDateString('es-ES', opciones);
     };
 
+    /**
+     * RENDER
+     */
     return (
         <div className="agendaCitaContainer">
             <div className="titleContainerAC">

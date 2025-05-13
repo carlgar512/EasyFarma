@@ -15,7 +15,7 @@ import React, { useState } from "react";
 import { operations } from "../../shared/operations";
 import * as icons from 'ionicons/icons';
 import "./MainHeader.css";
-import { MainHeaderProps } from "./MainHeaderInterfaces";
+import { MainHeaderProps, UserMenuProps } from "./MainHeaderInterfaces";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { useAuth } from "../../context/AuthContext";
 import { useHistory } from 'react-router-dom';
@@ -23,10 +23,26 @@ import TutorBanner from "../tutorBanner/TutorBanner";
 import { useUser } from "../../context/UserContext";
 import { UserType } from "../../shared/interfaces/frontDTO";
 
+
+/**
+ * Componente MainHeader
+ * Encabezado principal de la app. Muestra el título de la sección, acceso al menú lateral y al menú de usuario.
+ * También muestra un banner para usuarios infantiles.
+ */
 const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
+    /**
+      * VARIABLES
+      */
     const [popoverEvent, setPopoverEvent] = useState<MouseEvent | null>(null);
     const { userData } = useUser();
 
+    /**
+      * FUNCIONALIDAD
+      */
+
+    /**
+     * RENDER
+     */
     return (
         <>
             <IonHeader className="headerBar">
@@ -57,16 +73,24 @@ const MainHeader: React.FC<MainHeaderProps> = ({ tittle }) => {
     );
 };
 
-interface UserMenuProps {
-    event: MouseEvent | null;
-    onDismiss: () => void;
-}
+/**
+ * Componente UserMenu
+ * Popover que muestra las opciones del perfil de usuario y permite cerrar sesión con doble confirmación.
+ */
 
 const UserMenu: React.FC<UserMenuProps> = ({ event, onDismiss }) => {
+
+/**
+  * VARIABLES
+  */
     const history = useHistory();
     const [showConfirm, setShowConfirm] = useState(false);
     const { logout } = useAuth();
+    const perfilOperations = operations.filter(op => op.type === "Perfil");
 
+/**
+  * FUNCIONALIDAD
+  */
     const logOut = () => {
         logout();
         window.location.replace('/lobby');
@@ -77,8 +101,9 @@ const UserMenu: React.FC<UserMenuProps> = ({ event, onDismiss }) => {
         onDismiss();
     };
 
-    const perfilOperations = operations.filter(op => op.type === "Perfil");
-
+/**
+  * RENDER
+  */    
     return (
         <>
             <IonPopover

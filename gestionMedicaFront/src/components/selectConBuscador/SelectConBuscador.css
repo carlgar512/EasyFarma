@@ -26,12 +26,12 @@
     padding: 10px;
 }
 
-.topSectionSCBHeader{
+.topSectionSCBHeader {
     display: flex;
     justify-content: space-around;
 }
 
-.bottomSectionSCBHeader{
+.bottomSectionSCBHeader {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -57,7 +57,7 @@
     gap: 20px;
 }
 
-.buttonCloseTextSCB{
+.buttonCloseTextSCB {
     display: flex;
     justify-content: center;
     align-items: center;

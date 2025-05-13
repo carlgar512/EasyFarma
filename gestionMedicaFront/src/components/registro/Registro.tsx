@@ -21,10 +21,19 @@ import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import { useAuth } from "../../context/AuthContext";
 
-
+/**
+ * Componente Registro
+ * Pantalla de registro de nuevos usuarios que incluye validaciones de datos personales,
+ * comprobación de mayoría de edad, control de contraseñas y feedback visual con spinner y toasts.
+ * Permite seleccionar fecha de nacimiento mediante un calendario modal.
+ */
 const Registro: React.FC = () => {
-  const { setAuth } = useAuth();
 
+  /**
+   * VARIABLES
+   */
+  const { setAuth } = useAuth();
+  const history = useHistory();
   const [form, setForm] = useState({
     name: "",
     lastName: "",
@@ -44,10 +53,13 @@ const Registro: React.FC = () => {
   });
 
   const [isOpenCalendar, setIsOpen] = useState(false);
-
   const [loadSpinner, setLoadSpinner] = useState(false);
-
-  const history = useHistory();
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+  
+  
+  /**
+   * FUNCIONALIDAD
+   */
 
   const handleGoBackClick = () => {
 
@@ -58,8 +70,6 @@ const Registro: React.FC = () => {
     }
 
   };
-
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
 
   // Función para alternar la visibilidad de la contraseña
   const togglePasswordVisibility = () => {
@@ -73,7 +83,6 @@ const Registro: React.FC = () => {
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
 
   // Manejar el cambio de fecha
   const handleChangeDate = (e: any) => {
@@ -145,7 +154,6 @@ const Registro: React.FC = () => {
       password: form.password
     });
 
-    //console.log(response);
     setLoadSpinner(false);
 
     if (response.success) {
@@ -171,6 +179,15 @@ const Registro: React.FC = () => {
     }
   };
 
+  const formatDateToDMY = (isoDate: string) => {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
+  /**
+   * RENDER
+   */
   return (
     <IonPage>
       <IonHeader>
@@ -199,12 +216,12 @@ const Registro: React.FC = () => {
 
         <IonContent fullscreen className="content">
           <div className="form-container">
-            <div className="imgContainer">
+            <div className="imgContainerReg">
               <IonImg className="imagenReg" src="/register.svg"></IonImg>
             </div>
             <div className="form-card">
-              <IonItem className="form-item">
-                <label className="form-label">Nombre:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Nombre:</label>
                 <IonInput
                   color={"success"}
                   placeholder="Escribe tu nombre"
@@ -215,8 +232,8 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Apellidos:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Apellidos:</label>
                 <IonInput
                   color={"success"}
                   name="lastName"
@@ -227,8 +244,8 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">DNI:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">DNI:</label>
                 <IonInput
                   color={"success"}
                   placeholder="Escribe tu DNI"
@@ -236,11 +253,12 @@ const Registro: React.FC = () => {
                   value={form.dni}
                   onIonChange={handleChange}
                   clearInput={true}
+                  maxlength={9}
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Correo Electrónico:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Correo Electrónico:</label>
                 <IonInput
                   color={"success"}
                   name="email"
@@ -252,8 +270,8 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Teléfono</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Teléfono</label>
                 <IonInput
                   color={"success"}
                   name="tlf"
@@ -265,8 +283,8 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Contraseña:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Contraseña:</label>
                 <IonInput
                   color={"success"}
                   placeholder="Nueva contraseña"
@@ -286,8 +304,8 @@ const Registro: React.FC = () => {
                 </IonButton>
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Confirmar Contraseña:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Confirmar Contraseña:</label>
                 <IonInput
                   color={"success"}
                   name="confirmPassword"
@@ -307,12 +325,12 @@ const Registro: React.FC = () => {
                 </IonButton>
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Fecha de Nacimiento:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Fecha de Nacimiento:</label>
                 <IonInput
                   color={"success"}
                   name="dateNac"
-                  value={form.dateNac}
+                  value={formatDateToDMY(form.dateNac)}
                   placeholder="Selecciona tu fecha de nacimiento"
                   readonly={true} // Hace que el campo no sea editable directamente
                   onClick={() => setIsOpen(true)} // Abre el calendario cuando se hace clic
@@ -341,9 +359,9 @@ const Registro: React.FC = () => {
                       presentation="date"
                       color={"success"}
                       value={form.dateNac}
+                      max={new Date().toISOString().split('T')[0]}
                       onIonChange={handleChangeDate}
                     >
-                      <span slot="title">Fecha de Nacimiento</span>
                     </IonDatetime>
                   </div>
 
@@ -381,10 +399,7 @@ const Registro: React.FC = () => {
             </div>
           </div>
         </IonContent>
-
       }
-
-
     </IonPage>
   );
 };

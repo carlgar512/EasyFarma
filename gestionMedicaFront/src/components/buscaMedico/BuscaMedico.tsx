@@ -18,8 +18,33 @@ import { CentroDTO, EspecialidadDTO, MedicoDTO } from "../../shared/interfaces/f
 
 
 
-
+/**
+ * Componente: BuscaMedico
+ * 
+ * Descripción:
+ * Este componente representa la vista de búsqueda de médicos. Permite al usuario aplicar filtros 
+ * como provincia, especialidad, centro o nombre del médico para refinar los resultados. 
+ * También ofrece modos de visualización específicos como "favoritos" o "recientes".
+ * 
+ * Funcionalidades:
+ * - Carga inicial de filtros disponibles desde el backend.
+ * - Aplicación dinámica de filtros y segmentación de búsqueda.
+ * - Actualización de la URL según el modo de filtro seleccionado.
+ * - Paginación de resultados.
+ * - Eliminación visual de filtros aplicados mediante animación.
+ * - Visualización condicional del contenido: resultados o spinner de carga.
+ * - Modal para configurar filtros.
+ * 
+ * Dependencias:
+ * - backendService: para obtener datos médicos, filtros y recientes.
+ * - Ion components de Ionic para la interfaz visual.
+ * - Componentes personalizados: SideMenu, MainHeader, MainFooter, MedicoCard, ModalFiltros, NotificationToast.
+ */
 const BuscaMedico: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const history = useHistory();
     const { userData } = useUser();
     const [loading, setLoading] = useState(false);
@@ -41,6 +66,26 @@ const BuscaMedico: React.FC = () => {
 
     const [modoFiltro, setModoFiltro] = useState<"todos" | "favoritos" | "recientes">(initialFiltro);
 
+    const [filtrosAplicados, setFiltrosAplicados] = useState({
+        provincia: "",
+        especialidad: "",
+        centro: "",
+        nombre: "",
+    });
+
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [mapa, setMapa] = useState<MapaProvincias>({});
+    const [medicos, setMedicos] = useState<MedicoDTO[]>([]);
+    const [centros, setCentros] = useState<CentroDTO[]>([]);
+    const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
+    const [provincias, setProvincias] = useState<ProvinciaMapa>({});
+    const [recientes, setIdMedicosRecientes] = useState<any[]>([]);
+    const [paginaActual, setPaginaActual] = useState(1);
+
+    /**
+     * FUNCIONALIDAD
+     */
+
     useEffect(() => {
         const path = "/search-doctor";
         const params = new URLSearchParams();
@@ -55,21 +100,11 @@ const BuscaMedico: React.FC = () => {
         }
     }, [modoFiltro]);
 
-    const [filtrosAplicados, setFiltrosAplicados] = useState({
-        provincia: "",
-        especialidad: "",
-        centro: "",
-        nombre: "",
-    });
-
-    const [modalAbierto, setModalAbierto] = useState(false);
-
-    const [mapa, setMapa] = useState<MapaProvincias>({});
-    const [medicos, setMedicos] = useState<MedicoDTO[]>([]);
-    const [centros, setCentros] = useState<CentroDTO[]>([]);
-    const [especialidades, setEspecialidades] = useState<EspecialidadDTO[]>([]);
-    const [provincias, setProvincias] = useState<ProvinciaMapa>({});
-    const [recientes, setIdMedicosRecientes] = useState<any[]>([]);
+    useEffect(() => {
+        if (userData?.uid) {
+            cargarDatos();
+        }
+    }, [userData?.uid]);
 
     const cargarDatos = async () => {
         if (!userData?.uid) return;
@@ -103,13 +138,7 @@ const BuscaMedico: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        if (userData?.uid) {
-            cargarDatos();
-        }
-    }, [userData?.uid]);
-
-    const [paginaActual, setPaginaActual] = useState(1);
+    //PAGINACION
     const medicosPorPagina = 5;
 
     const soloFavoritos = modoFiltro === "favoritos";
@@ -188,6 +217,9 @@ const BuscaMedico: React.FC = () => {
         return "Búsqueda de especialistas";
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -205,7 +237,7 @@ const BuscaMedico: React.FC = () => {
                                         <span>Filtros de Búsqueda</span>
                                     </div>
                                     <IonSegment
-                                    color={"success"}
+                                        color={"success"}
                                         value={modoFiltro}
                                         onIonChange={(e) => setModoFiltro(e.detail.value as "todos" | "favoritos" | "recientes")}
                                         className="segmentFiltro"
@@ -239,7 +271,7 @@ const BuscaMedico: React.FC = () => {
                             <div className="resultadosHeader">
                                 <hr />
                                 <h2>
-                                    {medicos.length > 0
+                                    {medicosFiltrados.length > 0
                                         ? `${medicosFiltrados.length} médico${medicosFiltrados.length > 1 ? 's' : ''} encontrado${medicosFiltrados.length > 1 ? 's' : ''}`
                                         : "No se han encontrado médicos con estos filtros"}
                                 </h2>
@@ -340,7 +372,29 @@ const BuscaMedico: React.FC = () => {
     );
 };
 
-
+/**
+ * Componente: ModalFiltros
+ * 
+ * Descripción:
+ * Modal utilizado para aplicar filtros en la búsqueda de médicos. Permite seleccionar 
+ * provincia, especialidad, centro y nombre del especialista a través de componentes de selección.
+ * Los filtros se ajustan dinámicamente en función de las opciones ya seleccionadas.
+ * 
+ * Funcionalidades:
+ * - Inicializa los filtros con los valores actuales aplicados.
+ * - Filtra dinámicamente las opciones de provincia, centro y especialidad basándose en la selección del usuario.
+ * - Permite buscar y aplicar los filtros, o bien descartarlos.
+ * - Incluye un estado de carga simulado al aplicar los filtros.
+ * 
+ * Props:
+ * - `isOpen`: controla la visibilidad del modal.
+ * - `onClose`: función de cierre del modal.
+ * - `onAplicarFiltros`: callback para aplicar los filtros seleccionados.
+ * - `provincias`, `especialidades`, `centros`: datos disponibles para la selección.
+ * - `mapaFiltros`: estructura jerárquica que relaciona provincias, centros y especialidades.
+ * - `medicos`: listado de médicos utilizados para filtrar por nombre.
+ * - `filtrosAplicados`: valores actuales de los filtros ya aplicados.
+ */
 const ModalFiltros: React.FC<ModalFiltrosProps> = ({
     isOpen,
     onClose,
@@ -353,9 +407,9 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
     filtrosAplicados
 }) => {
 
-    useEffect(() => {
-        setFiltrosLocales(filtrosAplicados);
-    }, [filtrosAplicados]);
+    /**
+     * VARIABLES
+     */
 
     const [loading, setLoading] = useState(false);
     const [filtrosLocales, setFiltrosLocales] = useState({
@@ -364,6 +418,13 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         centro: "",
         nombre: ""
     });
+
+    /**
+     * FUNCIONALIDAD
+     */
+    useEffect(() => {
+        setFiltrosLocales(filtrosAplicados);
+    }, [filtrosAplicados]);
 
     const provinciasDisponibles = useMemo(() => {
         if (filtrosLocales.especialidad) {
@@ -451,7 +512,6 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         });
     }, [filtrosLocales, medicos, centros, mapaFiltros]);
 
-
     const handleChange = (key, value) => {
         setFiltrosLocales(prev => {
             if (key === "centro") {
@@ -470,7 +530,6 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         });
     };
 
-
     const handleBuscar = async () => {
         setLoading(true);
         await new Promise(resolve => setTimeout(resolve, 1200)); // Simula búsqueda
@@ -488,7 +547,9 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
         });
     };
 
-
+    /**
+     * RENDER
+     */
     return (
         <IonModal isOpen={isOpen} onDidDismiss={onClose}>
             <IonHeader>

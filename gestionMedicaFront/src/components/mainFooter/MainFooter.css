@@ -2,10 +2,10 @@
     display: flex;
     width: 100%;
     align-items: center;
-
     padding: 15px;
     background: radial-gradient(circle, var(--ion-color-customDark) 0%, var(--ion-color-customMedium) 100%);
 }
+
 .downButton {
     color: var(--ion-color-customUltraLight);
     --border-color: var(--ion-color-customUltraLight) !important;
@@ -20,5 +20,17 @@
     min-width: 25%;
     font-size: small;
     gap: 5px;
+}
 
+.downButton {
+    transition: transform 0.2s ease;
+}
+
+.downButton:hover {
+    transform: scale(1.08);
+    filter: brightness(1.2);
+}
+
+.downButton:active {
+    transform: scale(0.95);
 }

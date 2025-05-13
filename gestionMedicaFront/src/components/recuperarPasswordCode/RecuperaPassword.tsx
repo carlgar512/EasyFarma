@@ -1,21 +1,35 @@
 import { IonButton, IonContent, IonHeader, IonIcon, IonImg, IonInput, IonItem, IonPage, IonSpinner, IonToolbar } from "@ionic/react";
 import React, { useRef, useState } from "react";
 import "./RecuperaPassword.css";
-import { alertCircleOutline, atOutline, checkmarkCircleOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
+import { alertCircleOutline, atOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, informationCircleOutline, lockOpenOutline, paperPlaneOutline, personOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { FormModeEnum, VerificationCodeInputProps } from "./RecuperaPasswordInterfaces";
 import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 
 
-
+/**
+ * Componente RecuperaPassword
+ * Flujo multietapa para recuperar la contraseña mediante verificación por código.
+ * Se gestiona a través de un `FormModeEnum` que controla el estado:
+ * 
+ * Etapas:
+ * 1. Insertar DNI
+ * 2. Recibir código por email
+ * 3. Verificar código
+ * 4. Establecer nueva contraseña
+ *
+ * Se utiliza `sessionStorage` para persistir el estado del proceso entre recargas o navegación accidental.
+ */
 const RecuperaPassword: React.FC = () => {
-
+    /**
+      * VARIABLES
+      */
+    const history = useHistory();
     const [mode, setModeState] = useState<FormModeEnum>(() => {
         const savedMode = sessionStorage.getItem("recuperaPasswordMode");
         return (savedMode as FormModeEnum) || FormModeEnum.InsertDni;
     });
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -23,27 +37,24 @@ const RecuperaPassword: React.FC = () => {
         icon: checkmarkOutline,
     });
 
+    const [email, setEmail] = useState("");
+    const [formDni, setForm] = useState({ dni: "" });
+    const [formPassword, setFormPsw] = useState({ password: "", confirmPassword: "" });
+    const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+
+    /**
+     * FUNCIONALIDAD
+     */
+
     const setMode = (newMode: FormModeEnum) => {
         setModeState(newMode);
         sessionStorage.setItem("recuperaPasswordMode", newMode);
     };
 
-    const history = useHistory();
-    const [email, setEmail] = useState("");
-    const [formDni, setForm] = useState({
-        dni: "",
-    });
-    const [formPassword, setFormPsw] = useState({
-        password: "",
-        confirmPassword: ""
-    });
-
-    const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
-    
-      // Función para alternar la visibilidad de la contraseña
-      const togglePasswordVisibility = () => {
+    // Función para alternar la visibilidad de la contraseña
+    const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
-      };
+    };
 
     const handleChangePsw = (e: any) => {
         setFormPsw({ ...formPassword, [e.target.name]: e.target.value });
@@ -127,7 +138,7 @@ const RecuperaPassword: React.FC = () => {
         try {
             setMode(FormModeEnum.Loading);
 
-            const response = await backendService.checkCode(formDni.dni,code);
+            const response = await backendService.checkCode(formDni.dni, code);
 
             if (!response.success) {
                 setToast({
@@ -160,7 +171,6 @@ const RecuperaPassword: React.FC = () => {
             setMode(FormModeEnum.InsertCode);
         }
     };
-
 
     const handleEstablecerPassword = async () => {
         const { password, confirmPassword } = formPassword;
@@ -204,7 +214,9 @@ const RecuperaPassword: React.FC = () => {
         }
     };
 
-
+    /**
+      * RENDER
+      */
     return (
         <IonPage>
             <IonHeader>
@@ -223,14 +235,20 @@ const RecuperaPassword: React.FC = () => {
             </IonHeader>
             <IonContent fullscreen className="contentRP">
                 <div className="form-containerRP">
-                    <IonImg className="sesImgRP" src="/forgotPassword.svg"></IonImg>
+                    <div className="imgContainerRP">
+                        <IonImg className="sesImgRP" src="/forgotPassword.svg"></IonImg>
+                    </div>
                     {mode === FormModeEnum.InsertDni &&
                         <div className="formCardRP">
-                            <span className="infoTextRP">
-                                Introduce tu DNI para verificar si tienes una cuenta registrada.
-                                Si es así, enviaremos un código de recuperación al correo electrónico asociado a tu cuenta,
-                                para que puedas continuar.
-                            </span>
+                            <div className="infoTextContainerRP">
+                                <IonIcon icon={informationCircleOutline}></IonIcon>
+                                <span className="infoTextRP">
+                                    Introduce tu DNI para verificar si tienes una cuenta registrada.
+                                    Si es así, enviaremos un código de recuperación al correo electrónico asociado a tu cuenta,
+                                    para que puedas continuar.
+                                </span>
+                            </div>
+
                             <IonItem className="form-itemRP">
                                 <label className="form-labelRP">DNI:</label>
                                 <IonInput
@@ -240,6 +258,7 @@ const RecuperaPassword: React.FC = () => {
                                     value={formDni.dni}
                                     onIonChange={handleChange}
                                     clearInput={true}
+                                    maxlength={9}
                                 />
                             </IonItem>
 
@@ -250,7 +269,7 @@ const RecuperaPassword: React.FC = () => {
                                 className="ion-margin-top custom-buttonRP"
                                 onClick={handleBuscaDniYCreaCodigo}
                             >
-                                <IonIcon icon={paperPlaneOutline} size="large" slot="icon-only"></IonIcon>
+                                <IonIcon icon={paperPlaneOutline} size="large"></IonIcon>
                                 <span className="buttonTextRP">
                                     Buscar DNI y enviar código
                                 </span>
@@ -263,7 +282,7 @@ const RecuperaPassword: React.FC = () => {
                                 size="default"
                                 className="ion-margin-top custom-button2RP"
                             >
-                                <IonIcon icon={personOutline} size="large" slot="icon-only"></IonIcon>
+                                <IonIcon icon={personOutline} size="large"></IonIcon>
                                 <span className="buttonTextRP">
                                     ¿Recordaste tu contraseña? Inicia sesión
                                 </span>
@@ -273,9 +292,12 @@ const RecuperaPassword: React.FC = () => {
 
                     {mode === FormModeEnum.InsertCode &&
                         <div className="formCardRP">
-                            <span className="infoTextRP">
-                                Se ha enviado un código de verificación al correo {email}. Por favor, introdúcelo para restablecer tu contraseña.
-                            </span>
+                            <div className="infoTextContainerRP">
+                                <IonIcon icon={informationCircleOutline}></IonIcon>
+                                <span className="infoTextRP">
+                                    Se ha enviado un código de verificación al correo {email}. Por favor, introdúcelo para restablecer tu contraseña.
+                                </span>
+                            </div>
                             <VerificationCodeInput onComplete={handleCompruebaCodigo} />
                             <IonButton
                                 onClick={handleBuscaDniYCreaCodigo}
@@ -294,50 +316,53 @@ const RecuperaPassword: React.FC = () => {
 
                     {mode === FormModeEnum.NewPassword &&
                         <div className="formCardRP">
-                            <span className="infoTextRP">
-                                Introduce tu nueva contraseña. Esta será la contraseña que quedará guardada en tu cuenta para futuros accesos.
-                            </span>
-                                <IonItem className="form-itemRP">
-                                            <label className="form-labelRP">Contraseña:</label>
-                                            <IonInput
-                                              color={"success"}
-                                              placeholder="Nueva contraseña"
-                                              name="password"
-                                              type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
-                                              value={formPassword.password}
-                                              onIonChange={handleChangePsw}
-                                              clearInput={true}
-                                            />
-                                            <IonButton
-                                              fill="clear"
-                                              size="small"
-                                              onClick={togglePasswordVisibility}
-                                              color="success"
-                                            >
-                                              {!showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
-                                            </IonButton>
-                                          </IonItem>
-                            
-                                          <IonItem className="form-itemRP">
-                                            <label className="form-labelRP">Confirmar Contraseña:</label>
-                                            <IonInput
-                                              color={"success"}
-                                              name="confirmPassword"
-                                              placeholder="Repite contraseña"
-                                              type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
-                                              value={formPassword.confirmPassword}
-                                              onIonChange={handleChangePsw}
-                                              clearInput={true}
-                                            />
-                                            <IonButton
-                                              fill="clear"
-                                              size="small"
-                                              onClick={togglePasswordVisibility}
-                                              color="success"
-                                            >
-                                              {!showPassword ? <IonIcon icon={eyeOutline} size="large"/> : <IonIcon icon={eyeOff} size="large"/>}
-                                            </IonButton>
-                                          </IonItem>
+                            <div className="infoTextContainerRP">
+                                <IonIcon icon={informationCircleOutline}></IonIcon>
+                                <span className="infoTextRP">
+                                    Introduce tu nueva contraseña. Esta será la contraseña que quedará guardada en tu cuenta para futuros accesos.
+                                </span>
+                            </div>
+                            <IonItem className="form-itemRP">
+                                <label className="form-labelRP">Contraseña:</label>
+                                <IonInput
+                                    color={"success"}
+                                    placeholder="Nueva contraseña"
+                                    name="password"
+                                    type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
+                                    value={formPassword.password}
+                                    onIonChange={handleChangePsw}
+                                    clearInput={true}
+                                />
+                                <IonButton
+                                    fill="clear"
+                                    size="small"
+                                    onClick={togglePasswordVisibility}
+                                    color="success"
+                                >
+                                    {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                                </IonButton>
+                            </IonItem>
+
+                            <IonItem className="form-itemRP">
+                                <label className="form-labelRP">Confirmar Contraseña:</label>
+                                <IonInput
+                                    color={"success"}
+                                    name="confirmPassword"
+                                    placeholder="Repite contraseña"
+                                    type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
+                                    value={formPassword.confirmPassword}
+                                    onIonChange={handleChangePsw}
+                                    clearInput={true}
+                                />
+                                <IonButton
+                                    fill="clear"
+                                    size="small"
+                                    onClick={togglePasswordVisibility}
+                                    color="success"
+                                >
+                                    {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                                </IonButton>
+                            </IonItem>
 
                             <IonButton
                                 onClick={handleEstablecerPassword}
@@ -362,7 +387,7 @@ const RecuperaPassword: React.FC = () => {
                     }
 
                 </div>
-                <NotificationToast 
+                <NotificationToast
                     icon={toast.icon}
                     color={toast.color}
                     message={toast.message}
@@ -374,13 +399,26 @@ const RecuperaPassword: React.FC = () => {
     )
 }
 
-export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
+/**
+ * Componente VerificationCodeInput
+ * Input personalizado para introducir un código de verificación dígito a dígito.
+ * - Controla el foco entre inputs al escribir o borrar.
+ * - Solo acepta caracteres numéricos.
+ * - Llama a `onComplete(code)` cuando se completa el código.
+ */
+const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
     length = 4,
     onComplete,
 }) => {
 
+    /**
+      * VARIABLES
+      */
     const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
+    /**
+      * FUNCIONALIDAD
+      */
     const handleChange = (value: string, index: number) => {
         const input = inputsRef.current[index];
         if (!input) return;
@@ -412,6 +450,9 @@ export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
         }
     };
 
+    /**
+      * RENDER
+      */
     return (
         <div className="code-input-wrapper">
             {Array.from({ length }).map((_, i) => (
@@ -428,4 +469,5 @@ export const VerificationCodeInput: React.FC<VerificationCodeInputProps> = ({
         </div>
     );
 }
+
 export default RecuperaPassword;

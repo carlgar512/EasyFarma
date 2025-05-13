@@ -3,14 +3,42 @@ import { useHistory } from "react-router-dom";
 import SideMenu from "../sideMenu/SideMenu";
 import { IonButton, IonContent, IonIcon, IonImg, IonPage } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
-import { arrowBackOutline, heartOutline, searchOutline, starOutline, timeOutline } from "ionicons/icons";
+import { arrowBackOutline, searchOutline, starOutline, timeOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
 import './MenuAgendaCita.css'
 
-
+/**
+ * Componente: MenuAgendaCita
+ *
+ * Descripción:
+ * Este componente actúa como una pantalla de menú principal para la funcionalidad de búsqueda y selección
+ * de médicos. Ofrece al usuario tres accesos directos para explorar los especialistas disponibles:
+ * búsqueda general, médicos favoritos y médicos visitados recientemente.
+ *
+ * Funcionalidad:
+ * - Permite redirigir al usuario a:
+ *   • La búsqueda general por filtros (ubicación, especialidad, centro).
+ *   • El listado de médicos marcados como favoritos.
+ *   • El historial de médicos visitados recientemente.
+ * - Ofrece un botón para regresar a la vista principal del usuario.
+ *
+ * Navegación:
+ * - Utiliza `useHistory` de React Router para la gestión de rutas mediante `push` y `replace`.
+ *
+ * Elementos visuales:
+ * - Cada opción está representada por una tarjeta informativa con un ícono, texto descriptivo e imagen ilustrativa.
+ * - Incluye un botón de retorno visualmente accesible al pie del contenido.
+ */
 const MenuAgendaCita: React.FC = () => {
 
+    /**
+     * VARIABLES
+     */
     const history = useHistory();
+
+    /**
+    * FUNCIONALIDAD
+    */
     const handleVolver = () => {
         history.replace("/principal");
     };
@@ -27,12 +55,14 @@ const MenuAgendaCita: React.FC = () => {
         history.push("/search-doctor?recientes=true");
     };
 
-
+    /**
+     * RENDER
+    */
     return (
         <>
             <SideMenu />
             <IonPage id="main-content">
-                <MainHeader tittle="Te ayudamos a encontrar al médico adecuado" />
+                <MainHeader tittle="Busca y elige tu médico" />
 
                 <IonContent fullscreen className="contentMAC">
                     <div className="contentCentralMAC">

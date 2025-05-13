@@ -140,6 +140,22 @@
     align-items: center;
 }
 
+@media (max-width: 600px) {
+    .bodyAlergiaContainer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .alergiaTextContainer {
+        width: 100% !important;
+        padding: 10px;
+    }
+
+    .alergiaDescripcionText {
+        width: 100%;
+    }
+}
+
 .alergiaTextContainer {
     width: 40%;
     display: flex;
@@ -156,7 +172,6 @@
     margin-bottom: 12px;
     white-space: pre-wrap;
     text-align: justify;
-    /* Permite saltos de línea */
 }
 
 .alergenoContainer {

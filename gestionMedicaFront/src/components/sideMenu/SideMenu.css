@@ -12,21 +12,22 @@
 .lineaSeparadora {
     width: 100%;
     height: 2px;
-    background-color: var(--ion-color-customDark); /* Puedes cambiarlo a otro color personalizado */
+    background-color: var(--ion-color-customDark);
+    /* Puedes cambiarlo a otro color personalizado */
     border: none;
     border-radius: 1px;
     opacity: 0.5;
 }
 
-
-.titleSideMenu{
+.titleSideMenu {
     display: flex;
     align-items: center;
     flex-direction: column;
     justify-content: flex-start;
 }
-.sideMenu{
- --min-width: 30%;
+
+.sideMenu {
+    --min-width: 30%;
 }
 
 ion-menu::part(backdrop) {
@@ -54,8 +55,9 @@ ion-menu::part(container) {
 }
 
 .badge-grey {
-    background-color: #d9d9d9; /* Gris claro */
-    color: #595959; 
+    background-color: #d9d9d9;
+    /* Gris claro */
+    color: #595959;
 }
 
 .badge-green {

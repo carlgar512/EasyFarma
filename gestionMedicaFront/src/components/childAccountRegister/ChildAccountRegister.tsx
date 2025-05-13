@@ -12,27 +12,54 @@ import NotificationToast from "../notification/NotificationToast";
 import { backendService } from "../../services/backendService";
 import { useUser } from "../../context/UserContext";
 
-
+/**
+ * ChildAccountRegister.tsx
+ *
+ * Este componente permite al usuario tutor crear una nueva cuenta infantil (tutelada).
+ * La cuenta infantil hereda el email y teléfono del tutor, y se vincula directamente a su usuario.
+ * Solo se permite registrar cuentas para menores de edad, validando la fecha de nacimiento.
+ * 
+ * Funcionalidades principales:
+ * - Formulario para nombre, apellidos, DNI (opcional) y fecha de nacimiento.
+ * - Validación de edad y formato del DNI.
+ * - Confirmación previa mediante diálogo antes de crear la cuenta.
+ * - Feedback visual con toasts y spinner de carga.
+ * 
+ * Notas:
+ * - Usa el mismo correo, teléfono y acceso del tutor.
+ * - El campo de fecha limita el valor máximo al día actual.
+ */
 const ChildAccountRegister: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const history = useHistory();
     const [loading, setLoading] = useState<boolean>(false);
     const [isOpenCalendar, setIsOpen] = useState(false);
     const { userData } = useUser();
-
     const [form, setForm] = useState({
         name: "",
         lastName: "",
         dni: "",
         dateNac: ""
     });
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
-
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -43,14 +70,6 @@ const ChildAccountRegister: React.FC = () => {
         });
     };
 
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
-
     const handleVolver = () => {
         history.replace('/family-management');
     };
@@ -58,7 +77,6 @@ const ChildAccountRegister: React.FC = () => {
     const handleChange = (e: any) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
 
     // Manejar el cambio de fecha
     const handleChangeDate = (e: any) => {
@@ -68,7 +86,6 @@ const ChildAccountRegister: React.FC = () => {
             setForm({ ...form, dateNac: formattedDate }); // Actualiza el estado con la fecha seleccionada
         }
     };
-
 
     const crearUsuarioDobleConf = () => {
         const fechaNacimiento = new Date(form.dateNac);
@@ -109,7 +126,6 @@ const ChildAccountRegister: React.FC = () => {
         }
         const fechaFormateada = form.dateNac ? new Date(form.dateNac).toLocaleDateString('es-ES') : "";
 
-
         setDialogState({
             isOpen: true,
             tittle: "Crear nueva cuenta infantil",
@@ -118,7 +134,6 @@ const ChildAccountRegister: React.FC = () => {
             onConfirm: () => crearUsuarioInf(),
         })
     };
-
 
     const crearUsuarioInf = async () => {
         cerrarDialogo();
@@ -134,7 +149,6 @@ const ChildAccountRegister: React.FC = () => {
             setLoading(false); // Solo aquí
             return;
         }
-
         try {
             await backendService.crearCuentaInfantil({
                 name: form.name,
@@ -171,6 +185,9 @@ const ChildAccountRegister: React.FC = () => {
         }
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -202,7 +219,6 @@ const ChildAccountRegister: React.FC = () => {
                                         Además, solo se podrá acceder a la cuenta infantil desde la cuenta de uno de sus tutores.
                                     </span>
                                 </div>
-
                                 {/* 🧾 Formulario */}
                                 <div className="formNewChildAcc">
                                     <span className="formTittleCAR">Formulario de cuenta tutelada</span>
@@ -277,6 +293,7 @@ const ChildAccountRegister: React.FC = () => {
                                                     color={"success"}
                                                     value={form.dateNac}
                                                     onIonChange={handleChangeDate}
+                                                    max={new Date().toISOString().split('T')[0]}
                                                 />
                                             </div>
 

@@ -5,7 +5,26 @@ import './SelectConBuscador.css'
 import { closeCircleOutline } from "ionicons/icons";
 import { SelectConBuscadorProps } from "./SelectConBuscadorInterfaces";
 
-
+/**
+ * Componente SelectConBuscador
+ *
+ * Componente personalizado de selección con búsqueda, basado en Ionic.
+ * 
+ * Permite al usuario seleccionar un valor de una lista, con la posibilidad de filtrar los resultados
+ * mediante un campo de búsqueda insensible a acentos. El valor seleccionado se muestra en un IonItem
+ * y puede eliminarse mediante un icono de borrado.
+ *
+ * Al hacer clic en el elemento principal, se abre un modal con un buscador y una lista de opciones
+ * que pueden ser filtradas dinámicamente. La selección de un valor actualiza el estado externo 
+ * a través de la función `onChange`.
+ *
+ * Props:
+ * - `label`: Etiqueta que describe el campo.
+ * - `placeholder`: Texto por defecto mostrado si no hay selección.
+ * - `items`: Lista de opciones disponibles, cada una con `label` y `value`.
+ * - `value`: Valor actualmente seleccionado.
+ * - `onChange`: Callback invocado cuando se selecciona o limpia un valor.
+ */
 const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
     label,
     placeholder,
@@ -13,6 +32,10 @@ const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
     value,
     onChange,
 }) => {
+
+    /**
+     * VARIABLES
+     */
     const modal = useRef<HTMLIonModalElement>(null);
     const [busqueda, setBusqueda] = useState("");
 
@@ -21,7 +44,9 @@ const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
 
 
     const seleccionada = items.find((opt) => opt.value === value);
-
+    /**
+     * FUNCIONALIDAD
+     */
     const handleSeleccionar = (val: string) => {
         onChange(val);
         modal.current?.dismiss();
@@ -33,6 +58,9 @@ const SelectConBuscador: React.FC<SelectConBuscadorProps> = ({
         )
     );
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <IonItem button onClick={() => modal.current?.present()} className="select-item">

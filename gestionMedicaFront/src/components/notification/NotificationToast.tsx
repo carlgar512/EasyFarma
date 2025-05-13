@@ -2,7 +2,12 @@ import { IonToast } from "@ionic/react";
 import React from "react";
 import { NotificationToastProps } from "./NotificationToastInterfaces";
 
-
+/**
+ * Componente NotificationToast
+ * Toast reutilizable para mostrar mensajes de notificación breves al usuario.
+ * Acepta icono, color, mensaje y control de visibilidad desde el componente padre.
+ * Incluye botón "Descartar" y cierre automático tras 2 segundos.
+ */
 export const NotificationToast: React.FC<NotificationToastProps> = ({
     icon,
     color,
@@ -10,6 +15,9 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
     show,
     onClose,
 }) => {
+    /**
+     * RENDER
+     */
     return (
         <IonToast
             icon={icon}

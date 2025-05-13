@@ -15,7 +15,29 @@ import NotificationToast from "../notification/NotificationToast";
 import { UserType } from "../../shared/interfaces/frontDTO";
 
 
+/**
+ * Componente `CuentasTutorizadas`
+ *
+ * Página para gestionar las cuentas infantiles asociadas a un usuario tutor.
+ * 
+ * Funcionalidades principales:
+ * - Carga y visualización de las cuentas tuteladas del usuario actual.
+ * - Permite crear nuevas cuentas infantiles.
+ * - Muestra advertencia y restringe el acceso si el usuario actual es una cuenta infantil.
+ * - Usa `CuentaInfantilCard` para mostrar cada cuenta tutelada.
+ * - Muestra feedback de carga, errores y acciones mediante `IonToast` y `IonSpinner`.
+ *
+ * Redirige a:
+ * - `/principal`: al volver
+ * - `/newChildAccount`: para crear una nueva cuenta tutelada
+ *
+ * Requiere que el contexto `useUser` proporcione `userData` con `uid` y `tipoUsuario`.
+ */
 const CuentasTutorizadas: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const history = useHistory();
     const { userData } = useUser();
     const [loading, setLoading] = useState<boolean>();
@@ -25,14 +47,17 @@ const CuentasTutorizadas: React.FC = () => {
         color: "success",
         icon: checkmarkOutline,
     });
+    const [usuariosTutelados, setUsuariosTutelados] = useState<any[]>([]);
 
+    /**
+     * FUNCIONALIDAD
+     */
     const handleVolver = () => {
         history.replace('/principal');
     };
     const handleNewChildAccount = () => {
         history.replace('/newChildAccount');
     };
-    const [usuariosTutelados, setUsuariosTutelados] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchUsuariosTutelados = async () => {
@@ -58,6 +83,9 @@ const CuentasTutorizadas: React.FC = () => {
         fetchUsuariosTutelados();
     }, [userData?.uid]);
 
+    /**
+     * RENDER
+     */
     if (userData?.tipoUsuario === UserType.INFANTIL) {
         return (
             <>
@@ -75,16 +103,16 @@ const CuentasTutorizadas: React.FC = () => {
 
                             </div>
                             <div className="buttonsContainerGF">
-                            <IonButton
-                                className="buttonReturnGF"
-                                shape="round"
-                                size="large"
-                                expand="full"
-                                onClick={handleVolver}
-                            >
-                                <IonIcon icon={arrowBackOutline} />
-                                <span className="buttonTextGF">Volver</span>
-                            </IonButton>
+                                <IonButton
+                                    className="buttonReturnGF"
+                                    shape="round"
+                                    size="large"
+                                    expand="full"
+                                    onClick={handleVolver}
+                                >
+                                    <IonIcon icon={arrowBackOutline} />
+                                    <span className="buttonTextGF">Volver</span>
+                                </IonButton>
                             </div>
                         </div>
 
@@ -100,7 +128,7 @@ const CuentasTutorizadas: React.FC = () => {
             <SideMenu />
             <IonPage id="main-content">
                 <MainHeader tittle="Gestión familiar" />
-                {!loading ? (
+                {!loading && userData ? (
                     <IonContent fullscreen className="contentGF">
                         <div className="contentCentralGF">
                             <div className="titleContainerGF">
@@ -176,25 +204,38 @@ const CuentasTutorizadas: React.FC = () => {
             />
         </>
     );
-
 };
 
-
+/**
+ * Componente `CuentaInfantilCard`
+ *
+ * Representa visualmente una tarjeta para cada cuenta tutorizada (infantil) dentro del panel de gestión familiar.
+ *
+ * Funcionalidades principales:
+ * - Muestra nombre, apellidos e iniciales del menor.
+ * - Permite al tutor:
+ *    - Acceder como la cuenta infantil (cambiando el `userData` del contexto y recargando).
+ *    - Ver detalles de la cuenta infantil (`/infantilAcc-detail`).
+ *    - Dar de baja la cuenta infantil (requiere verificación por contraseña y doble confirmación).
+ *
+ * Componentes secundarios utilizados:
+ * - `ModalPasswordCheck`: valida identidad antes de permitir acciones críticas.
+ * - `DobleConfirmacion`: confirma acciones destructivas como la baja.
+ * - `NotificationToast`: muestra feedback de éxito o error.
+ *
+ * Props requeridas:
+ * - `usuario`: datos de la cuenta infantil.
+ * - `setLoading`: callback para controlar el estado de carga desde el componente padre.
+ */
 const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoading }) => {
+
+    /**
+     * VARIABLES
+     */
     const iniciales = `${usuario.nombreUsuario.charAt(0)}${usuario.apellidosUsuario.charAt(0)}`.toUpperCase();
     const history = useHistory();
     const { userData, setUserData } = useUser();
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
-    const cerrarDialogo = () => {
-        setDialogState({
-            isOpen: false,
-            tittle: "",
-            message: "",
-            img: "",
-            onConfirm: () => { },
-        });
-    };
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -210,16 +251,25 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
         onConfirm: () => { },
     })
 
-
+    /**
+     * FUNCIONALIDAD
+     */
+    const cerrarDialogo = () => {
+        setDialogState({
+            isOpen: false,
+            tittle: "",
+            message: "",
+            img: "",
+            onConfirm: () => { },
+        });
+    };
     const onAcceder = () => {
         // Guardar datos actuales (tutor)
         if (userData) {
             localStorage.setItem('tutorData', JSON.stringify(userData));
         }
-
         // Establecer usuario infantil en el contexto
         setUserData(usuario);
-
         // Recargar página para que persista y todo se refresque
         window.location.replace('/principal');
     };
@@ -229,7 +279,6 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
             pathname: "/infantilAcc-detail",
             state: { usuario }, // 👈 aquí mandamos el usuario
         });
-
     };
 
     const bajaUsuarioDobleConf = () => {
@@ -271,6 +320,9 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
         }
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <IonCard className="cuenta-card horizontal">
@@ -328,7 +380,5 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
         </>
     );
 };
-
-
 
 export default CuentasTutorizadas;

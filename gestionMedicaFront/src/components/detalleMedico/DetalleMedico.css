@@ -466,29 +466,31 @@
     align-items: center;
     font-weight: 500;
     border: 1px solid #ffeeba;
-  }
+}
 
-  .noDisponibilidadMensaje {
+.noDisponibilidadMensaje {
     display: flex;
     align-items: center;
-    background-color: #fff3cd; /* amarillo suave */
+    background-color: #fff3cd;
+    /* amarillo suave */
     border: 1px solid #ffeeba;
-    color: #856404; /* marrón oscuro para contraste */
+    color: #856404;
+    /* marrón oscuro para contraste */
     padding: 12px 16px;
     border-radius: 8px;
     font-weight: 500;
     font-size: 15px;
     margin-top: 12px;
     line-height: 1.4;
-  }
-  
-  .warningIcon {
+}
+
+.warningIcon {
     margin-right: 10px;
     font-size: 22px;
     flex-shrink: 0;
-  }
+}
 
-  .agendaContainerScroll{
+.agendaContainerScroll {
     width: 100%;
     display: flex;
     justify-content: center;

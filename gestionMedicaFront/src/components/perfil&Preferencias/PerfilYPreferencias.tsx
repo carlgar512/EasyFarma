@@ -18,17 +18,30 @@ import { useUser } from "../../context/UserContext";
 
 
 
-
+/**
+ * Componente PerfilYPreferencias
+ * Muestra la pantalla de perfil del usuario con sus operaciones disponibles agrupadas (como cerrar sesión o dar de baja la cuenta).
+ * Ofrece navegación hacia acciones personalizadas, confirmación antes de operaciones críticas y notificaciones visuales.
+ */
 const PerfilYPreferencias: React.FC = () => {
-     const { userData } = useUser();
+
+    /**
+    * VARIABLES
+    */
+    const { userData } = useUser();
     const history = useHistory();
+    const [orderOperationType] = useState(sortOperations(perfilOperations, "type"));
+
+    /**
+    * FUNCIONALIDAD
+    */
     const handleVolver = () => {
         history.replace('/principal');
     };
 
-   
-    const [orderOperationType, setOperation] = useState(sortOperations(perfilOperations, "type"));
-
+    /**
+      * RENDER
+      */
     return (
         <>
             <SideMenu />
@@ -39,7 +52,6 @@ const PerfilYPreferencias: React.FC = () => {
                         <div className="titleContainer">
                             <span className="tittleText">Buenas tardes, {userData?.nombreUsuario}</span>
                         </div>
-
                         {orderOperationType.map((operation) => {
                             return (
                                 <OperationLabel operation={operation} key={operation.id} ></OperationLabel>
@@ -53,7 +65,7 @@ const PerfilYPreferencias: React.FC = () => {
                             onClick={handleVolver}
                         >
                             <IonIcon icon={icons.arrowBackOutline}></IonIcon>
-                            <span className="buttonText">Volver</span>
+                            <span className="buttonTextPYF">Volver</span>
                         </IonButton>
                     </div>
                 </IonContent>
@@ -65,17 +77,25 @@ const PerfilYPreferencias: React.FC = () => {
 
 };
 
+
+/**
+ * Componente OperationLabel
+ * Representa visualmente una opción de operación dentro del perfil (cerrar sesión, baja de cuenta, etc.).
+ * Ejecuta la lógica adecuada según el tipo de operación y muestra confirmaciones o toasts según el resultado.
+ */
 const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
+
+    /**
+     * VARIABLES
+     */
+    const { logout, user } = useAuth();
+    const history = useHistory();
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: icons.checkmarkOutline,
-      });
-      
-    const { logout, user } = useAuth();
-    
-    const history = useHistory();
+    });
     const [showConfirm, setShowConfirm] = useState(false);
     const initialModalConfig = {
         tittle: "",
@@ -85,6 +105,9 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
     };
     const [modalConfig, setModalConfig] = useState(initialModalConfig);
 
+    /**
+    * FUNCIONALIDAD
+    */
     const handleOperation = () => {
         if (operation.id === 13) {
             setModalConfig({
@@ -109,25 +132,25 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
                     const res = await backendService.deactivateUser(user?.uid);
                     if (res.success) {
                         setToast({
-                                show: true,
-                                message: "Su cuenta ha sido dada de baja correctamente.",
-                                color: "success",
-                                icon: checkmarkOutline,
-                              });
-                              logout();
-                              history.replace('/lobby');
-                              setShowConfirm(false);
+                            show: true,
+                            message: "Su cuenta ha sido dada de baja correctamente.",
+                            color: "success",
+                            icon: checkmarkOutline,
+                        });
+                        logout();
+                        history.replace('/lobby');
+                        setShowConfirm(false);
                     }
-                    else{
+                    else {
                         setToast({
                             show: true,
                             message: "No se ha podido realizar la baja, intentelo más tarde.",
                             color: "danger",
                             icon: icons.alertCircleOutline,
-                          });
-                          setShowConfirm(false);
+                        });
+                        setShowConfirm(false);
                     }
-                 },
+                },
             });
             setShowConfirm(true);
         }
@@ -136,7 +159,9 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
         }
     };
 
-
+    /**
+     * RENDER
+     */
     return (
         <>
             <div className="labelContainer" onClick={handleOperation}>
@@ -151,7 +176,7 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
                     <span className="operationTittle">{operation.title}</span>
                 </div>
                 <div className="rightOperationLabel">
-                    <IonImg src={operation.img} alt={operation.description} className="operationImg" />
+                    <IonImg src={operation.img} className="operationImgPYF" />
                 </div>
             </div>
             <DobleConfirmacion
@@ -162,13 +187,13 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
                 onConfirm={modalConfig.onConfirm}
                 onCancel={() => setShowConfirm(false)}
             />
-              <NotificationToast
-                            icon={toast.icon}
-                            color={toast.color}
-                            message={toast.message}
-                            show={toast.show}
-                            onClose={() => setToast((prev) => ({ ...prev, show: false }))}
-                          />
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
         </>
     )
 };

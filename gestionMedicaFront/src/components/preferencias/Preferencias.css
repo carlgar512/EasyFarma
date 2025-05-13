@@ -181,7 +181,7 @@ ion-checkbox::part(container) {
     border: 2px solid var(--ion-color-customDark);
 }
 
-.contentTACentralP{
+.contentTACentralP {
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -191,7 +191,7 @@ ion-checkbox::part(container) {
 
 }
 
-.spinnerContainerP{
+.spinnerContainerP {
     background: var(--ion-color-customUltraLight);
     display: flex;
     justify-content: center;
@@ -204,7 +204,7 @@ ion-checkbox::part(container) {
     max-width: 1000px;
 }
 
-.textSpinnerP{
+.textSpinnerP {
     font-size: 1.1rem;
     color: var(--ion-color-customDark);
     font-weight: bold;

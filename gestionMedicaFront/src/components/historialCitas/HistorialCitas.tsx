@@ -14,25 +14,44 @@ import { useHistory, useLocation } from "react-router-dom";
 import NotificationToast from "../notification/NotificationToast";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 
+/**
+ * Componente HistorialCitas
+ *
+ * Este componente muestra al usuario su historial de citas médicas, permitiendo filtrar entre:
+ * - Todas las citas
+ * - Citas actuales (futuras o pendientes)
+ * - Citas archivadas (pasadas o finalizadas)
+ *
+ * Funcionalidades principales:
+ * - Obtención dinámica de datos desde el backend en función del tipo de vista seleccionada.
+ * - Paginación de los resultados mostrados.
+ * - Cambios de vista sincronizados con la URL para permitir navegación directa.
+ * - Muestra estados de carga, ausencia de citas y permite regresar a la vista principal.
+ *
+ * Utiliza:
+ * - Componente `CitaCard` para cada elemento del historial.
+ * - Componente `Paginacion` para la navegación entre páginas de resultados.
+ */
 const HistorialCitas: React.FC = () => {
-    const { userData } = useUser();
 
+    /**
+     * VARIABLES
+     */
+    const { userData } = useUser();
     const location = useLocation();
     const history = useHistory();
-  
-
-    // 🔍 Leer tipo desde la URL
+    // Leer tipo desde la URL
     const searchParams = new URLSearchParams(location.search);
     const tipoParam = searchParams.get("tipo") as "todos" | "actuales" | "archivados" | null;
-
-    // ✅ Estado interno basado en la URL (si no hay tipo → 'todos')
+    // Estado interno basado en la URL (si no hay tipo → 'todos')
     const [tipoVista, setTipoVista] = useState<"todos" | "actuales" | "archivados">(tipoParam || "todos");
-
-
     const [citas, setCitas] = useState<CitaDTO[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // 🔁 Cambiar tipo de vista y actualizar URL
+    /**
+     * FUNCIONALIDAD
+     */
+    // Cambiar tipo de vista y actualizar URL
     const cambiarVista = (nuevaVista: "todos" | "actuales" | "archivados") => {
         history.push(`/appointment-history?tipo=${nuevaVista}`);
         window.location.reload();
@@ -44,11 +63,11 @@ const HistorialCitas: React.FC = () => {
             const [day, month, year] = fechaStr.split("-").map(Number);
             return new Date(year, month - 1, day);
         };
-    
+
         return citas.sort((a, b) => {
             const fechaA = parseFecha(a.fechaCita);
             const fechaB = parseFecha(b.fechaCita);
-    
+
             if (tipoVista === "actuales") {
                 return fechaA.getTime() - fechaB.getTime(); // Más próxima primero
             } else {
@@ -105,11 +124,11 @@ const HistorialCitas: React.FC = () => {
         fetchCitas();
     }, [tipoVista, userData?.uid]);
 
-
     const handleVolver = () => {
         history.replace("/principal");
     };
 
+    //PAGINACION
     const [paginaActual, setPaginaActual] = useState(1);
     const tratamientosPorPagina = 5;
 
@@ -122,17 +141,19 @@ const HistorialCitas: React.FC = () => {
 
     const obtenerTitulo = () => {
         switch (tipoParam) {
-          case "actuales":
-            return "Citas actuales";
-          case "archivados":
-            return "Citas archivadas";
-          case "todos":
-          default:
-            return "Historial de citas";
+            case "actuales":
+                return "Citas actuales";
+            case "archivados":
+                return "Citas archivadas";
+            case "todos":
+            default:
+                return "Historial de citas";
         }
-      };
-      
-  
+    };
+
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -244,21 +265,47 @@ const HistorialCitas: React.FC = () => {
     );
 };
 
-
+/**
+ * Componente CitaCard
+ *
+ * Representa visualmente una tarjeta individual de cita médica con las siguientes funcionalidades:
+ * - Visualización de la fecha, hora, estado y si está archivada.
+ * - Botones de acción condicionales: eliminar, archivar, desarchivar.
+ * - Permite ver el detalle completo de la cita mediante navegación.
+ * - Usa un sistema de doble confirmación para evitar acciones accidentales.
+ * - Notifica al usuario mediante `NotificationToast` del resultado de las acciones.
+ *
+ * Props:
+ * - `cita`: datos de la cita a mostrar.
+ * - `index`: número de orden en la lista.
+ * - `onActualizar`: función callback para refrescar el listado de citas tras una acción.
+ */
 export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar }) => {
 
+    /**
+     * VARIABLES
+     */
     const puedeArchivar = cita.estadoCita === "Completada" || cita.estadoCita === "Cancelada";
     const puedeEliminar = cita.estadoCita === "Cancelada";
     const history = useHistory();
-
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
 
+
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -268,14 +315,6 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     const onDesArchivarDobleCheck = () => {
         setDialogState({
@@ -324,7 +363,7 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
             });
             setTimeout(() => {
                 onActualizar();
-            }, 500); // 👈 vuelve a cargar la lista actualizada
+            }, 500); //  vuelve a cargar la lista actualizada
         } catch (error) {
             setToast({
                 show: true,
@@ -333,8 +372,8 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
                 icon: alertCircleOutline,
             });
         }
-
     };
+
     const onArchivar = async () => {
         cerrarDialogo();
         try {
@@ -352,7 +391,7 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
             });
             setTimeout(() => {
                 onActualizar();
-            }, 500); // 👈 vuelve a cargar la lista actualizada
+            }, 500); //  vuelve a cargar la lista actualizada
         } catch (error) {
             setToast({
                 show: true,
@@ -361,7 +400,6 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
                 icon: alertCircleOutline,
             });
         }
-
     };
 
     const onEliminar = async () => {
@@ -376,7 +414,7 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
             });
             setTimeout(() => {
                 onActualizar();
-            }, 500); // 👈 vuelve a cargar la lista actualizada
+            }, 500); //  vuelve a cargar la lista actualizada
         } catch (error) {
             setToast({
                 show: true,
@@ -385,13 +423,12 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
                 icon: alertCircleOutline,
             });
         }
-
     };
 
     const onVerDetalle = () => {
         history.push({
             pathname: "/appointment-detail",
-            state: { cita }, // 👈 aquí mandamos el tratamiento
+            state: { cita }, //  aquí mandamos el tratamiento
         });
     };
 
@@ -400,7 +437,9 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
         return partes[0].trim();
     }
 
-
+    /**
+     * RENDER
+     */
     return (
         <div className="cita-card">
             <div className="cita-card-header">
@@ -436,8 +475,6 @@ export const CitaCard: React.FC<CitaCardProps> = ({ cita, index, onActualizar })
                             <IonIcon icon={archiveOutline} size="large" slot="icon-only" />
                         </IonButton>
                     )}
-
-
                 </div>
             </div>
 

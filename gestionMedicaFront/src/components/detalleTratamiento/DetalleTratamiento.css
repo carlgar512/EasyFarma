@@ -6,8 +6,8 @@
 
 }
 
-.contentDetalleTratamiento{
-    --background:  var(--ion-color-VerdePastel);
+.contentDetalleTratamiento {
+    --background: var(--ion-color-VerdePastel);
 }
 
 .cabeceraDT {
@@ -80,9 +80,11 @@
 }
 
 .badgeEstado.archivado {
-    background-color: #d9d9d9; /* Gris claro */
-    color: #595959;           /* Gris oscuro para el texto */
-  }
+    background-color: #d9d9d9;
+    /* Gris claro */
+    color: #595959;
+    /* Gris oscuro para el texto */
+}
 
 .lineaSep {
     border: none;
@@ -123,7 +125,7 @@
 }
 
 .descText {
-    text-align: center;
+    text-align: LEFT;
     font-size: 0.9rem;
     color: var(--ion-color-customDark);
 }
@@ -200,8 +202,7 @@
 
 .volverButtonDT:hover,
 .exportButtonDT:hover,
-.archiveButtonDT:hover
-{
+.archiveButtonDT:hover {
     transform: scale(1.02);
     transition: 0.3s ease-in-out;
 }
@@ -215,58 +216,63 @@
     margin-bottom: 16px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     transition: transform 0.2s ease;
-  }
-  
-  .lineaTratamientoCard:hover {
+}
+
+.lineaTratamientoCard:hover {
     transform: translateY(-3px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .lineaTratamientoCard h3 {
+}
+
+.lineaTratamientoCard h3 {
     font-size: 1.2rem;
     margin-bottom: 8px;
     font-weight: bold;
     color: var(--ion-color-customDark);
-  }
-  
-  .lineaTratamientoCard p {
+}
+
+.lineaTratamientoCard p {
     margin: 4px 0;
     font-size: 0.95rem;
     color: var(--ion-color-customDark);
-  }
-  
-  .lineaTratamientoCard p strong {
-    color: var(--ion-color-lightGreen); /* Azul suave */
-  }
-  
-  .lineaTratamientoCard hr {
+}
+
+.lineaTratamientoCard p strong {
+    color: var(--ion-color-lightGreen);
+    /* Azul suave */
+}
+
+.lineaTratamientoCard hr {
     margin-top: 12px;
     border: none;
     border-top: 1px solid #e0e0e0;
-  }
+}
 
-  .text-notFoundInfo {
-    color: var(--ion-color-customMedium); /* gray-500 */
+.text-notFoundInfo {
+    color: var(--ion-color-customMedium);
+    /* gray-500 */
     width: 100%;
     font-style: italic;
     font-size: 1rem;
     text-align: center;
     padding: 0.75rem;
-    background: var(--ion-color-customUltraLight); /* gray-50 */
-    border: 1px dashed var(--ion-color-customDark); /* gray-300 */
+    background: var(--ion-color-customUltraLight);
+    /* gray-50 */
+    border: 1px dashed var(--ion-color-customDark);
+    /* gray-300 */
     border-radius: 0.5rem;
-  }
-  
-  .contenedorDeTratamientoSpinner{
+}
+
+.contenedorDeTratamientoSpinner {
     display: flex;
     height: 100%;
     align-items: center;
     flex-direction: column;
     justify-content: space-around;
-  }
-  .spinnerContainerDT{
+}
+
+.spinnerContainerDT {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-  }
+}

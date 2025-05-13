@@ -2,16 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { MapComponentProps } from './MapComponentInterfaces';
 
-interface MapComponentProps {
-  direccionInicial: string;
-  onSelect: (direccion: string) => void;
-}
-
-//Pensar en coger ub del telefono
+/**
+ * Componente de mapa interactivo basado en Leaflet.
+ * 
+ * Este componente recibe una dirección inicial (`direccionInicial`) que intenta geolocalizar 
+ * utilizando Nominatim. Si la dirección es válida, centra el mapa en dicha localización y coloca un marcador.
+ * 
+ * El usuario puede hacer clic en cualquier punto del mapa para seleccionar una nueva ubicación. 
+ * Al hacerlo, se actualiza la posición del marcador y se consulta la dirección correspondiente 
+ * (reverse geocoding), invocando la función `onSelect` con la nueva dirección.
+ * 
+ * Si no se proporciona una dirección válida o falla la geolocalización, se utiliza una posición por defecto (Valladolid).
+ */
 const fallbackPosition: [number, number] = [41.6529, -4.7286]; // Valladolid
 
 const MapComponent: React.FC<MapComponentProps> = ({ direccionInicial, onSelect }) => {
+
+  /**
+   * VARIABLES
+   */
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [direccionActual, setDireccionActual] = useState<string>('');
   const [mapCenter, setMapCenter] = useState<[number, number] | null>(null); // AHORA es null al inicio
@@ -22,6 +33,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ direccionInicial, onSelect 
     iconAnchor: [16, 32],
   });
 
+  /**
+   * FUNCIONALIDAD
+   */
   useEffect(() => {
     const fetchCoords = async () => {
       try {
@@ -79,6 +93,9 @@ const MapComponent: React.FC<MapComponentProps> = ({ direccionInicial, onSelect 
     return null;
   };
 
+  /**
+   * RENDER
+   */
   return (
     <div className="mapWrapper">
       {mapCenter ? (

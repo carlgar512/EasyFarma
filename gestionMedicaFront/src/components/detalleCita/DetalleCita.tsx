@@ -15,6 +15,15 @@ import MedicoCard from "../medicoCard/MedicoCard";
 import { AgendaCita, ModalUbicacion } from "../detalleMedico/DetalleMedico";
 import { backendService } from "../../services/backendService";
 
+
+/**
+ * Componente contenedor para la visualización detallada de una cita médica.
+ * Extrae el objeto `cita` desde el estado de la ubicación (location.state)
+ * y lo pasa como prop al componente `DetalleCita`.
+ *
+ * Este wrapper facilita la navegación y asegura la encapsulación
+ * del dato necesario para la vista detallada.
+ */
 const DetalleCitaWrapper: React.FC = () => {
     const location = useLocation<{ cita }>();
     const cita: CitaDTO = location.state?.cita;
@@ -22,7 +31,27 @@ const DetalleCitaWrapper: React.FC = () => {
     return <DetalleCita cita={cita} />;
 };
 
+
+/**
+ * Componente `DetalleCita`
+ *
+ * Muestra los detalles completos de una cita médica, incluyendo:
+ * - Fecha, hora, estado y ubicación del centro
+ * - Datos del médico asociado (si están disponibles)
+ * - Acciones sobre la cita como cancelar, archivar, desarchivar o eliminar
+ * - Posibilidad de modificar la cita, mostrando un calendario y horarios disponibles
+ *
+ * Además, gestiona el estado de carga, muestra notificaciones (toast),
+ * y lanza diálogos de doble confirmación para acciones sensibles.
+ *
+ * Este componente se usa desde `DetalleCitaWrapper`, que le proporciona
+ * el objeto `cita` a través del estado de navegación (`location.state`).
+ */
 const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
+
+    /**
+     * VARIABLES
+     */
     const { userData } = useUser();
     const [loading, setLoading] = useState(true);
     const [citaActual, setcitaActual] = useState(cita);
@@ -34,14 +63,23 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
     const [seccionAgendarCitaState, setSeccionAgendarCita] = useState(false);
     const [agendas, setAgendas] = useState<AgendaMedicaDTO[]>([]);
     const agendaRef = useRef<HTMLDivElement>(null);
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
 
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -51,14 +89,6 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     useEffect(() => {
         if (seccionAgendarCitaState && agendaRef.current) {
@@ -95,7 +125,6 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
         }
     }, []);
 
-
     const handleVolver = () => {
         history.replace('./appointment-history?tipo=todos');
         window.location.reload();
@@ -126,7 +155,6 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
             setSeccionAgendarCita(true);
         }
     };
-
 
     const handleOnCancelarDobleCheck = () => {
         setDialogState({
@@ -167,17 +195,18 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
             onConfirm: () => handleOnArchivar(),
         });
     };
+
     const handleOnCancelar = async () => {
         cerrarDialogo();
         setLoading(true);
-      
+
         try {
             const citaActualizada: CitaDTO = {
                 ...citaActual,
                 estadoCita: "Cancelada",
             };
 
-            await backendService.actualizarCita(citaActualizada,true);
+            await backendService.actualizarCita(citaActualizada, true);
             if (medico) {
                 await backendService.liberarHorario(medico?.uid, citaActualizada.fechaCita, citaActualizada.horaCita);
             }
@@ -265,7 +294,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
     const handleOnArchivar = async () => {
         cerrarDialogo();
         setLoading(true);
-       
+
         try {
             const citaActualizada: CitaDTO = {
                 ...citaActual,
@@ -295,7 +324,9 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
         }
     };
 
-
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -402,7 +433,7 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
                                         especialidad={especialidad}
                                         centro={centro}
                                         provincia={centro.provincia || "Provincia no disponible"}
-                                        />
+                                    />
                                 ) : (
                                     <span className="text-notFoundInfoDC">No existe un médico asignado</span>
                                 )}
@@ -412,12 +443,12 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
                             {
                                 seccionAgendarCitaState && medico &&
                                 <div ref={agendaRef} className="agendaContainerScroll">
-                                <AgendaCita
-                                    setSeccionAgendarCita={setSeccionAgendarCita}
-                                    agendas={agendas}
-                                    medico={medico}
-                                    setLoading={() => setLoading}
-                                />
+                                    <AgendaCita
+                                        setSeccionAgendarCita={setSeccionAgendarCita}
+                                        agendas={agendas}
+                                        medico={medico}
+                                        setLoading={() => setLoading}
+                                    />
                                 </div>
                             }
                             <div className="buttonsContainerDC">
@@ -493,7 +524,6 @@ const DetalleCita: React.FC<DetalleCitaProps> = ({ cita }) => {
                 onCancel={() => cerrarDialogo()}
             />
         </>
-
     );
 }
 

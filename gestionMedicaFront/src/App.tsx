@@ -7,8 +7,6 @@ import {
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 
-
-
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -24,9 +22,6 @@ import '@ionic/react/css/text-alignment.css';
 import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
-
-
-
 
 /**
  * Ionic Dark Mode
@@ -69,7 +64,26 @@ import ChildAccountRegister from './components/childAccountRegister/ChildAccount
 
 
 
-
+/**
+ * Componente principal `App`
+ *
+ * Este componente configura la estructura base de la aplicación con Ionic React y React Router.
+ * Envuelve toda la aplicación en el contexto de autenticación (`AuthProvider`) y define las rutas disponibles,
+ * algunas de las cuales se encapsulan con el `UserProvider` para cargar y proporcionar los datos del usuario autenticado.
+ *
+ * Estructura principal:
+ * - `AuthProvider`: contexto global de autenticación.
+ * - `IonApp`: contenedor raíz de Ionic.
+ * - `IonReactRouter`: enrutador que integra Ionic con React Router.
+ * - `IonTabs` + `IonRouterOutlet`: define la navegación y las rutas disponibles.
+ *
+ * Rutas:
+ * - Algunas rutas públicas (como login, registro, recuperación de contraseña).
+ * - Otras protegidas mediante `UserProvider` que provee datos del usuario.
+ *
+ * Redirección:
+ * - Al acceder a `/`, redirige automáticamente a `/lobby`.
+ */
 setupIonicReact();
 
 const App: React.FC = () => (

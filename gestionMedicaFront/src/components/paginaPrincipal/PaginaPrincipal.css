@@ -973,7 +973,7 @@
     width: 100%;
     max-width: 700px;
     margin: 0 auto;
-  }
+}
 
 @media (max-width: 500px) {
     .gridBotonesAccesibilidad {
@@ -1042,7 +1042,7 @@
 
 /***SECCIONES Accesibilidad **/
 
-.btnVolver{
+.btnVolver {
     max-width: 1000px;
     --background: var(--ion-color-customRed);
     width: 90%;
@@ -1058,9 +1058,9 @@
     margin: 0 auto;
     padding: 0 16px;
     margin-bottom: 10px;
-  }
+}
 
-  .tituloSeccion {
+.tituloSeccion {
     margin-top: 10px;
     font-size: 1.6rem;
     padding: 10px;
@@ -1072,11 +1072,11 @@
     color: var(--ion-color-customDark);
     text-align: center;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  }
+}
 
-  @media (max-width: 500px) {
+@media (max-width: 500px) {
     .operationsGrid {
-      grid-template-columns: repeat(1, 1fr);
-      gap: 10px;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
     }
-  }
+}

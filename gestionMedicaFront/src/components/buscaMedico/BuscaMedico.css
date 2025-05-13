@@ -16,6 +16,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 20px;
+    min-height: 90%;
 }
 
 .buttonContainerSD {
@@ -275,7 +276,7 @@
     margin-top: 8px;
 }
 
-.filtrosContainerGrid{
+.filtrosContainerGrid {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -283,6 +284,7 @@
     height: 100%;
     width: 100%;
 }
+
 .filtrosContainer {
     display: flex;
     justify-content: center;
@@ -346,9 +348,9 @@
     max-width: 420px;
     border-radius: 12px;
     background: var(--ion-color-customUltraLight);
-  }
-  
-  .segmentFiltro ion-segment-button {
+}
+
+.segmentFiltro ion-segment-button {
     font-size: 15px;
     text-transform: uppercase;
     padding: 6px 0;
@@ -357,21 +359,22 @@
     font-weight: 500;
     --indicator-height: 2px;
     --indicator-color: var(--ion-color-primary);
-  }
-  
-  @media (max-width: 600px) {
-    .segmentFiltro {
-      width: 95%;
-      font-size: 14px;
-    }
-  
-    .segmentFiltro ion-segment-button {
-      font-size: 13px;
-    }
-  }
+}
 
-  .medico-card-error {
-    background-color: #fff3cd; /* fondo suave tipo alerta */
+@media (max-width: 600px) {
+    .segmentFiltro {
+        width: 95%;
+        font-size: 14px;
+    }
+
+    .segmentFiltro ion-segment-button {
+        font-size: 13px;
+    }
+}
+
+.medico-card-error {
+    background-color: #fff3cd;
+    /* fondo suave tipo alerta */
     border: 1px solid #ffecb5;
     color: #856404;
     padding: 16px;
@@ -383,9 +386,9 @@
     display: flex;
     align-items: center;
     gap: 12px;
-  }
-  
-  .medico-card-error p {
+}
+
+.medico-card-error p {
     margin: 0;
     font-weight: 500;
-  }
+}

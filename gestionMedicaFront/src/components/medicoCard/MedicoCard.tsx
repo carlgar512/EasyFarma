@@ -10,6 +10,26 @@ import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 
+/**
+ * Componente MedicoCard
+ *
+ * Representa la vista resumida de un médico con la información relevante para el usuario:
+ * nombre, especialidad, centro y provincia, junto con acciones disponibles como:
+ * - Agendar una nueva cita
+ * - Ver detalle del profesional
+ * - Marcar o desmarcar como favorito (con confirmación si es necesario)
+ *
+ * Props:
+ * - medico: Objeto de tipo MedicoDTO que contiene la información principal del profesional.
+ * - especialidad: Objeto de tipo EspecialidadDTO asociado al médico.
+ * - centro: Objeto de tipo CentroDTO donde ejerce el médico.
+ * - provincia: Nombre de la provincia donde se ubica el centro.
+ *
+ * Comportamientos clave:
+ * - Gestión local de favorito con sincronización con el backend.
+ * - Navegación hacia el detalle del médico o agendamiento de cita.
+ * - Confirmación visual de acciones mediante diálogos y notificaciones.
+ */
 const MedicoCard: React.FC<MedicoCardProps> = ({
     medico,
     especialidad,
@@ -18,21 +38,31 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
 
 }) => {
 
+    /**
+     * VARIABLES
+     */
     const history = useHistory();
     const { userData, setUserData } = useUser();
     const [isFavorito, setIsFavorito] = useState<boolean>(() =>
         userData?.medicosFavoritos.includes(medico.uid) ?? false
     );
-
-
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
 
+    /**
+     * FUNCIONALIDAD
+     */
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -42,14 +72,6 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     const onFavoritoDobleCheck = () => {
         if (!userData || !userData.medicosFavoritos) return;
@@ -137,7 +159,9 @@ const MedicoCard: React.FC<MedicoCardProps> = ({
         });
     };
 
-
+    /**
+     * RENDER
+     */
     return (
         <div className="medico-card">
             <div className="card-header">

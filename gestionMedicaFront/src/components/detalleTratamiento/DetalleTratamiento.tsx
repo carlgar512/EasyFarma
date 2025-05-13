@@ -15,31 +15,72 @@ import MedicoCard from "../medicoCard/MedicoCard";
 
 
 
-
+/**
+ * Componente `DetalleTratamientoWrapper`
+ * 
+ * Actúa como contenedor de enrutamiento para el componente `DetalleTratamiento`.
+ * Extrae el objeto `tratamiento` desde el estado de navegación (history.state)
+ * y lo pasa como prop al componente de detalle.
+ * 
+ * Esto permite mantener la navegación limpia y desacoplar la lógica de obtención del tratamiento
+ * del propio componente de detalle.
+ */
 const DetalleTratamientoWrapper: React.FC = () => {
+    /**
+     * VARIABLES
+     */
     const location = useLocation<{ tratamiento }>();
     const tratamiento = location.state?.tratamiento;
 
-
+    /**
+     * RENDER
+     */
     return <DetalleTratamiento tratamiento={tratamiento} />;
 };
 
+/**
+ * Componente `DetalleTratamiento`
+ *
+ * Este componente muestra la información detallada de un tratamiento médico específico.
+ * Incluye:
+ *  - Información general del tratamiento (estado, fechas, descripción)
+ *  - Médico asociado y detalles del centro
+ *  - Líneas del tratamiento (medicamentos, dosis, frecuencia, duración, etc.)
+ *  - Opciones para archivar/restaurar el tratamiento
+ *  - Funcionalidad para exportar el tratamiento como PDF cifrado
+ *
+ * El componente realiza una llamada al backend para obtener toda la información completa
+ * y permite gestionar acciones como archivado y exportación con confirmación previa.
+ */
 const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) => {
-    const { userData } = useUser();
 
+    /**
+     * VARIABLES
+     */
+    const history = useHistory();
+    const { userData } = useUser();
     const [tratamientoCompleto, setTratamiento] = useState<TratamientoDTO | null>(null);
     const [lineas, setLineas] = useState<LineaConMedicamento[]>([]);
     const [medico, setMedico] = useState<MedicoCompletoDTO | null>(null);
     const [loading, setLoading] = useState(true);
     const [reloadTrigger, setReloadTrigger] = useState(0);
-
     const [toast, setToast] = useState({
         show: false,
         message: "",
         color: "success",
         icon: checkmarkOutline,
     });
+    const [dialogState, setDialogState] = useState({
+        isOpen: false,
+        tittle: "",
+        message: "",
+        img: "",
+        onConfirm: () => { },
+    });
 
+    /**
+     * FUNCIONALIDAD
+     */
     useEffect(() => {
         const fetchTratamientoCompleto = async () => {
             try {
@@ -72,7 +113,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
         }
     }, [reloadTrigger]);
 
-
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -82,14 +122,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
             onConfirm: () => { },
         });
     };
-
-    const [dialogState, setDialogState] = useState({
-        isOpen: false,
-        tittle: "",
-        message: "",
-        img: "",
-        onConfirm: () => { },
-    });
 
     const handleArchive = async () => {
         try {
@@ -156,7 +188,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
     };
 
     const solicitarConfirmacionDesArchivado = () => {
-
         setDialogState({
             isOpen: true,
             tittle: "¿Restaurar tratamiento?",
@@ -166,7 +197,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
         });
     };
 
-    const history = useHistory();
     const handleVolver = () => {
         history.goBack()
     };
@@ -408,7 +438,6 @@ const DetalleTratamiento: React.FC<DetalleTratamientoProps> = ({ tratamiento }) 
                 onCancel={() => cerrarDialogo()}
             />
         </>
-
     );
 };
 

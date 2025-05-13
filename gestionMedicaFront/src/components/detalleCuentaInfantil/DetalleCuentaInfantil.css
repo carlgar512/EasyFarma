@@ -90,10 +90,7 @@
   min-height: 90%;
 }
 
-
 /** Content de Detalle */
-
-
 .seccionCuentaDAI {
   display: flex;
   justify-content: space-between;
@@ -403,8 +400,8 @@
   color: var(--ion-color-customDark);
 }
 
-.form-inputNewTutorModal{
-  display:flex;
+.form-inputNewTutorModal {
+  display: flex;
   min-width: 150px;
 }
 

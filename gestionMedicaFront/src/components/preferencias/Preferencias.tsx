@@ -10,7 +10,27 @@ import { InfoUserDTO } from "../../shared/interfaces/frontDTO";
 import NotificationToast from "../notification/NotificationToast";
 import { backendService } from "../../services/backendService";
 
+
+/**
+ * Componente `Preferencias`
+ *
+ * Este componente permite al usuario modificar y guardar sus preferencias de visualización,
+ * en particular la activación o desactivación del "modo accesibilidad".
+ *
+ * Funcionalidades clave:
+ * - Carga inicial del estado de accesibilidad desde los datos del usuario.
+ * - Permite alternar entre la vista estándar y la vista simplificada.
+ * - Guarda las preferencias modificadas a través de una llamada al backend.
+ * - Presenta retroalimentación mediante notificaciones tipo toast.
+ * - Incluye lógica de carga y validación visual del estado actual.
+ *
+ * También incorpora navegación hacia atrás y desactiva el botón de guardar si no hay cambios.
+ */
 const Preferencias: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const [valorOriginal, setValorOriginal] = useState(false);
     const [accesibilidad, setAccesibilidad] = useState(false);
     const { userData, setUserData } = useUser();
@@ -22,7 +42,9 @@ const Preferencias: React.FC = () => {
     });
     const [loading, setLoading] = useState(false);
 
-
+    /**
+     * FUNCIONALIDAD
+     */
     // Logs cuando los datos realmente se actualizan
     useEffect(() => {
         if (userData) {
@@ -84,7 +106,9 @@ const Preferencias: React.FC = () => {
         }
     };
 
-
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />

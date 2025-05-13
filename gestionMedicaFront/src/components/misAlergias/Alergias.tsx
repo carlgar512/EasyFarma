@@ -9,12 +9,33 @@ import './Alergias.css'
 import { AlergiaCardProps, GradoSeveridad, TipoAlergeno } from "./AlergiasInterfaces";
 import { backendService } from "../../services/backendService";
 
+
+/**
+ * Componente Alergias
+ *
+ * Este componente muestra un listado de alergias registradas para el usuario actual.
+ * Al cargarse, obtiene los datos desde el backend utilizando el identificador de usuario (`uid`).
+ * 
+ * Cada alergia se representa mediante un componente `AlergiaCard`, incluyendo la transformación
+ * de los valores técnicos (`tipoAlergeno`, `gradoSeveridad`) a formatos legibles mediante funciones de mapeo.
+ *
+ * Si no se encuentran alergias registradas, se muestra un mensaje informativo con una imagen de estado vacío.
+ * En caso contrario, se lista cada alergia en un contenedor estructurado.
+ *
+ * Durante la carga, se presenta un spinner de espera. También incluye un botón para volver a la pantalla anterior.
+ */
 const Alergias: React.FC = () => {
+
+    /**
+     * VARIABLES
+     */
     const [alergias, setAlergias] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const { userData } = useUser();
 
+    /**
+     * FUNCIONALIDAD
+     */
     useEffect(() => {
         const fetchAlergias = async () => {
             if (!userData?.uid) return;
@@ -41,11 +62,13 @@ const Alergias: React.FC = () => {
         fetchAlergias();
     }, [userData?.uid]);
 
-    
     const handleVolver = () => {
         window.history.back();
     };
 
+    /**
+     * RENDER
+     */
     return (
         <>
             <SideMenu />
@@ -60,7 +83,6 @@ const Alergias: React.FC = () => {
                                         <div className="imgContainer">
                                             <IonImg src="NoData.svg" className="imgNoData" />
                                         </div>
-
                                         <span className="noAlergiasText">No se han registrado alergias para este paciente.</span>
                                     </div>
 
@@ -116,6 +138,18 @@ const Alergias: React.FC = () => {
     );
 };
 
+/**
+ * Componente AlergiaCard
+ *
+ * Representa visualmente la información detallada de una alergia registrada por el paciente,
+ * incluyendo título, descripción, tipo de alérgeno, grado de severidad y síntomas asociados.
+ *
+ * Props:
+ * - alergia: Objeto que contiene los datos de una alergia específica del paciente.
+ *
+ * El diseño del componente adapta visualmente el contenido dependiendo del tipo de alérgeno
+ * y su grado de severidad mediante iconos y estilos condicionales.
+ */
 const AlergiaCard: React.FC<AlergiaCardProps> = ({ alergia }) => {
     const iconoPorTipo: Record<TipoAlergeno, string> = {
         [TipoAlergeno.ALIMENTOS]: restaurantOutline,
@@ -163,7 +197,15 @@ const AlergiaCard: React.FC<AlergiaCardProps> = ({ alergia }) => {
     );
 }
 
-
+/**
+ * Función mapTipoAlergeno
+ *
+ * Mapea una cadena de texto a su correspondiente enumeración del tipo `TipoAlergeno`.
+ * Se utiliza para garantizar una interpretación segura y estandarizada del tipo de alérgeno recibido.
+ *
+ * @param tipo - Cadena representando el tipo de alérgeno (en mayúsculas o minúsculas).
+ * @returns TipoAlergeno correspondiente.
+ */
 export const mapTipoAlergeno = (tipo: string): TipoAlergeno => {
     switch (tipo.toUpperCase()) {
         case "ALIMENTOS":
@@ -186,6 +228,15 @@ export const mapTipoAlergeno = (tipo: string): TipoAlergeno => {
     }
 };
 
+/**
+ * Función mapGradoSeveridad
+ *
+ * Convierte una cadena de texto en su valor correspondiente dentro del enum `GradoSeveridad`.
+ * Se emplea para traducir la severidad textual en un valor de enumeración manejable y controlado.
+ *
+ * @param grado - Cadena representando el grado de severidad.
+ * @returns GradoSeveridad correspondiente.
+ */
 export const mapGradoSeveridad = (grado: string): GradoSeveridad => {
     switch (grado.toUpperCase()) {
         case "LEVE":
