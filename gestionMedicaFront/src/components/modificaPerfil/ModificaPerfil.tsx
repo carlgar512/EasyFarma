@@ -3,7 +3,7 @@ import SideMenu from "../sideMenu/SideMenu";
 import { IonButton, IonContent, IonIcon, IonInput, IonLabel, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
 import MainFooter from "../mainFooter/MainFooter";
-import { alertCircleOutline, arrowBackOutline, atOutline, brushOutline, checkmarkDoneOutline, checkmarkOutline, closeOutline, cloudUploadOutline, eyeOff, eyeOutline, optionsOutline, warningOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, atOutline, brushOutline, checkmarkDoneOutline, checkmarkOutline, closeCircleOutline, closeOutline, cloudUploadOutline, eyeOff, eyeOutline, optionsOutline, warningOutline } from "ionicons/icons";
 import './ModificaPerfil.css'
 import { DatoUsuarioProps, ModalCambioDatoRegularProps } from "./ModificaPerfilInterfaces";
 import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
@@ -39,6 +39,12 @@ const ModificaPerfil: React.FC = () => {
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
     const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
     const [campoEditando, setCampoEditando] = useState<keyof InfoUserDTO | null | "password">(null);
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
 
     /**
      * FUNCIONALIDAD
@@ -64,47 +70,84 @@ const ModificaPerfil: React.FC = () => {
         // 🔐 Si se está actualizando el email → primero Firebase Auth
         if (campo === "email") {
             try {
-                await backendService.updateEmailFirebaseAuth(nuevoValor);
+              await backendService.updateEmailFirebaseAuth(nuevoValor);
             } catch (error) {
-                console.error("❌ Error al actualizar email en Firebase Auth:", error);
-                return false;
+              setToast({
+                show: true,
+                message: "Error al actualizar el email en Firebase.",
+                color: "danger",
+                icon: closeCircleOutline,
+              });
+              return false;
             }
-        }
-
-        else if (campo === "password") {
+          }
+          
+          else if (campo === "password") {
             try {
-                await backendService.passwordReset(userData.dni, nuevoValor);
+              await backendService.passwordReset(userData.dni, nuevoValor);
             } catch (error) {
-                console.error("❌ Error al actualizar la contraseña:", error);
-                return false;
+              setToast({
+                show: true,
+                message: "Error al actualizar la contraseña.",
+                color: "danger",
+                icon: closeCircleOutline,
+              });
+              return false;
             }
-        }
-
-        else if (campo === "dni") {
+          }
+          
+          else if (campo === "dni") {
             try {
-                const response = await backendService.existeDNIRegistrado(nuevoValor);
-                if(response){
-                    
-                }
-            } catch (error) {
-                console.error("❌ Error al actualizar dni", error);
+              const response = await backendService.existeDNIRegistrado(nuevoValor);
+              if (response) {
+                setToast({
+                  show: true,
+                  message: "El DNI ya está registrado.",
+                  color: "danger",
+                  icon: closeCircleOutline,
+                });
                 return false;
+              }
+            } catch (error) {
+              setToast({
+                show: true,
+                message: "Error al verificar el DNI.",
+                color: "danger",
+                icon: closeCircleOutline,
+              });
+              return false;
             }
-        }
-
-        try {
+          }
+          
+          try {
             const response = await backendService.updateUserInfo(usuarioActualizado);
             if (response.success) {
-                setUserData(usuarioActualizado);
-                return true; // ✅ Todo bien
+              setUserData(usuarioActualizado);
+              setToast({
+                show: true,
+                message: "Usuario actualizado correctamente",
+                color: "success",
+                icon: checkmarkOutline,
+              });
+              return true;
             } else {
-                console.error("❌ Error del servidor:", response.error);
-                return false;
+              setToast({
+                show: true,
+                message: response.error || "Error del servidor al guardar los cambios.",
+                color: "danger",
+                icon: closeCircleOutline,
+              });
+              return false;
             }
-        } catch (error) {
-            console.error("❌ Error al guardar:", error);
+          } catch (error) {
+            setToast({
+              show: true,
+              message: "Error al guardar los cambios.",
+              color: "danger",
+              icon: closeCircleOutline,
+            });
             return false;
-        }
+          }
     };
 
     /**
@@ -275,6 +318,14 @@ const ModificaPerfil: React.FC = () => {
                         : ""
                 }
                 onGuardar={handleGuardarNuevoValor}
+            />
+
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
         </>
     );
