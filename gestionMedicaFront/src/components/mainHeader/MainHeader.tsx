@@ -92,6 +92,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ event, onDismiss }) => {
   * FUNCIONALIDAD
   */
     const logOut = () => {
+        sessionStorage.removeItem('userData');
         logout();
         window.location.replace('/lobby');
     };

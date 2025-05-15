@@ -713,6 +713,25 @@ const getUsuariosTutelados = async (idTutor: string): Promise<any[]> => {
     if (!response.ok || !data.success) {
       throw new Error(data.error || "Error al dar de baja al usuario como tutelado");
     }
+    return data;
+  };
+
+  const existeDNIRegistrado = async (dni: string): Promise<boolean> => {
+    const response = await fetch(`${BASE_URL}/existeDNIRegistrado`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ dni }),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al verificar la existencia del DNI");
+    }
+  
+    return data.existe;
   };
   
 
@@ -752,6 +771,7 @@ export const backendService = {
     getTutelaActivaEntreDos,
     comprobarNuevoTutor,
     guardarTutela,
-    bajaUsuarioComoTutelado
+    bajaUsuarioComoTutelado,
+    existeDNIRegistrado
 };
 

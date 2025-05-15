@@ -80,6 +80,18 @@ const ModificaPerfil: React.FC = () => {
             }
         }
 
+        else if (campo === "dni") {
+            try {
+                const response = await backendService.existeDNIRegistrado(nuevoValor);
+                if(response){
+                    
+                }
+            } catch (error) {
+                console.error("❌ Error al actualizar dni", error);
+                return false;
+            }
+        }
+
         try {
             const response = await backendService.updateUserInfo(usuarioActualizado);
             if (response.success) {
@@ -180,20 +192,22 @@ const ModificaPerfil: React.FC = () => {
                                     editable={false}
                                     setIsModalOpen={() => setIsModalCheckOpen(true)}
                                 />
+                                {
+                                    userData.tipoUsuario !== UserType.INFANTIL &&
 
-                                <IonButton
-                                    onClick={handleCambiarContraseña}
-                                    expand="block"
-                                    shape="round"
-                                    size="default"
-                                    className="ion-margin-top buttonCambiarPsw"
-                                >
-                                    <IonIcon icon={atOutline} size="large" slot="icon-only"></IonIcon>
-                                    <span className="buttonTextMP">
-                                        Cambiar contraseña
-                                    </span>
-                                </IonButton>
-
+                                    <IonButton
+                                        onClick={handleCambiarContraseña}
+                                        expand="block"
+                                        shape="round"
+                                        size="default"
+                                        className="ion-margin-top buttonCambiarPsw"
+                                    >
+                                        <IonIcon icon={atOutline} size="large" slot="icon-only"></IonIcon>
+                                        <span className="buttonTextMP">
+                                            Cambiar contraseña
+                                        </span>
+                                    </IonButton>
+                                }
                                 <div className="buttonContainerMP">
                                     <IonButton
                                         onClick={handleVolver}
@@ -386,8 +400,6 @@ const ModalCambioDatoRegular: React.FC<ModalCambioDatoRegularProps> = ({
 
         try {
             setCargando(true);
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-
             const ok = await onGuardar(
                 campo === "password"
                     ? nuevaPassword

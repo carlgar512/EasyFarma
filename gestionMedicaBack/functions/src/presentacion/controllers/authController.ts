@@ -186,7 +186,6 @@ export const updateUserInfoHandler = onRequest(async (req, res) => {
   }
 });
 
-
 export const registerChildHandler = onRequest(async (req, res) => {
   try {
     const data = req.body;
@@ -237,6 +236,34 @@ export const comprobarNuevoTutorHandler = onRequest(async (req, res) => {
     res.status(400).json({
       success: false,
       message: error.message || "Error al comprobar tutor.",
+    });
+  }
+});
+
+
+export const existeDNIRegistradoHandler = onRequest(async (req, res) => {
+  try {
+    const { dni } = req.body;
+
+    if (!dni) {
+      res.status(400).json({
+        success: false,
+        message: "DNI no proporcionado.",
+      });
+      return;
+    }
+
+    const existe = await AuthService.existeDNIRegistrado(dni);
+
+    res.status(200).json({
+      success: true,
+      existe, // booleano: true si está registrado
+    });
+  } catch (error) {
+    console.error("❌ Error en existeDNIRegistradoHandler:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor.",
     });
   }
 });

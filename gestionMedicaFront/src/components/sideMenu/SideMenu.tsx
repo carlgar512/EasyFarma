@@ -32,6 +32,7 @@ const SideMenu: React.FC = () => {
     // Cerrar sesión con confirmación
     const logOut = () => {
         setDoubleConfOpen(false);
+        sessionStorage.removeItem('userData');
         logout();
         window.location.replace('/lobby'); // Reemplaza la URL actual y borra el historial
     };

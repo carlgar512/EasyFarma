@@ -255,6 +255,7 @@ const ChildAccountRegister: React.FC = () => {
                                             value={form.dni}
                                             onIonChange={handleChange}
                                             clearInput={true}
+                                            maxlength={9}
                                         />
                                     </IonItem>
 

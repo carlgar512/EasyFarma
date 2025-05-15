@@ -15,6 +15,7 @@ import { backendService } from "../../services/backendService";
 import NotificationToast from "../notification/NotificationToast";
 import { checkmarkOutline } from "ionicons/icons";
 import { useUser } from "../../context/UserContext";
+import { UserType } from "../../shared/interfaces/frontDTO";
 
 
 
@@ -88,6 +89,7 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
     /**
      * VARIABLES
      */
+    const { userData } = useUser();
     const { logout, user } = useAuth();
     const history = useHistory();
     const [toast, setToast] = useState({
@@ -108,54 +110,70 @@ const OperationLabel: React.FC<OperationLabelProps> = ({ operation }) => {
     /**
     * FUNCIONALIDAD
     */
-    const handleOperation = () => {
-        if (operation.id === 13) {
-            setModalConfig({
-                tittle: operation.title,
-                message: "¿Estás seguro de que deseas cerrar sesión? Tu sesión se cerrará y deberás iniciar sesión nuevamente para continuar usando la aplicación.",
-                img: operation.img,
-                onConfirm: () => {
-                    logout();
-                    history.replace('/lobby');
-                    setShowConfirm(false);
-                }
-            });
-            setShowConfirm(true);
-        }
-        else if (operation.id === 14) {
-            console.log(user?.uid);
-            setModalConfig({
-                tittle: operation.title,
-                message: "¿Estás seguro de que deseas dar de baja tu cuenta? Esta acción es permanente.Perderás el acceso a tu cuenta y a todos tus datos, y no podrás volver a acceder.",
-                img: operation.img,
-                onConfirm: async () => {
-                    const res = await backendService.deactivateUser(user?.uid);
-                    if (res.success) {
-                        setToast({
-                            show: true,
-                            message: "Su cuenta ha sido dada de baja correctamente.",
-                            color: "success",
-                            icon: checkmarkOutline,
-                        });
+    const handleOperation = async () => {
+        switch (operation.id) {
+            case 13:
+                setModalConfig({
+                    tittle: operation.title,
+                    message: "¿Estás seguro de que deseas cerrar sesión? Tu sesión se cerrará y deberás iniciar sesión nuevamente para continuar usando la aplicación.",
+                    img: operation.img,
+                    onConfirm: () => {
                         logout();
+                        sessionStorage.removeItem('userData');
                         history.replace('/lobby');
                         setShowConfirm(false);
                     }
-                    else {
-                        setToast({
-                            show: true,
-                            message: "No se ha podido realizar la baja, intentelo más tarde.",
-                            color: "danger",
-                            icon: icons.alertCircleOutline,
-                        });
-                        setShowConfirm(false);
+                });
+                setShowConfirm(true);
+                break;
+    
+            case 14:
+                console.log(user?.uid);
+                setModalConfig({
+                    tittle: operation.title,
+                    message: "¿Estás seguro de que deseas dar de baja tu cuenta? Esta acción es permanente. Perderás el acceso a tu cuenta y a todos tus datos, y no podrás volver a acceder.",
+                    img: operation.img,
+                    onConfirm: async () => {
+                        let res;
+                        try {
+                            if (userData?.tipoUsuario === UserType.INFANTIL) {
+                                res = await backendService.bajaUsuarioComoTutelado(userData.uid);
+                                console.log(res);
+                            } else {
+                                res = await backendService.deactivateUser(user?.uid);
+                            }
+
+                            if (res.success) {
+                                setToast({
+                                    show: true,
+                                    message: "Su cuenta ha sido dada de baja correctamente.",
+                                    color: "success",
+                                    icon: checkmarkOutline,
+                                });
+                                sessionStorage.removeItem('userData');
+                                logout();
+                                history.replace('/lobby');
+                            } else {
+                                throw new Error();
+                            }
+                        } catch (error) {
+                            setToast({
+                                show: true,
+                                message: "No se ha podido realizar la baja, inténtelo más tarde.",
+                                color: "danger",
+                                icon: icons.alertCircleOutline,
+                            });
+                        } finally {
+                            setShowConfirm(false);
+                        }
                     }
-                },
-            });
-            setShowConfirm(true);
-        }
-        else {
-            window.location.href = operation.url;
+                });
+                setShowConfirm(true);
+                break;
+    
+            default:
+                window.location.href = operation.url;
+                break;
         }
     };
 

@@ -12,6 +12,7 @@ import {
     bajaUsuarioHandler,
     checkCodeHandler,
     comprobarNuevoTutorHandler,
+    existeDNIRegistradoHandler,
     getEmailByDniHandler,
     getUserInfoHandler,
     passwordResetHandler,
@@ -123,6 +124,7 @@ export const updateUserInfo = updateUserInfoHandler;
 export const registerChild = registerChildHandler;
 export const comprobarNuevoTutor = comprobarNuevoTutorHandler;
 export const bajaUsuarioComoTutelado = bajaUsuarioComoTuteladoHandler;
+export const existeDNIRegistrado = existeDNIRegistradoHandler;
 
 
 // Exportación de funciones Alergia

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import React from "react";
 import { AuthContextType } from "./ContextInterfaces";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../services/firebaseConfig";
 
 
@@ -9,18 +9,21 @@ import { auth } from "../services/firebaseConfig";
  * Contexto de Autenticación (`AuthContext`)
  *
  * Este componente provee un contexto global para gestionar la autenticación de usuarios.
- * Se encarga de:
- * - Mantener el usuario autenticado (`user`) y el token JWT (`token`).
- * - Recuperar el token desde `localStorage` al iniciar.
- * - Escuchar los cambios en el estado de autenticación con Firebase.
- * - Exponer funciones para establecer (`setAuth`) o cerrar sesión (`logout`).
+ *
+ * Funcionalidades principales:
+ * - Mantiene el usuario autenticado (`user`) y el token JWT (`token`).
+ * - Recupera el token desde `localStorage` al iniciar.
+ * - Escucha los cambios en el estado de autenticación usando Firebase (`onAuthStateChanged`).
+ * - Cierra la sesión automáticamente tras 30 minutos de inactividad del usuario.
+ * - Sincroniza el cierre de sesión entre pestañas mediante eventos de `localStorage`.
+ * - Expone funciones `setAuth()` para iniciar sesión y `logout()` para cerrarla completamente.
  *
  * Hook personalizado:
  * - `useAuth()` permite acceder al contexto de autenticación desde cualquier componente hijo.
- *   Lanza un error si se usa fuera del `AuthProvider`.
+ *   Lanza un error si se usa fuera del `<AuthProvider>`.
  *
  * Uso:
- * Envuelve tu aplicación con `<AuthProvider>` para tener acceso al contexto.
+ * Envuelve tu aplicación con `<AuthProvider>` para tener acceso global al contexto de autenticación.
  */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -65,6 +68,43 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
     localStorage.removeItem("token");
   };
+
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === "token" && e.newValue === null) {
+        logout();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+  
+    const resetTimer = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        console.warn("🕒 Inactividad detectada, cerrando sesión...");
+        logout();
+        window.location.href = "/";
+        signOut(auth).catch((e) => {
+          console.warn("⚠️ Error al cerrar sesión de Firebase:", e);
+        });
+      
+      }, 15 * 60 * 1000); // 15 minutos
+    };
+  
+    const events = ["mousemove", "keydown", "click"];
+    events.forEach((event) => window.addEventListener(event, resetTimer));
+  
+    resetTimer(); // inicializa
+  
+    return () => {
+      clearTimeout(timeout);
+      events.forEach((event) => window.removeEventListener(event, resetTimer));
+    };
+  }, []);
 
   /**
    * RENDER

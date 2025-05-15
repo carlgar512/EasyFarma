@@ -112,6 +112,30 @@ export class AuthService {
   }
 
   /**
+ * Verifica si el DNI ya está registrado en el sistema.
+ *
+ * @param dni - DNI a consultar
+ * @returns `true` si el DNI ya existe (está registrado), `false` si no existe
+ */
+  static async existeDNIRegistrado(dni: string): Promise<boolean> {
+    logger.info(`🔍 Comprobando existencia del DNI: ${dni}`);
+
+    try {
+      const uid = await getUIDByDNI(dni);
+
+      if (uid) {
+        logger.info(`✅ El DNI ${dni} ya está registrado con UID: ${uid}`);
+        return true;
+      } else {
+        logger.info(`❌ El DNI ${dni} no está registrado en el sistema`);
+        return false;
+      }
+    } catch (error: any) {
+      logger.error(`❌ Error al comprobar existencia del DNI ${dni}: ${error.message}`);
+      throw new Error("No se pudo verificar el DNI en este momento");
+    }
+  }
+  /**
   * Busca un usuario por DNI y devuelve su email, validando su estado y tipo de cuenta.
   */
   static async getEmailFromDNI(dni: string): Promise<string> {
@@ -151,15 +175,6 @@ export class AuthService {
     logger.info(`✅ Email encontrado: ${email}`);
     return email;
   }
-
-
-  /**
-   * Logout no se gestiona desde backend (solo cliente)
-   */
-  static async logoutUser(): Promise<void> {
-    logger.warn("🚫 Logout intentado desde backend. Esta acción debe gestionarse en el cliente.");
-    throw new Error("Logout debe ser gestionado desde el cliente");
-  };
 
   /**
    * Obtiene la información del usuario desde Firestore
@@ -354,6 +369,32 @@ export class AuthService {
         try {
           await TutelaService.finalizarTutela(tutela.idTutela);
           logger.info(`🔚 Tutela finalizada: ${tutela.idTutela}`);
+
+          const idTutelado = tutela.idTutelado;
+
+          // 🔍 Obtener todas las tutelas del tutelado
+          const tutelasTutelado = await TutelaService.obtenerTutelasPorIdTutelado(idTutelado);
+          const activasTutelado = tutelasTutelado.filter(t => !t.fechaDesvinculacion);
+
+          // ❗ Si solo le quedaba esta tutela, darlo de baja también
+          if (activasTutelado.length === 0) {
+            try {
+              const altaTutelado = await getAltaActivaFromFirestore(idTutelado);
+              if (altaTutelado) {
+                const { id, ...datosAlta } = altaTutelado;
+                const altaUsuarioTutelado = AltaCliente.fromFirestoreObject(datosAlta);
+                altaUsuarioTutelado.setFechaBaja(new Date());
+
+                await updateAltaCliente(id, altaUsuarioTutelado.toFirestoreObject());
+                logger.info(`👶 Usuario tutelado ${idTutelado} dado de baja automáticamente al quedarse sin tutores.`);
+              } else {
+                logger.warn(`⚠️ No se encontró alta activa para el tutelado con ID: ${idTutelado}`);
+              }
+            } catch (e: any) {
+              logger.error(`❌ Error al dar de baja al tutelado ${idTutelado}: ${e.message}`);
+            }
+          }
+
         } catch (e: any) {
           logger.warn(`⚠️ No se pudo finalizar la tutela ${tutela.idTutela}: ${e.message}`);
         }
@@ -370,28 +411,28 @@ export class AuthService {
     try {
       // 1. Obtener el alta activa
       const altaActiva = await getAltaActivaFromFirestore(idUsuario);
-  
+
       if (!altaActiva) {
         logger.warn(`⚠️ No se encontró alta activa para el usuario con ID: ${idUsuario}`);
         throw new Error("No hay alta activa para este usuario");
       }
-  
+
       const { id, ...datosAlta } = altaActiva;
       const altaUsuario = AltaCliente.fromFirestoreObject(datosAlta);
-  
+
       // 2. Establecer fecha de baja
       const fechaBaja = new Date();
       altaUsuario.setFechaBaja(fechaBaja);
-  
+
       // 3. Actualizar alta en Firestore
       await updateAltaCliente(id, altaUsuario.toFirestoreObject());
-  
+
       logger.info(`✅ Usuario con ID ${idUsuario} dado de baja correctamente en alta ID ${altaActiva.id}`);
-  
+
       // 4. Finalizar tutelas activas donde es tutelado
       const tutelas = await TutelaService.obtenerTutelasPorIdTutelado(idUsuario);
       const activas = tutelas.filter(t => !t.fechaDesvinculacion);
-  
+
       for (const tutela of activas) {
         try {
           await TutelaService.finalizarTutela(tutela.idTutela);
@@ -400,9 +441,9 @@ export class AuthService {
           logger.warn(`⚠️ No se pudo finalizar la tutela ${tutela.idTutela}: ${e.message}`);
         }
       }
-  
+
       return true;
-  
+
     } catch (error: any) {
       logger.error(`❌ Error en bajaUsuarioComoTutelado para ID ${idUsuario}: ${error.message}`);
       throw error;
