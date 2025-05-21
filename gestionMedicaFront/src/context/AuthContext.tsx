@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.warn("⚠️ Error al cerrar sesión de Firebase:", e);
         });
       
-      }, 15 * 60 * 1000); // 15 minutos
+      }, 20 * 60 * 1000); // 20 minutos
     };
   
     const events = ["mousemove", "keydown", "click"];
