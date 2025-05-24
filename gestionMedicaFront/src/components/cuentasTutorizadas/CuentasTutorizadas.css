@@ -285,3 +285,127 @@
   margin-bottom: 2rem;
   line-height: 1.5;
 }
+
+/**MODAL TRANSICION */
+.customModalTransition {
+  margin: auto;
+  --min-width: 70%
+}
+
+.headerModalTransition {
+  --background: transparent;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.titleContainerModalTransition {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  padding-left: 20px;
+  color: var(--ion-color-customDark);
+}
+
+.titleModalTransition {
+  font-size: 1.2rem;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+  font-weight: bold;
+  text-align: center;
+}
+
+.contentModalTransition {
+  padding: 30px;
+  background-color: #f8f8f8;
+  height: 100%;
+}
+
+.formContainerModalTransition{
+  background-color: var(--ion-color-customUltraLight);
+  padding: 10px;
+  padding-top: 15px;
+  border-radius: 16px;
+}
+
+.contentContainerModalTransition {
+  padding: 20px;
+  margin-bottom: 20px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.infoTextContainerModalTransition {
+  background-color: #e6f7f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0c5c3d;
+  padding: 12px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.infoTextModalTransition{
+  width: 80%;
+}
+
+.itemModalTransition {
+  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 10px;
+}
+
+.inputModalTransition {
+  --padding-start: 10px;
+  color: var(--ion-color-customDark);
+}
+
+.buttonContainerModalTransition {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmButtonModalTransition {
+  --background: var(--ion-color-customDark);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.cancelButtonModalTransition {
+  --background: var(--ion-color-customRed);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.buttonTextModalTransition{
+  width: 80%;
+}
+
+.alertInputModalTransition{
+  display: flex;
+  align-items: center;
+}
+
+.cuenta-mayor-alerta {
+  display: flex;
+  align-items: center;
+  background-color: #fff3f3;
+  border: 1px solid #f5c2c7;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #b02a37;
+  font-size: 14px;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/**MODAL TRANSICION */

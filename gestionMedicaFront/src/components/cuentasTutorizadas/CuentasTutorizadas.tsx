@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import SideMenu from "../sideMenu/SideMenu";
-import { IonButton, IonCard, IonContent, IonIcon, IonPage, IonSpinner } from "@ionic/react";
+import { IonButton, IonCard, IonContent, IonHeader, IonIcon, IonInput, IonInputPasswordToggle, IonItem, IonLabel, IonModal, IonPage, IonSpinner } from "@ionic/react";
 import MainHeader from "../mainHeader/MainHeader";
-import { alertCircleOutline, arrowBackOutline, checkmarkOutline, eyeOutline, logInOutline, navigate, peopleOutline, personAddOutline, trashOutline } from "ionicons/icons";
+import { alertCircleOutline, arrowBackOutline, checkmarkCircleOutline, checkmarkOutline, closeCircleOutline, constructOutline, eyeOutline, informationCircleOutline, logInOutline, peopleOutline, personAddOutline, trashOutline, warningOutline } from "ionicons/icons";
 import MainFooter from "../mainFooter/MainFooter";
 import './CuentasTutorizadas.css'
-import { CuentaInfantilCardProps } from "./CuentasTutorizadasInterfaces";
+import { CuentaInfantilCardProps, ModalTransitionAccProps } from "./CuentasTutorizadasInterfaces";
 import ModalPasswordCheck from "../modalPasswordCheck/ModalPasswordCheck";
 import DobleConfirmacion from "../dobleConfirmacion/DobleConfirmacion";
 import { backendService } from "../../services/backendService";
@@ -236,6 +236,8 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
     const history = useHistory();
     const { userData, setUserData } = useUser();
     const [isModalCheckOpen, setIsModalCheckOpen] = useState<boolean>(false);
+    const [isModalTransitionOpen, setisModalTransitionOpen] = useState<boolean>(false);
+    const [esMayorDeEdad, setEsMayorDeEdad] = useState(false);
     const [toast, setToast] = useState({
         show: false,
         message: "",
@@ -254,6 +256,18 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
     /**
      * FUNCIONALIDAD
      */
+    useEffect(() => {
+        if (usuario?.fechaNacimiento) {
+            const fechaNac = new Date(usuario.fechaNacimiento);
+            const hoy = new Date();
+            const edad = hoy.getFullYear() - fechaNac.getFullYear();
+            const mes = hoy.getMonth() - fechaNac.getMonth();
+            const dia = hoy.getDate() - fechaNac.getDate();
+            const mayor = edad > 18 || (edad === 18 && (mes > 0 || (mes === 0 && dia >= 0)));
+
+            setEsMayorDeEdad(mayor);
+        }
+    }, [usuario]);
     const cerrarDialogo = () => {
         setDialogState({
             isOpen: false,
@@ -263,15 +277,32 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
             onConfirm: () => { },
         });
     };
-    const onAcceder = () => {
-        // Guardar datos actuales (tutor)
-        if (userData) {
-            localStorage.setItem('tutorData', JSON.stringify(userData));
+
+    const onAcceder = async () => {
+
+        if (esMayorDeEdad) {
+            // Mostrar notificación
+            setToast({
+                show: true,
+                message: "El usuario ha alcanzado la mayoría de edad. Se ha enviado un correo con instrucciones.",
+                color: "warning",
+                icon: warningOutline,
+            });
+            setisModalTransitionOpen(true);
+            // Enviar correo de transición
+            await backendService.enviarCorreoTransicion(userData, usuario);
         }
-        // Establecer usuario infantil en el contexto
-        setUserData(usuario);
-        // Recargar página para que persista y todo se refresque
-        window.location.replace('/principal');
+        else {
+            // Guardar datos actuales (tutor)
+            if (userData) {
+                localStorage.setItem('tutorData', JSON.stringify(userData));
+            }
+            // Establecer usuario infantil en el contexto
+            setUserData(usuario);
+            // Recargar página para que persista y todo se refresque
+            window.location.replace('/principal');
+        }
+
     };
 
     const onVerDetalle = () => {
@@ -320,6 +351,61 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
         }
     };
 
+    const transicionACuentaRegular = async ({
+        email,
+        dni,
+        password,
+    }: {
+        email: string;
+        dni: string;
+        password: string;
+        confirmPassword: string;
+    }) => {
+
+        try {
+            setLoading(true);
+
+            const result = await backendService.nuevaCuentaDesdeInfantil({
+                usuarioTutelado: usuario,
+                email,
+                dni,
+                password,
+            });
+
+            if (result.success) {
+                setToast({
+                    show: true,
+                    message: "Cuenta convertida a regular correctamente.",
+                    color: "success",
+                    icon: checkmarkOutline,
+                });
+
+                setisModalTransitionOpen(false);
+            }
+            else {
+                setToast({
+                    show: true,
+                    message: "Error al registrar la nueva cuenta.",
+                    color: "danger",
+                    icon: alertCircleOutline,
+                });
+            }
+        } catch (error: any) {
+            setToast({
+                show: true,
+                message: error.message || "Error al registrar la nueva cuenta.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+        } finally {
+            setLoading(false);
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
+    };
+
+
     /**
      * RENDER
      */
@@ -332,6 +418,12 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
                         <div className="cuenta-card-nombre">
                             <span className="nombre">{usuario.nombreUsuario} {usuario.apellidosUsuario}</span>
                             <span className="subtitulo">(Cuenta tutorizada)</span>
+                            {esMayorDeEdad &&
+                                <div className="cuenta-mayor-alerta">
+                                    <IonIcon icon={alertCircleOutline} />
+                                    <span className="alertGF">Cuenta mayor de edad</span>
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -341,7 +433,7 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
                             <span className="cardButtonTextGF">Acceso a cuenta</span>
                         </IonButton>
 
-                        <IonButton expand="block" shape="round" className="boton-cuenta detalle" onClick={onVerDetalle}>
+                        <IonButton expand="block" shape="round" className="boton-cuenta detalle" onClick={onVerDetalle} disabled={esMayorDeEdad}>
                             <IonIcon slot="start" icon={eyeOutline} />
                             <span className="cardButtonTextGF">Ver detalle</span>
                         </IonButton>
@@ -377,7 +469,232 @@ const CuentaInfantilCard: React.FC<CuentaInfantilCardProps> = ({ usuario, setLoa
                 show={toast.show}
                 onClose={() => setToast((prev) => ({ ...prev, show: false }))}
             />
+            <ModalTransitionAcc
+                isOpen={isModalTransitionOpen}
+                onConfirm={(data) => transicionACuentaRegular(data)}
+                onCancel={() => setisModalTransitionOpen(false)}
+                usuarioTutelado={usuario} />
         </>
+    );
+};
+
+/**
+ * Componente ModalTransitionAcc
+ *
+ * Este componente representa un modal que permite a un usuario tutelado realizar el proceso
+ * de transición hacia una cuenta individual. Muestra un formulario en el que se deben introducir:
+ * el correo electrónico, DNI (si no estaba ya registrado), y una nueva contraseña con su confirmación.
+ *
+ * El modal incluye validaciones de campos obligatorios, formato de correo, y coincidencia de contraseñas.
+ * Se integra con un sistema de notificaciones tipo toast para informar al usuario sobre errores o acciones exitosas.
+ *
+ * Este proceso se activa después de que se haya enviado un correo con instrucciones al usuario.
+ *
+ * Props esperadas:
+ * - isOpen: determina si el modal está visible.
+ * - onConfirm: función que se ejecuta al confirmar el formulario.
+ * - onCancel: función que se ejecuta al cerrar el modal sin confirmar.
+ * - usuarioTutelado: datos del usuario tutelado (si existen) para precargar el DNI si ya está registrado.
+ */
+const ModalTransitionAcc: React.FC<ModalTransitionAccProps> = ({
+    isOpen,
+    onConfirm,
+    onCancel,
+    usuarioTutelado
+}) => {
+
+    /**
+     * VARIABLES
+     */
+    const [email, setEmail] = useState('');
+    const [dni, setDni] = useState(usuarioTutelado?.dni?.trim() || '');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const [toast, setToast] = useState({
+        show: false,
+        message: "",
+        color: "success",
+        icon: checkmarkOutline,
+    });
+
+    /**
+     * FUNCIONALIDAD
+     */
+    useEffect(() => {
+        if (!isOpen) {
+            // Cuando el modal se cierra, limpiamos el formulario
+            setEmail('');
+            setDni('');
+            setPassword('');
+            setConfirmPassword('');
+        }
+    }, [isOpen]);
+    useEffect(() => {
+        if (isOpen) {
+            setDni(usuarioTutelado?.dni?.trim() || '');
+        }
+    }, [isOpen, usuarioTutelado]);
+
+    const handleConfirm = () => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email || !dni || !password || !confirmPassword) {
+            setToast({
+                show: true,
+                message: "Por favor, rellena todos los campos.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            setToast({
+                show: true,
+                message: "El correo electrónico no es válido.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setToast({
+                show: true,
+                message: "Las contraseñas no coinciden.",
+                color: "danger",
+                icon: alertCircleOutline,
+            });
+            return;
+        }
+
+        // Si todo está bien, llamamos a onConfirm
+        onConfirm({ email, dni, password, confirmPassword });
+        onCancel();
+    };
+
+    /**
+     * RENDER
+     */
+    return (
+        <IonModal isOpen={isOpen} onDidDismiss={onCancel} className="customModalTransition">
+            <IonHeader className="headerModalTransition">
+                <div className="titleContainerModalTransition">
+                    <IonIcon icon={constructOutline} size="large" />
+                    <span className="titleModalTransition">Transición de Cuenta</span>
+                </div>
+            </IonHeader>
+
+            <IonContent className="contentModalTransition">
+                <div className="contentContainerModalTransition">
+                    <div className="infoTextContainerModalTransition">
+                        <IonIcon icon={informationCircleOutline} />
+                        <span className="infoTextModalTransition">
+                            Se ha enviado un correo con las instrucciones. Por favor, rellene los siguientes campos para continuar.
+                        </span>
+                    </div>
+
+                    <div className="formContainerModalTransition">
+                        <IonItem className="itemModalTransition">
+                            <IonLabel position="stacked">Correo electrónico</IonLabel>
+
+                            <IonInput
+                                className="inputModalTransition"
+                                type="email"
+                                color={"success"}
+                                value={email}
+                                clearInput={true}
+                                onIonChange={(e) => setEmail(e.detail.value!)}
+                                required
+                            />
+                        </IonItem>
+
+                        <IonItem className="itemModalTransition">
+                            {usuarioTutelado?.dni?.trim() ? (
+                                <IonLabel position="stacked" color="danger" className="alertInputModalTransition">
+                                    <IonIcon icon={warningOutline} style={{ marginRight: "6px" }} />
+                                    El DNI ya fue registrado y no puede modificarse.
+                                </IonLabel>
+                            ) : (
+                                <IonLabel position="stacked">DNI</IonLabel>
+                            )}
+                            <IonInput
+                                className="inputModalTransition"
+                                type="text"
+                                color="success"
+                                value={dni}
+                                clearInput={!usuarioTutelado?.dni?.trim()}
+                                onIonChange={(e) => setDni(e.detail.value!)}
+                                readonly={!!usuarioTutelado?.dni?.trim()} //
+                                maxlength={9}
+                                required
+                            />
+                        </IonItem>
+
+                        <IonItem className="itemModalTransition">
+                            <IonLabel position="stacked">Contraseña</IonLabel>
+                            <IonInput
+                                className="inputModalTransition"
+                                type="password"
+                                color={"success"}
+                                value={password}
+                                clearInput={true}
+                                onIonChange={(e) => setPassword(e.detail.value!)}
+                                required
+                            >
+                                <IonInputPasswordToggle slot="end" color={"success"}></IonInputPasswordToggle>
+                            </IonInput>
+                        </IonItem>
+
+                        <IonItem className="itemModalTransition">
+                            <IonLabel position="stacked">Confirmar contraseña</IonLabel>
+                            <IonInput
+                                className="inputModalTransition"
+                                type="password"
+                                color={"success"}
+                                clearInput={true}
+                                value={confirmPassword}
+                                onIonChange={(e) => setConfirmPassword(e.detail.value!)}
+                                required
+                            >
+                                <IonInputPasswordToggle slot="end" color={"success"}></IonInputPasswordToggle>
+                            </IonInput>
+                        </IonItem>
+                    </div>
+                    <div className="buttonContainerModalTransition">
+                        <IonButton
+                            expand="block"
+                            className="confirmButtonModalTransition"
+                            shape="round"
+                            onClick={() => handleConfirm()}
+                        >
+                            <IonIcon icon={checkmarkCircleOutline} />
+                            <span className="buttonTextModalTransition">Confirmar</span>
+                        </IonButton>
+
+                        <IonButton
+                            expand="block"
+                            color="danger"
+                            className="cancelButtonModalTransition"
+                            onClick={onCancel}
+                            shape="round"
+                        >
+                            <IonIcon icon={closeCircleOutline} />
+                            <span className="buttonTextModalTransition">Cancelar</span>
+                        </IonButton>
+                    </div>
+                </div>
+
+            </IonContent>
+            <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+            />
+        </IonModal>
     );
 };
 

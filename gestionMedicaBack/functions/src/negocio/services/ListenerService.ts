@@ -4,7 +4,7 @@ import { Centro } from "../modelos/Centro";
 import { Cita } from "../modelos/Cita";
 import { Medico } from "../modelos/Medico";
 import { Usuario } from "../modelos/Usuario";
-import { sendAppointmentCancellationEmail, sendAppointmentConfirmationEmail, sendCodeToEmailService, sendPdfToEmailService } from "./mailService";
+import { sendAppointmentCancellationEmail, sendAppointmentConfirmationEmail, sendCodeToEmailService, sendPdfToEmailService, sendTransitionEmail } from "./mailService";
 import fs from "fs";
 
 
@@ -96,3 +96,12 @@ eventBus.on(
     }
   }
 );
+
+eventBus.on("send.cuenta.transicion", async ({ usuarioTutelado, tutor }) => {
+  try {
+    await sendTransitionEmail(usuarioTutelado, tutor);
+    console.log(`📧 Email de transición enviado a ${tutor.getEmail()}`);
+  } catch (err) {
+    console.error("❌ Error enviando email de transición:", err);
+  }
+});

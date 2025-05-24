@@ -875,6 +875,68 @@ const existeDNIRegistrado = async (dni: string): Promise<boolean> => {
     return data.existe;
 };
 
+/**
+ * Solicita al backend el envío del correo de transición a cuenta adulta  
+ * para un usuario tutelado que ha alcanzado la mayoría de edad.
+ */
+const enviarCorreoTransicion = async (
+    usuario: any,
+    usuarioTutelado: any
+  ): Promise<void> => {
+    const response = await fetch(`${BASE_URL}/sendTransitionEmail`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ usuario, usuarioTutelado }),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al enviar el correo de transición");
+    }
+  
+    // Puedes mostrar un mensaje de éxito opcionalmente
+    console.log("✅ Correo de transición enviado");
+  };
+
+
+  /**
+ * Registra una nueva cuenta regular a partir de una cuenta infantil existente.  
+ * Envía los datos al backend para validar y crear el usuario en Auth y Firestore.
+ */
+  const nuevaCuentaDesdeInfantil = async ({
+    usuarioTutelado,
+    email,
+    dni,
+    password,
+  }: {
+    usuarioTutelado: any;
+    email: string;
+    dni: string;
+    password: string;
+  }): Promise<{ success: boolean; uid?: string }> => {
+    const response = await fetch(`${BASE_URL}/nuevaCuentaDesdeInfantil`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ usuarioTutelado, email, dni, password }),
+    });
+  
+    const data = await response.json();
+  
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Error al registrar nueva cuenta.");
+    }
+  
+    return {
+      success: true,
+      uid: data.uid,
+    };
+  };
+  
 
 export const backendService = {
     register,
@@ -913,6 +975,8 @@ export const backendService = {
     comprobarNuevoTutor,
     guardarTutela,
     bajaUsuarioComoTutelado,
-    existeDNIRegistrado
+    existeDNIRegistrado,
+    enviarCorreoTransicion,
+    nuevaCuentaDesdeInfantil
 };
 

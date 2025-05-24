@@ -15,10 +15,12 @@ import {
     existeDNIRegistradoHandler,
     getEmailByDniHandler,
     getUserInfoHandler,
+    nuevaCuentaDesdeInfantilHandler,
     passwordResetHandler,
     recoveryRequestHandler,
     registerChildHandler,
     registerHandler,
+    sendTransitionEmailHandler,
     updateUserInfoHandler
 } from "./presentacion/controllers/authController";
 import "./negocio/services/ListenerService";
@@ -125,6 +127,8 @@ export const registerChild = registerChildHandler;
 export const comprobarNuevoTutor = comprobarNuevoTutorHandler;
 export const bajaUsuarioComoTutelado = bajaUsuarioComoTuteladoHandler;
 export const existeDNIRegistrado = existeDNIRegistradoHandler;
+export const sendTransitionEmail = sendTransitionEmailHandler;
+export const nuevaCuentaDesdeInfantil = nuevaCuentaDesdeInfantilHandler;
 
 
 // Exportación de funciones Alergia

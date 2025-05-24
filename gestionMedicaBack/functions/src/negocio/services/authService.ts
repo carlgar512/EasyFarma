@@ -11,6 +11,7 @@ import { TipoUsuario } from "../modelos/enums/TipoUsuario";
 import { Tutela } from "../modelos/Tutela";
 import { Usuario } from "../modelos/Usuario";
 import { TutelaService } from "./tutelaService";
+import * as admin from 'firebase-admin';
 
 
 
@@ -515,5 +516,74 @@ export class AuthService {
       throw error;
     }
   }
+
+
+  static async registerAccountDesdeInfantil({
+    usuarioTutelado,
+    email,
+    dni,
+    password,
+  }: {
+    usuarioTutelado: any;
+    email: string;
+    dni: string;
+    password: string;
+  }): Promise<Usuario> {
+    logger.info(`➡️ Registrando usuario: ${email}`);
+
+    // 1. Verificar si el DNI ya está registrado
+    if (dni) {
+      const existingId = await getUIDByDNI(dni);
+      if (existingId && existingId !==  usuarioTutelado.uid) {
+        logger.warn(`⚠️ El DNI ${dni} ya está registrado. Registro cancelado.`);
+        throw new Error("Ya existe un usuario registrado con este DNI.");
+      }
+    }
+
+    // 2. Crear el usuario en Auth si no existe aún
+    try {
+      await admin.auth().getUser(usuarioTutelado.uid);
+      logger.info(`ℹ️ UID ya existe en Auth: ${usuarioTutelado.uid}`);
+    } catch (error) {
+      logger.info(`✅ UID no existe en Auth, creándolo: ${usuarioTutelado.uid}`);
+      await admin.auth().createUser({
+        uid: usuarioTutelado.uid,
+        email,
+        password,
+      });
+    }
+
+    // 3. Obtener usuario desde Firestore
+    const userDoc = await getUserById(usuarioTutelado.uid);
+    if (!userDoc) {
+      throw new Error("Usuario tutelado no encontrado en Firestore.");
+    }
+
+    const usuario = Usuario.fromFirestore(usuarioTutelado.uid, userDoc);
+
+    // 4. Actualizar los nuevos datos
+    usuario.setDni(dni);
+    usuario.setEmail(email);
+    usuario.setTipoUsuario(TipoUsuario.Regular);
+
+    // 5. Guardar cambios en Firestore
+    await updateUserInFirestore(usuario.getIdUsuario(), usuario.toFirestoreObject());
+    //Eliminar tutelas
+    const tutelas = await TutelaService.obtenerTutelasPorIdTutelado(usuario.getIdUsuario());
+    const activas = tutelas.filter(t => !t.fechaDesvinculacion);
+
+    for (const tutela of activas) {
+      try {
+        await TutelaService.finalizarTutela(tutela.idTutela);
+        logger.info(`🔚 Tutela finalizada: ${tutela.idTutela}`);
+      } catch (e: any) {
+        logger.warn(`⚠️ No se pudo finalizar la tutela ${tutela.idTutela}: ${e.message}`);
+      }
+    }
+
+    logger.info(`✅ Usuario actualizado correctamente con nuevo estado regular: ${email}`);
+    return usuario;
+  }
+
 
 }

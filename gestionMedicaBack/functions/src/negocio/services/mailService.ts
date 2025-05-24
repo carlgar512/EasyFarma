@@ -232,3 +232,74 @@ export const sendAppointmentCancellationEmail = async (
 
   console.log("📨 Email de cancelación enviado:", info.messageId);
 };
+
+
+export const sendTransitionEmail = async (
+  usuario: Usuario,
+  tutor: Usuario
+): Promise<void> => {
+  const logoPath = path.resolve(process.cwd(), "assets/imgs/Logo.png");
+
+  const info = await transporter.sendMail({
+    from: `"EasyFarma Seguros" <${env.EMAIL_USER}>`,
+    to: tutor.getEmail(),
+    subject: "🎓 Tu usuario tutelado ha alcanzado la mayoría de edad",
+    html: `
+      <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f0f4f8;">
+        <div style="max-width: 600px; margin: auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); text-align: center;">
+          <img src="cid:logo-easyfarma" alt="EasyFarma Logo" style="max-width: 160px; margin-bottom: 25px;" />
+          
+          <h2 style="color: #2e6b4e;">El usuario tutelado ha alcanzado la mayoría de edad</h2>
+  
+          <p style="font-size: 16px; color: #333;">
+            Estimado/a <strong>${tutor.getNombreUsuario()} ${tutor.getApellidosUsuario()}</strong>,
+          </p>
+  
+          <p style="font-size: 15px; color: #555; margin-top: 20px;">
+            Le informamos que el usuario <strong>${usuario.getNombreUsuario()} ${usuario.getApellidosUsuario()}</strong> ha alcanzado la mayoría de edad.
+          </p>
+  
+          <p style="font-size: 15px; color: #555;">
+            A partir de este momento, su cuenta infantil dejará de estar activa y deberá convertirse en una cuenta regular.
+          </p>
+  
+          <p style="font-size: 15px; color: #555;">
+            Para completar este proceso, el usuario deberá acceder al formulario que se abrirá automáticamente en la aplicación e introducir:
+          </p>
+  
+          <ul style="font-size: 15px; color: #333; text-align: left; max-width: 500px; margin: 0 auto;">
+            <li>📧 Un nuevo correo electrónico</li>
+            <li>🆔 Su DNI</li>
+            <li>🔒 Una nueva contraseña (y su confirmación)</li>
+          </ul>
+  
+          <p style="font-size: 15px; color: #d9534f; margin-top: 25px;">
+            Una vez completado este registro, <strong>ninguno de los tutores tendrá acceso ni control sobre la nueva cuenta</strong>. El usuario será el único titular de la misma, como cualquier cuenta regular en EasyFarma.
+          </p>
+  
+          <p style="font-size: 15px; color: #555; margin-top: 20px;">
+            Toda la información asociada a la cuenta infantil — citas, médicos, historial y preferencias — será traspasada automáticamente a la nueva cuenta regular.
+          </p>
+  
+          <p style="font-size: 14px; color: #aaa; margin-top: 40px;">
+            Si tiene alguna duda o necesita asistencia, no dude en contactarnos.
+          </p>
+  
+          <p style="font-size: 14px; color: #aaa; margin-top: 30px;">
+            Atentamente,<br/>
+            El equipo de EasyFarma
+          </p>
+        </div>
+      </div>
+    `,
+    attachments: [
+      {
+        filename: 'logo.png',
+        path: logoPath,
+        cid: 'logo-easyfarma'
+      }
+    ]
+  });
+
+  console.log("📨 Email de transición enviado:", info.messageId);
+};

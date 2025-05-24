@@ -2,6 +2,7 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { eventBus } from "../../serviciosComunes/event/event-emiter";
 import { AuthService } from "../../negocio/services/authService";
+import { Usuario } from "../../negocio/modelos/Usuario";
 
 
 export const getEmailByDniHandler = onRequest(async (req, res) => {
@@ -264,6 +265,89 @@ export const existeDNIRegistradoHandler = onRequest(async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error interno del servidor.",
+    });
+  }
+});
+
+export const sendTransitionEmailHandler = onRequest(async (req, res) => {
+  try {
+    const { usuario, usuarioTutelado } = req.body;
+
+    if (!usuario || !usuarioTutelado) {
+      throw new Error("Faltan datos de usuario o usuario tutelado");
+    }
+
+    // 🔧 Reconstruir instancias válidas
+    const tutor = new Usuario(
+      usuario.dni,
+      usuario.email,
+      usuario.nombreUsuario,
+      usuario.apellidosUsuario,
+      usuario.fechaNacimiento,
+      usuario.telefono,
+      usuario.numTarjeta,
+      usuario.direccion,
+      usuario.modoAccesibilidad,
+      usuario.medicosFavoritos,
+      usuario.operacionesFavoritas,
+      usuario.tipoUsuario
+    );
+    tutor.setIdUsuario(usuario.uid); // si aplica
+
+    const tutelado = new Usuario(
+      usuarioTutelado.dni,
+      usuarioTutelado.email,
+      usuarioTutelado.nombreUsuario,
+      usuarioTutelado.apellidosUsuario,
+      usuarioTutelado.fechaNacimiento,
+      usuarioTutelado.telefono,
+      usuarioTutelado.numTarjeta,
+      usuarioTutelado.direccion,
+      usuarioTutelado.modoAccesibilidad,
+      usuarioTutelado.medicosFavoritos,
+      usuarioTutelado.operacionesFavoritas,
+      usuarioTutelado.tipoUsuario
+    );
+    tutelado.setIdUsuario(usuarioTutelado.uid);
+
+    // 📤 Emitir evento con objetos bien formados
+    eventBus.emit("send.cuenta.transicion", {
+      usuarioTutelado: tutelado,
+      tutor,
+    });
+
+    res.status(200).json({ success: true, message: "Correo de transición enviado correctamente" });
+
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+export const nuevaCuentaDesdeInfantilHandler = onRequest(async (req, res) => {
+  try {
+    const { usuarioTutelado, email, dni, password } = req.body;
+
+    if (!usuarioTutelado || !email || !dni || !password) {
+      throw new Error("Faltan datos obligatorios para crear la cuenta.");
+    }
+
+    const result = await AuthService.registerAccountDesdeInfantil({
+      usuarioTutelado,
+      email,
+      dni,
+      password,
+    });
+
+    res.status(200).json({
+      success: true,
+      uid: result.getIdUsuario(),
+      message: "Cuenta registrada exitosamente.",
+    });
+  } catch (error: any) {
+    console.error("❌ Error en nuevaCuentaDesdeInfantil:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Error al registrar nueva cuenta.",
     });
   }
 });
