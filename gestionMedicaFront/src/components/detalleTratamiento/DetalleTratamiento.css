@@ -1,0 +1,278 @@
+.contenedorDeTratamiento {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+.contentDetalleTratamiento {
+    --background: var(--ion-color-VerdePastel);
+}
+
+.cabeceraDT {
+    max-width: 1000px;
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+
+}
+
+.tituloDT {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    font-size: 1.9rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.archiveButtonDT {
+    --background: var(--ion-color-customYellow);
+    color: black;
+}
+
+.descyFechDT {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 90%;
+    gap: 10px;
+    max-width: 1000px;
+}
+
+.detalleContainerText {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.descyFechTop {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.badgeEstado {
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    width: fit-content;
+    text-align: center;
+}
+
+/* Estado activo: verde */
+.badgeEstado.activo {
+    background-color: var(--ion-color-lightGreen);
+}
+
+/* Estado finalizado: rojo */
+.badgeEstado.finalizado {
+    background-color: var(--ion-color-customRed);
+}
+
+.badgeEstado.archivado {
+    background-color: #d9d9d9;
+    /* Gris claro */
+    color: #595959;
+    /* Gris oscuro para el texto */
+}
+
+.lineaSep {
+    border: none;
+    border-top: 2px solid var(--ion-color-customHardDark);
+    width: 100%;
+    opacity: 0.7;
+}
+
+.fechasContainerDT {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fechaContentCont {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    color: var(--ion-color-customDark);
+}
+
+.fechaText {
+    font-size: 1.1rem;
+}
+
+.descContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.descTittle {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.descText {
+    text-align: LEFT;
+    font-size: 0.9rem;
+    color: var(--ion-color-customDark);
+}
+
+.medicoAsociadoDT {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.TextTittle {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    font-size: 1.2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.infoDT {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 90%;
+    gap: 10px;
+    max-width: 1000px;
+}
+
+.infoContentDT {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 10px;
+
+}
+
+.buttonsContainerDT {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.exportButtonDT {
+    --background: var(--ion-color-customDark);
+    width: 100%;
+}
+
+.volverButtonDT {
+    --background: var(--ion-color-customRed);
+    width: 100%;
+}
+
+.buttonTextDT {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+.volverButtonDT:hover,
+.exportButtonDT:hover,
+.archiveButtonDT:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+.lineaTratamientoCard {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.lineaTratamientoCard:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.lineaTratamientoCard h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.lineaTratamientoCard p {
+    margin: 4px 0;
+    font-size: 0.95rem;
+    color: var(--ion-color-customDark);
+}
+
+.lineaTratamientoCard p strong {
+    color: var(--ion-color-lightGreen);
+    /* Azul suave */
+}
+
+.lineaTratamientoCard hr {
+    margin-top: 12px;
+    border: none;
+    border-top: 1px solid #e0e0e0;
+}
+
+.text-notFoundInfo {
+    color: var(--ion-color-customMedium);
+    /* gray-500 */
+    width: 100%;
+    font-style: italic;
+    font-size: 1rem;
+    text-align: center;
+    padding: 0.75rem;
+    background: var(--ion-color-customUltraLight);
+    /* gray-50 */
+    border: 1px dashed var(--ion-color-customDark);
+    /* gray-300 */
+    border-radius: 0.5rem;
+}
+
+.contenedorDeTratamientoSpinner {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.spinnerContainerDT {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

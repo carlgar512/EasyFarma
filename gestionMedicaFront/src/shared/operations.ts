@@ -16,26 +16,17 @@ export const operations: Operation[] = [
         description: "Accede rápidamente a tu lista de médicos favoritos. Consulta su información, agenda citas con facilidad y gestiona tu lista añadiendo o eliminando profesionales según tus necesidades.",
         type: "Medicos",
         icon: "starOutline",
-        url: "/favorite-doctors",
+        url: "/search-doctor?favoritos=true",
         img: "misMedicos.svg"
     },
     {
-        id: 3,
-        title: "Historial de Citas",
-        description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado.",
+        id: 15,
+        title: "Mis citas",
+        description: "Consulta tus próximas citas médicas fácilmente. Accede a la información del especialista, fecha, hora y centro médico. Mantén un control eficiente de tus visitas médicas programadas.",
         type: "Citas",
         icon: "calendarOutline",
-        url: "/appointment-history",
-        img: "historialCitas.svg"
-    },
-    {
-        id: 4,
-        title: "Encuentra a tu Médico Ideal",
-        description: "Busca y encuentra médicos según especialidad, ubicación o disponibilidad. Accede a perfiles detallados, consulta valoraciones y agenda tu cita con el especialista que mejor se adapte a tus necesidades.",
-        type: "Medicos",
-        icon: "searchCircleOutline",
-        url: "/search-doctor",
-        img: "encuentraMedico.svg"
+        url: "/appointment-history?tipo=actuales",
+        img: "misCitas.svg"
     },
     {
         id: 5,
@@ -47,12 +38,32 @@ export const operations: Operation[] = [
         img: "agendaCita.svg"
     },
     {
+        id: 3,
+        title: "Historial de Citas",
+        description: "Consulta el historial de tus citas médicas en un solo lugar. Revisa fechas, detalles y médicos atendidos para un mejor control de tu salud. ¡Mantente siempre organizado.",
+        type: "Citas",
+        icon: "calendarOutline",
+        url: "/appointment-history?tipo=todos",
+        img: "historialCitas.svg"
+    },
+
+    {
+        id: 4,
+        title: "Encuentra a tu Médico Ideal",
+        description: "Busca y encuentra médicos según especialidad, ubicación o disponibilidad. Accede a perfiles detallados, consulta valoraciones y agenda tu cita con el especialista que mejor se adapte a tus necesidades.",
+        type: "Medicos",
+        icon: "searchCircleOutline",
+        url: "/search-doctor",
+        img: "encuentraMedico.svg"
+    },
+   
+    {
         id: 6,
-        title: "Mi Tratamiento en Curso",
+        title: "Mis Tratamientos en Curso",
         description: "Sigue tu tratamiento en tiempo real y accede a toda la información relevante sobre tu progreso y próximos pasos.",
         type: "Tratamientos",
         icon: "fitnessOutline",
-        url: "/current-treatment",
+        url: "/treatment-history?tipo=actuales",
         img: "miTratamiento.svg"
     },
     {
@@ -70,7 +81,7 @@ export const operations: Operation[] = [
         description: "Accede a un registro completo de todos tus tratamientos médicos pasados. Consulta medicamentos recetados, fechas y duración de cada tratamiento para un mejor seguimiento de tu salud.",
         type: "Tratamientos",
         icon: "fileTrayFullOutline",
-        url: "/treatment-history",
+        url: "/treatment-history?tipo=todos",
         img: "miHistorial.svg"
     },
     {
@@ -82,4 +93,52 @@ export const operations: Operation[] = [
         url: "/family-management",
         img: "familia.svg"
     }
+];
+
+export const perfilOperations: Operation[] = [
+    {
+        id: 10,
+        title: "Mi cuenta",
+        description: "Modificá tus datos de usuario registrados y mantené tu perfil actualizado.",
+        type: "Perfil",
+        icon: "optionsOutline",
+        url: "/editProfile",
+        img: "editPerfil.svg"
+    },
+    {
+        id: 11,
+        title: "Preferencias de accesibilidad",
+        description: "Elige tu modo de interfaz preferido y adapta la aplicación a tus necesidades.",
+        type: "Perfil",
+        icon: "constructOutline",
+        url: "/preferences",
+        img: "preferencias.svg"
+    },
+    {
+        id: 12,
+        title: "Tarjeta del asegurado",
+        description: "Consulta y accede a tu tarjeta digital de asegurado de forma rápida y segura.",
+        type: "Perfil",
+        icon: "cardOutline",
+        url: "/insured-card",
+        img: "creditCard.svg"
+    },
+    {
+        id: 13,
+        title: "Cerrar sesión",
+        description: "Cierra tu sesión actual y protege tu información personal.",
+        type: "Perfil",
+        icon: "exitOutline",
+        url: "/logout",
+        img: "cerrarSesion.svg"
+    },
+    {
+        id: 14,
+        title: "Baja de cuenta",
+        description: "Elimina tu cuenta de forma permanente y borra todos tus datos registrados.",
+        type: "Perfil",
+        icon: "trashOutline",
+        url: "/account-delete",
+        img: "bajaCuenta.svg"
+    },
 ];

@@ -1,4 +1,3 @@
-
 .confirmButton{
  --background: var(--ion-color-customDark);
 }
@@ -10,26 +9,42 @@
     font-weight: bold;
     color: var(--ion-color-customDark);
 }
+
 .dialogTittleContainer{
     display: flex;
     justify-content: center;
     align-items: center;
     padding-left: 10px;
 }
+
 .dialogContainer{
     display: flex;
     width: 100%;
     height: 100%;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     gap: 20px;
 }
+
 .dialogText{
-    flex-grow: 1;
+    height: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
     text-align: justify;
     color: var(--ion-color-customMedium);
 }
+
+.imgContainer{
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .dialogImg{
-    max-width: 250px ;
+    width: 90%;
+    max-width: 200px ;
+    max-height: 200px;
 }

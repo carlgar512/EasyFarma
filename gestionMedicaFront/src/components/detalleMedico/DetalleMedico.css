@@ -1,0 +1,498 @@
+.contentDetalleMedico {
+    --background: var(--ion-color-VerdePastel);
+}
+
+.centralDetalleMedico {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    width: 100%;
+}
+
+.buttonContainerMedico {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.buttonVolverMedico {
+    --background: var(--ion-color-customRed);
+    width: 100%;
+}
+
+.buttonTextMedico {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+.buttonNuevaCita {
+    --background: var(--ion-color-customDark);
+    width: 100%;
+}
+
+.buttonVolverMedico:hover,
+.buttonNuevaCita:hover,
+.calendarButtonAC:hover,
+.buttonActionDM:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+.avatarMedico {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: #d1fae5;
+    color: #065f46;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.letrasAvatar {
+    font-size: 1.3rem;
+}
+
+.topBarDetalleMedico {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 1000px;
+}
+
+.nameTitleDM {
+    font-weight: bold;
+    font-size: 1.4rem;
+    color: var(--ion-color-customDark);
+}
+
+.iconFavoriteDM {
+    --background: var(--ion-color-customYellow);
+}
+
+.contentDMDetalle {
+    width: 95%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.detalleLineaTextContainerDM {
+    display: flex;
+    gap: 10px;
+}
+
+.detalleText {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.barraSeparacion {
+    border: none;
+    height: 1px;
+    width: 100%;
+    background: var(--ion-color-customDark);
+}
+
+.contentItemDM {
+    color: var(--ion-color-customDark);
+}
+
+.contentDMDetalle {
+    padding: 20px;
+    background-color: #ffffff;
+    /* Fondo blanco puro para más contraste */
+    border: 1px solid #e0e0e0;
+    /* Borde ligero para separar del fondo */
+    border-radius: 16px;
+    /* Bordes un poco más redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* Sombra más pronunciada */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contentItemDM {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 50px;
+
+}
+
+.campoTitle {
+    font-weight: bold;
+    color: var(--ion-color-lightGreen);
+}
+
+.detalleSectionContainer {
+    width: 100%;
+}
+
+.buttonActionDM {
+    margin-left: auto;
+    --border-radius: 12px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-size: 0.9rem;
+    --background: var(--ion-color-customMedium);
+    min-width: 40px;
+}
+
+.buttonTextDM {
+    width: 80%;
+    margin-left: 10px;
+}
+
+@media (max-width: 480px) {
+    .buttonTextDM {
+        display: none;
+    }
+}
+
+.modalUbicacionHeader {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.iconUbicacion {
+    margin-left: 8px;
+    color: var(--ion-color-customDark);
+}
+
+.titleUbicacion {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.contentModalMap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contentModalCentralMap {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.botonCerrarModalMap {
+    width: 90%;
+}
+
+.mapContainerModal {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+/* AGENDACITA */
+
+.agendaCitaContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    width: 95%;
+    max-width: 1000px;
+    background-color: #ffffff;
+    /* Fondo blanco puro para más contraste */
+    border: 1px solid #e0e0e0;
+    /* Borde ligero */
+    border-radius: 16px;
+    /* Bordes más suaves */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* Sombra más intensa */
+}
+
+.titleContainerAC {
+    padding: 10px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.agendaCitaTitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+    text-align: center;
+    /* o left si prefieres */
+}
+
+.barraSeparacionAC {
+    border: none;
+    height: 2px;
+    width: 100%;
+    background: var(--ion-color-customDark);
+}
+
+.form-itemAC {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+}
+
+.form-labelAC {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.inputFechaCita {
+    display: inline-block;
+    width: 100%;
+    padding: 10px 12px;
+    background-color: #f0f4f8;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+    cursor: pointer;
+    transition: background-color 0.3s, border-color 0.3s;
+    text-align: left;
+}
+
+/* Cambia de color al pasar el mouse */
+.inputFechaCita:hover {
+    background-color: #e2e8f0;
+    border-color: #4CAF50;
+    /* verde en hover */
+}
+
+/* Cuando no hay fecha seleccionada */
+.inputFechaCita::before {
+    content: '';
+}
+
+/* Texto gris si no hay fecha */
+.inputFechaCita:empty::after {
+    content: 'Seleccione una fecha disponible';
+    color: #888;
+}
+
+.calendarButtonAC {
+    --background: var(--ion-color-customMedium);
+}
+
+.horariosDisponiblesContainerAC {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    gap: 20px
+}
+
+.horariosDisponiblesAC {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+
+}
+
+.agendaCitaTitleHorarios {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ion-color-customDark);
+}
+
+.barraSeparacionACHorarios {
+    border: none;
+    height: 2px;
+    width: 100%;
+    background: var(--ion-color-customDark);
+
+}
+
+/* Cada horario como un botón redondo */
+.horarioItemAC {
+    background-color: #f0f4f8;
+    border: 2px solid var(--ion-color-customDark);
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    padding: 10px 14px;
+    border-radius: 36px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 70px;
+    text-align: center;
+
+}
+
+/* Efecto hover */
+.horarioItemAC:hover {
+    background-color: var(--ion-color-lightGreen);
+    color: white;
+    border-color: var(--ion-color-lightGreen);
+}
+
+/* Opcional: marcar el horario seleccionado */
+.horarioItemAC.selected {
+    background-color: var(--ion-color-lightGreen);
+    color: white;
+    border-color: var(--ion-color-lightGreen);
+}
+
+.seleccionaFechaAC {
+    text-align: center;
+    color: #777;
+    font-size: 1rem;
+    font-style: italic;
+    /* <- aquí hacemos el texto en cursiva */
+    margin-top: 1rem;
+}
+
+.agendaCitaButtonsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/**MODAL CALENDARIO **/
+
+.topBarModalAC {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+}
+
+.left-contentAC {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ion-color-customDark);
+}
+
+.modalTitleAC {
+    font-size: 1.3rem;
+    font-weight: bold;
+    flex-grow: 1;
+}
+
+.leaveCalendarButtonAC {
+    --background: var(--ion-color-customRed);
+}
+
+.contentAC {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+
+.calendarCitas {
+    --background: #f5f5f5 !important;
+    --background-rgb: #f5f5f5 !important;
+
+    border-radius: 16px !important;
+    padding: 10px !important;
+
+    box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.1) -6px -6px 12px rgba(255, 255, 255, 0.7) !important;
+
+}
+
+.calendarCitas::part(calendar-day today) {
+    color: black !important;
+    background: var(--ion-color-customYellow);
+}
+
+.calendarCitas::part(calendar-day) {
+    color: var(--ion-color-customRed);
+}
+
+.contenedorDeMedicoSpinner {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.spinnerContainerDM {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.textSpinnerMedico {
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+}
+
+.modificacionBanner {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    border: 1px solid #ffeeba;
+}
+
+.noDisponibilidadMensaje {
+    display: flex;
+    align-items: center;
+    background-color: #fff3cd;
+    /* amarillo suave */
+    border: 1px solid #ffeeba;
+    color: #856404;
+    /* marrón oscuro para contraste */
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    margin-top: 12px;
+    line-height: 1.4;
+}
+
+.warningIcon {
+    margin-right: 10px;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.agendaContainerScroll {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

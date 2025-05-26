@@ -1,0 +1,111 @@
+ /*MEDICO CARD######################################### */
+ .medico-card {
+   background-color: white;
+   border-radius: 12px;
+   padding: 16px;
+   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+   display: flex;
+   flex-direction: column;
+   position: relative;
+   transition: all 0.3s ease;
+   animation: fadeInUp 0.3s ease;
+ }
+
+ @keyframes fadeInUp {
+   from {
+     opacity: 0;
+     transform: translateY(10px);
+   }
+
+   to {
+     opacity: 1;
+     transform: translateY(0);
+   }
+ }
+
+ .card-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: flex-start;
+ }
+
+ .card-header h3 {
+   margin: 0;
+   color: var(--ion-color-customDark);
+   font-size: 1.2rem;
+ }
+
+ .card-header .especialidad {
+   margin-top: 4px;
+   font-weight: bold;
+   color: #047857;
+ }
+
+ .card-header .centro {
+   margin-top: 2px;
+   color: var(--ion-color-customDark);
+   font-size: 0.95rem;
+ }
+
+ .favorito-boton {
+   position: absolute;
+   top: 10px;
+   right: 10px;
+   color: #fbbf24;
+ }
+
+ .card-footer {
+   margin-top: 20px;
+   text-align: right;
+ }
+
+ .centro {
+   margin-left: 5px;
+ }
+
+ .separadorMedico {
+   border: none;
+   border-top: 1px solid #e5e7eb;
+   margin: 8px 0;
+ }
+
+ .header-left {
+   display: flex;
+   gap: 12px;
+   align-items: flex-start;
+   justify-content: flex-start;
+ }
+
+ .avatarMedico {
+   width: 48px;
+   height: 48px;
+   border-radius: 50%;
+   background-color: #d1fae5;
+   color: #065f46;
+   font-weight: 600;
+   font-size: 1rem;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+ }
+
+ .letrasAvatar {
+   font-size: 1.1rem;
+ }
+
+ .medico-card:hover {
+   transform: translateY(-3px);
+   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+ }
+
+ .provincia {
+   font-size: 0.9rem;
+   color: #6c757d;
+   margin-top: 2px;
+   margin-left: 24px;
+   /* opcional, alinear con el icono de ubicación */
+ }
+
+ .nuevaCitabBoton {
+   --background: var(--ion-color-customDark);
+ }

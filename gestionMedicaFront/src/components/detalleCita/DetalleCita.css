@@ -1,0 +1,275 @@
+.contenedorDeCita {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.contentDetalleCita {
+    --background: var(--ion-color-VerdePastel) !important;
+}
+
+.cabeceraDC {
+    max-width: 1000px;
+    display: flex;
+    width: 90%;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.tituloDC {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    font-size: 1.9rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttonsContainerDC {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.modifyButtonDC {
+    --background: var(--ion-color-customYellow);
+    width: 100%;
+    color: black;
+}
+
+.volverButtonDC {
+    --background: var(--ion-color-customRed);
+    width: 100%;
+}
+
+.buttonTextDC {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+.contenedorDeCitaSpinner {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.spinnerContainerDC {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.textSpinnerCita {
+    font-size: 1rem;
+    color: var(--ion-color-customDark);
+}
+
+.text-notFoundInfoDC {
+    color: var(--ion-color-customMedium);
+    /* gray-500 */
+    width: 100%;
+    font-style: italic;
+    font-size: 1rem;
+    text-align: center;
+    padding: 0.75rem;
+    background: var(--ion-color-customUltraLight);
+    /* gray-50 */
+    border: 1px dashed var(--ion-color-customDark);
+    /* gray-300 */
+    border-radius: 0.5rem;
+}
+
+.medicoAsociadoDC {
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.TextTittleDC {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    font-size: 1.2rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.lineaSepDC {
+    border: none;
+    border-top: 2px solid var(--ion-color-customHardDark);
+    width: 100%;
+    opacity: 0.7;
+}
+
+.volverButtonDC:hover,
+.modifyButtonDC:hover,
+.btnDC:hover,
+.buttonActionDC:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+.badgeEstadoDC {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    width: fit-content;
+    text-align: center;
+}
+
+.badgeEstadoDC.PendienteDC {
+    background-color: var(--ion-color-customYellow);
+    color: black;
+}
+
+.badgeEstadoDC.CompletadaDC {
+    background-color: var(--ion-color-lightGreen);
+    color: white;
+}
+
+.badgeEstadoDC.CanceladaDC {
+    background-color: var(--ion-color-customRed);
+    color: white;
+}
+
+.badgeEstadoDC.archivado {
+    background-color: #d9d9d9;
+    /* Gris claro */
+    color: #595959;
+    /* Gris oscuro para el texto */
+}
+
+.detalleContainerDC {
+    display: flex;
+    width: 90%;
+    max-width: 1000px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background-color: #ffffff;
+    /* Fondo blanco puro para más contraste */
+    border: 1px solid #e0e0e0;
+    /* Borde ligero para separar del fondo */
+    border-radius: 16px;
+    /* Bordes un poco más redondeados */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.detalleContainerDCTop {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.detalleContainerTextDC {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    font-size: 1.2rem;
+
+}
+
+.botonesDC {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+
+.btnDC.cancelar {
+    --background: var(--ion-color-customRed);
+    width: 40%;
+}
+
+.btnDC.eliminar {
+    --background: var(--ion-color-customRed);
+}
+
+.btnDC.archivar {
+    --background: var(--ion-color-customYellow);
+    color: black;
+}
+
+.btnDC.desarchivar {
+    --background: var(--ion-color-customYellow);
+    color: black;
+}
+
+.buttonTextDC {
+    font-size: 1rem;
+    font-weight: bold;
+    width: 80%;
+
+}
+
+.buttonActionDC {
+    margin-left: auto;
+    --border-radius: 12px;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-size: 0.9rem;
+    --background: var(--ion-color-customMedium);
+    min-width: 40px;
+}
+
+.buttonTextDC {
+    width: 80%;
+    margin-left: 10px;
+}
+
+.fechasContainerDC {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.fechaContentContDC {
+    min-height: 50px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+    color: var(--ion-color-customDark);
+}
+
+.buttonTextDCMain {
+    display: flex;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+}
+
+.agendaContainerScroll {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media screen and (max-width: 480px) {
+    .buttonTextDC {
+        display: none;
+    }
+}

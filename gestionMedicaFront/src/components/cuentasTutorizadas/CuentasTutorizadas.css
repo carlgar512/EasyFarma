@@ -1,0 +1,411 @@
+.contentGF {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
+
+.contentCentralGF {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  min-height: 90%;
+}
+
+.titleContainerGF {
+  background: var(--ion-color-customUltraLight);
+  max-width: 1000px;
+  width: 90%;
+  padding: 10px;
+  border-radius: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--ion-color-customDark);
+}
+
+.tittleTextGF {
+  font-family: var(--font-primary);
+  color: var(--ion-color-customDark);
+  font-size: 1.5rem;
+  font-weight: bold;
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonReturnGF:hover,
+.buttonNewAccountGF:hover {
+  transform: scale(1.02);
+  transition: 0.3s ease-in-out;
+}
+
+.buttonNewAccountGF {
+  --background: var(--ion-color-customDark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonReturnGF {
+  --background: var(--ion-color-customRed);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonTextGF {
+  width: 80%;
+  font-weight: bold;
+}
+
+.buttonsContainerGF {
+  width: 90%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+}
+
+.cuentasContainerGF {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 1000px;
+  justify-content: center;
+  align-items: center;
+}
+
+/*** CARD de cuentaInfantil */
+.cuenta-card.horizontal {
+  padding: 30px;
+  width: 100%;
+  border-radius: 16px;
+}
+
+.cuenta-card-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+
+}
+
+.cuenta-card-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.avatar-iniciales {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34d399, #10b981);
+  /* verde menta a verde intenso */
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.cuenta-card-nombre {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+}
+
+.cuenta-card-nombre .nombre {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--ion-color-customDark);
+
+}
+
+.cuenta-card-nombre .subtitulo {
+  font-size: 0.9rem;
+  color: var(--ion-color-customMedium);
+  font-style: italic;
+  display: flex;
+
+}
+
+.cuenta-card-right {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.boton-cuenta {
+  font-weight: 500;
+  display: flex;
+  transition: transform 0.15s ease;
+}
+
+.boton-cuenta:hover {
+  transform: scale(1.02);
+}
+
+.boton-cuenta.acceder {
+  --background: var(--ion-color-customDark);
+  --color: white;
+}
+
+.boton-cuenta.detalle {
+  --background: var(--ion-color-customMedium);
+
+}
+
+.boton-cuenta.baja {
+  --background: var(--ion-color-customRed);
+}
+
+.cardButtonTextGF {
+  width: 80%;
+}
+
+/*** CARD de cuentaInfantil */
+.sinCuentasGF {
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed var(--ion-color-customMedium);
+  border-radius: 12px;
+  background-color: var(--ion-color-customUltraLight);
+  width: 100%;
+  color: var(--ion-color-customDark);
+  font-size: 1rem;
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.mensajeSinCuentas {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spinnerContainerGF {
+  background: var(--ion-color-customUltraLight);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 30px;
+  border-radius: 26px;
+  width: 80%;
+  gap: 10px;
+  max-width: 1000px;
+}
+
+.textSpinnerGF {
+  font-size: 1.1rem;
+  color: var(--ion-color-customDark);
+  font-weight: bold;
+  text-align: center;
+}
+
+.contentCentralGFSpinner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  min-height: 90%;
+}
+
+/* Usertype Infanti */
+.advertenciaInfantilUI {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #f5f7fa;
+}
+
+.warningContainerUI {
+  text-align: center;
+  padding: 2rem;
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
+  background-color: #fffbea;
+  border: 1px solid #ffe58f;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.warningIconUI {
+  font-size: 2.5rem;
+  color: #ffc107;
+  margin-bottom: 1rem;
+}
+
+.warningTitleUI {
+  font-size: 1.6rem;
+  color: #d39e00;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.warningMessageUI {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+/**MODAL TRANSICION */
+.customModalTransition {
+  margin: auto;
+  --min-width: 70%
+}
+
+.headerModalTransition {
+  --background: transparent;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.titleContainerModalTransition {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  padding-left: 20px;
+  color: var(--ion-color-customDark);
+}
+
+.titleModalTransition {
+  font-size: 1.2rem;
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+  font-weight: bold;
+  text-align: center;
+}
+
+.contentModalTransition {
+  padding: 30px;
+  background-color: #f8f8f8;
+  height: 100%;
+}
+
+.formContainerModalTransition{
+  background-color: var(--ion-color-customUltraLight);
+  padding: 10px;
+  padding-top: 15px;
+  border-radius: 16px;
+}
+
+.contentContainerModalTransition {
+  padding: 20px;
+  margin-bottom: 20px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.infoTextContainerModalTransition {
+  background-color: #e6f7f0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0c5c3d;
+  padding: 12px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.infoTextModalTransition{
+  width: 80%;
+}
+
+.itemModalTransition {
+  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 10px;
+}
+
+.inputModalTransition {
+  --padding-start: 10px;
+  color: var(--ion-color-customDark);
+}
+
+.buttonContainerModalTransition {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.confirmButtonModalTransition {
+  --background: var(--ion-color-customDark);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.cancelButtonModalTransition {
+  --background: var(--ion-color-customRed);
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.buttonTextModalTransition{
+  width: 80%;
+}
+
+.alertInputModalTransition{
+  display: flex;
+  align-items: center;
+}
+
+.cuenta-mayor-alerta {
+  display: flex;
+  align-items: center;
+  background-color: #fff3f3;
+  border: 1px solid #f5c2c7;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #b02a37;
+  font-size: 14px;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/**MODAL TRANSICION */

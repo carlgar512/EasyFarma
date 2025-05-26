@@ -1,0 +1,253 @@
+.contentTA {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    --background: radial-gradient(circle, var(--ion-color-customUltraLight) 0%, var(--ion-color-customLight) 85%, var(--ion-color-customMedium) 100%);
+}
+
+.contentTACentral {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 90%;
+    margin-top: 30px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.titleContainerTA {
+    background: var(--ion-color-customUltraLight);
+    max-width: 1000px;
+    width: 90%;
+    padding: 10px;
+    border-radius: 36px;
+    display: flex;
+    color: var(--ion-color-customDark);
+    align-items: center;
+    justify-content: center;
+}
+
+.tittleTextTA {
+    font-family: var(--font-primary);
+    color: var(--ion-color-customDark);
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttonContainerCredit {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.cardButton1 {
+    width: 90%;
+    max-width: 1000px;
+    --background: var(--ion-color-customDark);
+}
+
+.cardButton2 {
+    width: 90%;
+    max-width: 1000px;
+    --background: var(--ion-color-customRed);
+}
+
+.buttonTextCredit {
+    font-weight: bold;
+    width: 80%;
+}
+
+.cardButton1:hover,
+.cardButton2:hover {
+    transform: scale(1.02);
+    transition: 0.3s ease-in-out;
+}
+
+
+/*  Modal QR #########################################################*/
+.modalText {
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-align: center;
+    width: 90%;
+}
+
+.tittleContainerModal {
+    color: var(--ion-color-customDark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 10px;
+}
+
+.modalContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+/*  CREDIT CARD #########################################################*/
+
+.creditCard {
+    background-color: #171717;
+    width: 340px;
+    height: 200px;
+    perspective: 1000px;
+    color: white;
+    box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 1rem;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+    position: relative;
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+/* Hover 3D + sombra real */
+.creditCard:hover {
+    transform: perspective(800px) rotateX(-10deg) rotateY(-10deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Efecto de brillo diagonal */
+.creditCard::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+    transform: rotate(25deg);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Mostrar brillo en hover */
+.creditCard:hover::before {
+    opacity: 1;
+    animation: shine 1.2s forwards;
+}
+
+/* Animación del brillo */
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(25deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(25deg);
+    }
+}
+
+.heading {
+    position: absolute;
+    letter-spacing: .2em;
+    font-size: 0.6em;
+    top: 2em;
+    left: 26.2em;
+}
+
+.chip {
+    position: absolute;
+    top: 2.3em;
+    left: 1.5em;
+}
+
+.contactless {
+    position: absolute;
+    top: 3.5em;
+    left: 19.0em;
+}
+
+.number {
+    position: absolute;
+    font-weight: bold;
+    font-size: .7em;
+    top: 8.3em;
+    left: 1.6em;
+}
+
+.valid_thru {
+    position: absolute;
+    font-weight: bold;
+    font-size: 0.6em;
+    top: 12.6em;
+    left: 3.2em;
+}
+
+.dateCard {
+    position: absolute;
+    font-weight: bold;
+    font-size: 0.6em;
+    top: 14.0em;
+    left: 3.2em;
+}
+
+.name {
+    position: absolute;
+    font-weight: bold;
+    font-size: 0.6em;
+    top: 17.1em;
+    left: 2em;
+}
+
+.imgCreditCard {
+    width: 37%;
+    position: absolute;
+    top: 6.5em;
+    left: 13em;
+}
+
+/*  CREDIT CARD #########################################################*/
+
+.contentTACentralTC {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+
+}
+
+.spinnerContainerTC {
+    background: var(--ion-color-customUltraLight);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px;
+    border-radius: 26px;
+    width: 80%;
+    gap: 10px;
+    max-width: 1000px;
+}
+
+.textSpinner {
+    font-size: 1.1rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    text-align: center;
+}

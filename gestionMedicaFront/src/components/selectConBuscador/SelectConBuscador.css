@@ -1,0 +1,82 @@
+.select-item {
+    --padding-start: 16px;
+    --inner-padding-end: 12px;
+    --border-color: var(--ion-color-medium);
+    display: flex;
+    justify-content: space-between;
+    width: 95%;
+    align-items: center;
+}
+
+.labelTittleSCB {
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+}
+
+.select-value {
+    font-style: italic;
+    color: var(--ion-color-customDark);
+}
+
+.select-modal-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.topSectionSCBHeader {
+    display: flex;
+    justify-content: space-around;
+}
+
+.bottomSectionSCBHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.select-modal-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.select-modal-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--ion-color-customDark);
+    display: flex;
+}
+
+.select-close-button {
+    font-size: 0.95rem;
+    --background: var(--ion-color-customRed);
+    gap: 20px;
+}
+
+.buttonCloseTextSCB {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    font-weight: bold;
+}
+
+.select-searchbar {
+    --background: var(--ion-color-light);
+    margin: 0;
+    padding: 0;
+    width: 90%;
+}
+
+.select-options-list {
+    padding-top: 0;
+}
+
+.select-option-item {
+    --padding-start: 16px;
+    --inner-padding-end: 12px;
+}

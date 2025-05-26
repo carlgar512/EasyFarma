@@ -1,13 +1,27 @@
-import { IonButton, IonContent, IonIcon, IonImg, IonPage } from "@ionic/react";
+import { IonAlert, IonButton, IonContent, IonIcon, IonImg, IonPage } from "@ionic/react";
 import "./Lobby.css";
 import { callOutline, personAddOutline, personOutline } from "ionicons/icons";
 import { useHistory } from 'react-router-dom';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
+import { TELEFONOS } from "../../shared/telefonos";
 
+/**
+ * Componente Lobby
+ * Pantalla principal de bienvenida que permite al usuario acceder al inicio de sesión, registro o realizar una llamada de emergencia.
+ * Detecta si el usuario está en un dispositivo móvil para habilitar llamadas, y ofrece una interfaz centrada y adaptable.
+ */
 const Lobby: React.FC = () => {
-    const history = useHistory();
 
+    /**
+     * VARIABLES
+     */
+    const history = useHistory();
+    const [showAlert, setShowAlert] = useState(false);
+    
+    /**
+     * FUNCIONALIDAD
+     */
     const handleRegisterClick = () => {
         history.push('/register');
     };
@@ -21,38 +35,45 @@ const Lobby: React.FC = () => {
     //TODO probar en telf y cambiar numero
     const handleEmergencyCall = () => {
         if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-            window.location.href = 'tel:+34679761132';
+            window.location.href = `tel:${TELEFONOS.EMERGENCIA}`;
         } else {
-            alert("Esta función solo está disponible en dispositivos móviles. Llame al +1234567890 si necesita asistencia.");
+            setShowAlert(true);
         }
     };
 
+    /**
+     * RENDER
+     */
     return (
         <IonPage>
-
             <IonContent fullscreen className="ion-padding lobby-container">
                 <div className="lobbyScreen">
                     <IonImg className="logo"
                         src="/EasyFarmaLogo.png"
                         alt="Logo de EasyFarma"
                     ></IonImg>
-                    <div className="button-group">
-
+                    <div className="button-groupLobby">
                         <IonButton size="large" expand="full" shape="round" className="login-btn" onClick={handleSignInClick}>
                             <IonIcon slot="start" icon={personOutline}></IonIcon>
-                            Iniciar Sesión
+                            <span className="buttonTextLobby">Iniciar Sesión</span>
                         </IonButton>
                         <IonButton size="large" expand="full" shape="round" className="register-btn" onClick={handleRegisterClick}>
                             <IonIcon slot="start" icon={personAddOutline}></IonIcon>
-                            Registrarse
+                            <span className="buttonTextLobby">Registrarse</span>
                         </IonButton>
                         <IonButton size="large" expand="full" shape="round" className="emergency-btn" onClick={handleEmergencyCall}>
                             <IonIcon slot="start" icon={callOutline}></IonIcon>
-                            Emergencia
+                            <span className="buttonTextLobby">Emergencia</span>
                         </IonButton>
                     </div>
                 </div>
-
+                <IonAlert
+                    isOpen={showAlert}
+                    onDidDismiss={() => setShowAlert(false)}
+                    header="Llamada no disponible"
+                    message={`Esta función solo está disponible en dispositivos móviles. Llame manualmente a ${TELEFONOS.EMERGENCIA_VISIBLE}.`}
+                    buttons={['OK']}
+                />
             </IonContent>
         </IonPage>
     );

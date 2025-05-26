@@ -1,0 +1,14 @@
+// telefonos
+
+export const TELEFONOS = {
+    EMERGENCIA: '+34600882146',
+    EMERGENCIA_VISIBLE: '+34 600 882 146',
+    SOPORTE: '+34900123456', // Ejemplo adicional
+    TEL112: '112',
+    SEGURO: '+34902765432',
+    FARMACIA: '+34911223344',
+    SOPORTEVISIBLE: '+34 900 123 456', // Ejemplo adicional
+    TEL112VISIBLE: '112',
+    SEGUROVISIBLE: '+34 902 765 432',
+    FARMACIAVISIBLE: '+34 911 223 344',
+  };

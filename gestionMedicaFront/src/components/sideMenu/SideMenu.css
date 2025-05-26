@@ -1,0 +1,66 @@
+.menuHeader {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
+    font-size: 1.5rem;
+    color: var(--ion-color-customDark);
+    font-weight: bold;
+    width: 100%;
+
+}
+
+.lineaSeparadora {
+    width: 100%;
+    height: 2px;
+    background-color: var(--ion-color-customDark);
+    /* Puedes cambiarlo a otro color personalizado */
+    border: none;
+    border-radius: 1px;
+    opacity: 0.5;
+}
+
+.titleSideMenu {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.sideMenu {
+    --min-width: 30%;
+}
+
+ion-menu::part(backdrop) {
+    background-color: var(--ion-color-customHardDark);
+}
+
+ion-menu::part(container) {
+    border-radius: 0 20px 20px 0;
+
+    box-shadow: 4px 0px 16px var(--ion-color-customUltraLight);
+}
+
+.customBadge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.badge-yellow {
+    background-color: var(--ion-color-customYellow);
+    color: black;
+}
+
+.badge-grey {
+    background-color: #d9d9d9;
+    /* Gris claro */
+    color: #595959;
+}
+
+.badge-green {
+    background-color: var(--ion-color-lightGreen);
+    color: white;
+}

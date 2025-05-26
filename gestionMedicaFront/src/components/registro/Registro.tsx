@@ -7,65 +7,59 @@ import {
   IonItem,
   IonPage,
   IonToolbar,
-  IonToast,
   IonIcon,
   IonDatetime,
   IonSpinner,
   IonImg,
+  IonModal,
 } from "@ionic/react";
 import "./Registro.css"; // Importa el archivo CSS
-import { alertCircleOutline, checkmarkOutline, exitOutline, personAddOutline, personOutline } from 'ionicons/icons';
+import { alertCircleOutline, calendarNumberOutline, checkmarkOutline, exitOutline, eyeOff, eyeOutline, personAddOutline, personOutline } from 'ionicons/icons';
 import { useHistory } from "react-router-dom";
 import React from "react";
+import { backendService } from "../../services/backendService";
+import NotificationToast from "../notification/NotificationToast";
+import { useAuth } from "../../context/AuthContext";
 
+/**
+ * Componente Registro
+ * Pantalla de registro de nuevos usuarios que incluye validaciones de datos personales,
+ * comprobación de mayoría de edad, control de contraseñas y feedback visual con spinner y toasts.
+ * Permite seleccionar fecha de nacimiento mediante un calendario modal.
+ */
 const Registro: React.FC = () => {
 
-  const register = async (userData: {
-    name: string;
-    lastName: string;
-    dni: string;
-    email: string;
-    dateNac: string;
-    password: string;
-  }) => {
-    const response = await fetch(
-      "http://localhost:5001/easyfarma-5ead7/us-central1/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userData)
-      }
-    );
-
-    const data = await response.json();
-    console.log(data);
-
-    if (!response.ok) {
-      throw new Error(data.error || "Error al registrar usuario");
-    }
-
-    return data;
-  };
-
-
+  /**
+   * VARIABLES
+   */
+  const { setAuth } = useAuth();
+  const history = useHistory();
   const [form, setForm] = useState({
     name: "",
     lastName: "",
     dni: "",
     email: "",
+    tlf: "",
     password: "",
     confirmPassword: "",
     dateNac: ""
   });
+
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    color: "success",
+    icon: checkmarkOutline,
+  });
+
+  const [isOpenCalendar, setIsOpen] = useState(false);
   const [loadSpinner, setLoadSpinner] = useState(false);
-
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [isSuccessToast, setIsSuccessToast] = useState(false); // Nuevo estado
-
-  const history = useHistory();
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
+  
+  
+  /**
+   * FUNCIONALIDAD
+   */
 
   const handleGoBackClick = () => {
 
@@ -77,16 +71,18 @@ const Registro: React.FC = () => {
 
   };
 
+  // Función para alternar la visibilidad de la contraseña
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleLoginClick = () => {
     history.replace('/signIn')
   };
 
-
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
 
   // Manejar el cambio de fecha
   const handleChangeDate = (e: any) => {
@@ -97,55 +93,101 @@ const Registro: React.FC = () => {
     }
   };
 
-
-
   const handleSubmit = async () => {
-    if (!form.name || !form.lastName || !form.dni || !form.email || !form.password || !form.confirmPassword || !form.dateNac) {
-      console.log(form);
-      setToastMessage("Todos los campos son obligatorios");
-      setIsSuccessToast(false);
-      setShowToast(true);
+    const dni = form.dni?.toUpperCase().trim(); // Normaliza el DNI
+    // Validación: vacío o mal formato
+    const dniRegex = /^[0-9]{8}[A-Za-z]$/;
+    if (!form.name || !form.lastName || !form.dni || !form.email || !form.tlf || !form.password || !form.confirmPassword || !form.dateNac) {
+      setToast({
+        show: true,
+        message: "Todos los campos son obligatorios",
+        color: "danger",
+        icon: alertCircleOutline,
+      });
       return;
     }
-
+    else if (!dniRegex.test(dni)) {
+      setToast({
+        show: true,
+        message: "Por favor, introduce un DNI válido.",
+        color: "danger",
+        icon: alertCircleOutline,
+      });
+      return;
+    }
     else if (form.password !== form.confirmPassword) {
-      setToastMessage("Las contraseñas no coinciden");
-      setIsSuccessToast(false);
-      setShowToast(true);
+      setToast({
+        show: true,
+        message: "Las contraseñas no coinciden",
+        color: "danger",
+        icon: alertCircleOutline,
+      });
+      return;
+    }
+    // 👉 Validación de edad mínima (18 años)
+    const nacimiento = new Date(form.dateNac);
+    const hoy = new Date();
+    const edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mesDiferencia = hoy.getMonth() - nacimiento.getMonth();
+    const diaDiferencia = hoy.getDate() - nacimiento.getDate();
+
+    const esMenor = edad < 18 || (edad === 18 && (mesDiferencia < 0 || (mesDiferencia === 0 && diaDiferencia < 0)));
+
+    if (esMenor) {
+      setToast({
+        show: true,
+        message: "Debes tener al menos 18 años para registrarte.",
+        color: "danger",
+        icon: alertCircleOutline,
+      });
       return;
     }
     setLoadSpinner(true);
-    console.log("Registrando usuario:", form);
 
-    const response = await register({
+    const response = await backendService.register({
       name: form.name,
       lastName: form.lastName,
-      dni: form.dni,
+      dni: dni,
       email: form.email,
+      tlf: form.tlf,
       dateNac: form.dateNac,
       password: form.password
     });
-     
-    console.log(response);
+
     setLoadSpinner(false);
+
     if (response.success) {
-      setToastMessage("Registro exitoso");
-      setIsSuccessToast(true);
-      setShowToast(true);
+      if (response.user && response.token) {
+        setAuth(response.user, response.token);
+      }
+      setToast({
+        show: true,
+        message: "Registro exitoso",
+        color: "success",
+        icon: checkmarkOutline,
+      });
       setTimeout(() => {
         history.replace('/principal');
       }, 1000);
     } else {
-      setToastMessage("Error al registrar: " + response.error);
-      setIsSuccessToast(false);
-      setShowToast(true);
+      setToast({
+        show: true,
+        message: "Error al registrar: " + response.error,
+        color: "danger",
+        icon: alertCircleOutline,
+      });
     }
-
-
   };
 
+  const formatDateToDMY = (isoDate: string) => {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}-${month}-${year}`;
+  };
 
-
+  /**
+   * RENDER
+   */
   return (
     <IonPage>
       <IonHeader>
@@ -174,10 +216,12 @@ const Registro: React.FC = () => {
 
         <IonContent fullscreen className="content">
           <div className="form-container">
-            <IonImg src="/register.svg"></IonImg>
+            <div className="imgContainerReg">
+              <IonImg className="imagenReg" src="/register.svg"></IonImg>
+            </div>
             <div className="form-card">
-              <IonItem className="form-item">
-                <label className="form-label">Nombre:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Nombre:</label>
                 <IonInput
                   color={"success"}
                   placeholder="Escribe tu nombre"
@@ -188,8 +232,8 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Apellidos:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Apellidos:</label>
                 <IonInput
                   color={"success"}
                   name="lastName"
@@ -200,8 +244,8 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">DNI:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">DNI:</label>
                 <IonInput
                   color={"success"}
                   placeholder="Escribe tu DNI"
@@ -209,11 +253,12 @@ const Registro: React.FC = () => {
                   value={form.dni}
                   onIonChange={handleChange}
                   clearInput={true}
+                  maxlength={9}
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Correo Electrónico:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Correo Electrónico:</label>
                 <IonInput
                   color={"success"}
                   name="email"
@@ -225,48 +270,103 @@ const Registro: React.FC = () => {
                 />
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Contraseña:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Teléfono</label>
+                <IonInput
+                  color={"success"}
+                  name="tlf"
+                  placeholder="Escribe tu teléfono"
+                  type="tel"
+                  value={form.tlf}
+                  onIonChange={handleChange}
+                  clearInput={true}
+                />
+              </IonItem>
+
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Contraseña:</label>
                 <IonInput
                   color={"success"}
                   placeholder="Nueva contraseña"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
                   value={form.password}
                   onIonChange={handleChange}
                   clearInput={true}
                 />
+                <IonButton
+                  fill="clear"
+                  size="small"
+                  onClick={togglePasswordVisibility}
+                  color="success"
+                >
+                  {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                </IonButton>
               </IonItem>
 
-              <IonItem className="form-item">
-                <label className="form-label">Confirmar Contraseña:</label>
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Confirmar Contraseña:</label>
                 <IonInput
                   color={"success"}
                   name="confirmPassword"
                   placeholder="Repite contraseña"
-                  type="password"
+                  type={showPassword ? "text" : "password"} // Alterna entre 'text' y 'password'
                   value={form.confirmPassword}
                   onIonChange={handleChange}
                   clearInput={true}
                 />
+                <IonButton
+                  fill="clear"
+                  size="small"
+                  onClick={togglePasswordVisibility}
+                  color="success"
+                >
+                  {!showPassword ? <IonIcon icon={eyeOutline} size="large" /> : <IonIcon icon={eyeOff} size="large" />}
+                </IonButton>
               </IonItem>
 
-              <div className="form-FechaNac">
+              <IonItem className="form-itemReg">
+                <label className="form-labelReg">Fecha de Nacimiento:</label>
+                <IonInput
+                  color={"success"}
+                  name="dateNac"
+                  value={formatDateToDMY(form.dateNac)}
+                  placeholder="Selecciona tu fecha de nacimiento"
+                  readonly={true} // Hace que el campo no sea editable directamente
+                  onClick={() => setIsOpen(true)} // Abre el calendario cuando se hace clic
+                />
 
-                <div className="calendar-wrapper">
-                  <IonDatetime
-                    size="fixed"
-                    name="dateNac"
-                    presentation="date"
-                    color={"success"}
-                    value={form.dateNac}
-                    onIonChange={handleChangeDate}
-                  >
-                    <span slot="title">Fecha de Nacimiento</span>
-                  </IonDatetime>
-                </div>
+                {/* Botón para abrir el calendario */}
+                <IonButton onClick={() => setIsOpen(true)} className="calendarButton">
+                  <IonIcon icon={calendarNumberOutline} size="large" slot="icon-only" ></IonIcon>
+                </IonButton>
+                <IonModal isOpen={isOpenCalendar} onDidDismiss={() => setIsOpen(false)}>
+                  <IonHeader>
+                    <IonToolbar className="top-BarBackground">
+                      <div className="topBarModal">
+                        <div className="left-content">
+                          <IonIcon icon={calendarNumberOutline} size="large" slot="icon-only" ></IonIcon>
+                          <span className="modalTitle">Calendario</span>
+                        </div>
+                        <IonButton className="leaveCalendarButton" onClick={() => setIsOpen(false)}>Cerrar</IonButton>
+                      </div>
+                    </IonToolbar>
+                  </IonHeader>
+                  <div className="content">
+                    <IonDatetime
+                      size="fixed"
+                      name="dateNac"
+                      presentation="date"
+                      color={"success"}
+                      value={form.dateNac}
+                      max={new Date().toISOString().split('T')[0]}
+                      onIonChange={handleChangeDate}
+                    >
+                    </IonDatetime>
+                  </div>
 
-              </div>
+                </IonModal>
+              </IonItem>
 
               <IonButton
                 expand="block"
@@ -275,8 +375,8 @@ const Registro: React.FC = () => {
                 className="ion-margin-top custom-button"
                 onClick={handleSubmit}
               >
-                <IonIcon icon={personAddOutline} slot="start"></IonIcon>
-                Crear nueva cuenta
+                <IonIcon icon={personAddOutline} size="large" slot="start"></IonIcon>
+                <span className="buttonTextReg"> Crear nueva cuenta</span>
               </IonButton>
 
               <IonButton
@@ -286,34 +386,20 @@ const Registro: React.FC = () => {
                 size="default"
                 className="ion-margin-top custom-button2"
               >
-                <IonIcon icon={personOutline} slot="start" ></IonIcon>
-                ¿Ya registrado?, Iniciar sesion
+                <IonIcon icon={personOutline} size="large" slot="start" ></IonIcon>
+                <span className="buttonTextReg"> ¿Ya registrado?, Iniciar sesion</span>
               </IonButton>
-
-
-              <IonToast
-                icon={isSuccessToast ? checkmarkOutline : alertCircleOutline} // Cambia icono dinámicamente
-                color={isSuccessToast ? "success" : "danger"} // Cambia color dinámicamente
-                isOpen={showToast}
-                onDidDismiss={() => setShowToast(false)}
-                message={toastMessage}
-                duration={2000}
-                swipeGesture="vertical"
-                buttons={[
-                  {
-                    text: 'Descartar',
-                    role: 'cancel',
-                  },
-                ]}
-
+              <NotificationToast
+                icon={toast.icon}
+                color={toast.color}
+                message={toast.message}
+                show={toast.show}
+                onClose={() => setToast((prev) => ({ ...prev, show: false }))}
               />
             </div>
           </div>
         </IonContent>
-
       }
-
-
     </IonPage>
   );
 };

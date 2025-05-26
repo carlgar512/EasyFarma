@@ -1,0 +1,97 @@
+/* Pagination styles */
+.paginationWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.paginationButton {
+    background-color: #ffffff;
+    border: 2px solid var(--ion-color-customMedium);
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ion-color-customMedium);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.paginationButton:hover {
+    background-color: var(--ion-color-lightGreen);
+    border: 2px solid var(--ion-color-lightGreen);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.paginationButton.active {
+    background-color: var(--ion-color-lightGreen);
+    color: white;
+    border-color: var(--ion-color-lightGreen);
+    box-shadow: 0 4px 10px rgba(56, 128, 255, 0.3);
+}
+
+
+.paginationEllipsis {
+    padding: 8px;
+    font-weight: bold;
+    color: var(--ion-color-customMedium);
+}
+
+.paginationButton.nav {
+    background-color: #ffffff;
+    color: var(--ion-color-customMedium);
+    border: 2px solid var(--ion-color-customMedium);
+    font-weight: bold;
+    font-size: 1.1rem;
+    padding: 8px 12px;
+}
+
+.paginationButton.nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.bigContainer {
+    display: flex;
+    gap: 20px;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    /* permite caída pero controlada */
+    padding: 0 1rem;
+}
+
+@media (max-width: 600px) {
+    .paginationWrapper {
+        padding: 0 0.5rem;
+    }
+
+    .bigContainer {
+        gap: 3px;
+    }
+
+    .paginationButton {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .paginationButton.nav {
+        padding: 6px 8px;
+        font-size: 1rem;
+    }
+}

@@ -1,6 +1,6 @@
 export interface DobleConfirmacionProps {
     isOpen: boolean;
-    title?: string;
+    tittle: string;
     message: string;
     img: string;
     onConfirm: () => void;
