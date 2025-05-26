@@ -7,6 +7,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 const auth = admin.auth();
 
+/** 
 // Forzar uso de emuladores si estamos en local
 if (process.env.FUNCTIONS_EMULATOR === "true") {
   db.settings({
@@ -16,5 +17,5 @@ if (process.env.FUNCTIONS_EMULATOR === "true") {
 
   process.env.FIREBASE_AUTH_EMULATOR_HOST = "localhost:9099"; // Puerto Auth
 }
-
+*/
 export { db, auth };

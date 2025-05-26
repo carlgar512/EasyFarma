@@ -5,8 +5,8 @@ import { signInWithEmailAndPassword, updateEmail } from "firebase/auth";
 import { auth } from "./firebaseConfig"; // Asegúrate de que este path es correcto
 import { MapaFiltrosResponse } from "../components/buscaMedico/BuscaMedicoInterfaces";
 
-const BASE_URL = "http://localhost:5001/easyfarma-5ead7/us-central1";
-
+//const BASE_URL_EMULATORS = "http://localhost:5001/easyfarma-5ead7/us-central1";
+const BASE_URL = "http://127.0.0.1:5001/easyfarma-5ead7/us-central1";
 /**
  * Registra un nuevo usuario en el backend y luego inicia sesión automáticamente.
  * Devuelve el usuario autenticado y su token.
@@ -882,61 +882,61 @@ const existeDNIRegistrado = async (dni: string): Promise<boolean> => {
 const enviarCorreoTransicion = async (
     usuario: any,
     usuarioTutelado: any
-  ): Promise<void> => {
+): Promise<void> => {
     const response = await fetch(`${BASE_URL}/sendTransitionEmail`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usuario, usuarioTutelado }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ usuario, usuarioTutelado }),
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al enviar el correo de transición");
+        throw new Error(data.message || "Error al enviar el correo de transición");
     }
-  
+
     // Puedes mostrar un mensaje de éxito opcionalmente
     console.log("✅ Correo de transición enviado");
-  };
+};
 
 
-  /**
- * Registra una nueva cuenta regular a partir de una cuenta infantil existente.  
- * Envía los datos al backend para validar y crear el usuario en Auth y Firestore.
- */
-  const nuevaCuentaDesdeInfantil = async ({
+/**
+* Registra una nueva cuenta regular a partir de una cuenta infantil existente.  
+* Envía los datos al backend para validar y crear el usuario en Auth y Firestore.
+*/
+const nuevaCuentaDesdeInfantil = async ({
     usuarioTutelado,
     email,
     dni,
     password,
-  }: {
+}: {
     usuarioTutelado: any;
     email: string;
     dni: string;
     password: string;
-  }): Promise<{ success: boolean; uid?: string }> => {
+}): Promise<{ success: boolean; uid?: string }> => {
     const response = await fetch(`${BASE_URL}/nuevaCuentaDesdeInfantil`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usuarioTutelado, email, dni, password }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ usuarioTutelado, email, dni, password }),
     });
-  
+
     const data = await response.json();
-  
+
     if (!response.ok || !data.success) {
-      throw new Error(data.message || "Error al registrar nueva cuenta.");
+        throw new Error(data.message || "Error al registrar nueva cuenta.");
     }
-  
+
     return {
-      success: true,
-      uid: data.uid,
+        success: true,
+        uid: data.uid,
     };
-  };
-  
+};
+
 
 export const backendService = {
     register,

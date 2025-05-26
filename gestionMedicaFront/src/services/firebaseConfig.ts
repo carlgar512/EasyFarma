@@ -21,10 +21,11 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // ✅ Conectar al emulador solo si estás en desarrollo local
+/*
 if (window.location.hostname === "localhost") {
   connectAuthEmulator(auth, "http://localhost:9099");
   console.info("🔌 Conectado al emulador de Auth (localhost:9099)");
 }
-
+*/
 
 export { db, auth, analytics };
