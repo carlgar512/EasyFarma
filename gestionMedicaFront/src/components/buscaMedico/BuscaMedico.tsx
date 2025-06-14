@@ -360,7 +360,10 @@ const BuscaMedico: React.FC = () => {
             <ModalFiltros
                 isOpen={modalAbierto}
                 onClose={() => setModalAbierto(false)}
-                onAplicarFiltros={(filtros) => setFiltrosAplicados(filtros)}
+                onAplicarFiltros={(filtros) => {
+                    setFiltrosAplicados(filtros);
+                    setPaginaActual(1);
+                }}
                 provincias={provincias}
                 especialidades={especialidades}
                 centros={centros}
@@ -575,10 +578,12 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
                             <SelectConBuscador
                                 label="Provincia"
                                 placeholder="Selecciona una provincia"
-                                items={provinciasDisponibles.map(id => ({
-                                    value: id,
-                                    label: provincias[id]
-                                }))}
+                                items={provinciasDisponibles
+                                    .sort((a, b) => provincias[a].localeCompare(provincias[b], 'es', { sensitivity: 'base' }))
+                                    .map(id => ({
+                                        value: id,
+                                        label: provincias[id]
+                                    }))}
                                 value={filtrosLocales.provincia}
                                 onChange={(val) => handleChange("provincia", val)}
                             />
@@ -586,10 +591,12 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
                             <SelectConBuscador
                                 label="Especialidad"
                                 placeholder="Selecciona una especialidad"
-                                items={especialidadesDisponibles.map((e) => ({
-                                    value: e.uid,
-                                    label: e.nombre,
-                                }))}
+                                items={especialidadesDisponibles
+                                    .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }))
+                                    .map((e) => ({
+                                        value: e.uid,
+                                        label: e.nombre,
+                                    }))}
                                 value={filtrosLocales.especialidad}
                                 onChange={(val) => handleChange("especialidad", val)}
                             />
@@ -597,10 +604,12 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
                             <SelectConBuscador
                                 label="Centro"
                                 placeholder="Selecciona un centro"
-                                items={centrosDisponibles.map((e) => ({
-                                    value: e.uid,
-                                    label: e.nombreCentro,
-                                }))}
+                                items={centrosDisponibles
+                                    .sort((a, b) => a.nombreCentro.localeCompare(b.nombreCentro, 'es', { sensitivity: 'base' }))
+                                    .map((e) => ({
+                                        value: e.uid,
+                                        label: e.nombreCentro,
+                                    }))}
                                 value={filtrosLocales.centro}
                                 onChange={(val) => handleChange("centro", val)}
                             />
@@ -608,10 +617,18 @@ const ModalFiltros: React.FC<ModalFiltrosProps> = ({
                             <SelectConBuscador
                                 label="Especialista"
                                 placeholder="Selecciona un especialista"
-                                items={medicosDisponibles.map((e) => ({
-                                    value: e.uid,
-                                    label: e.nombreMedico + " " + e.apellidosMedico,
-                                }))}
+                                items={medicosDisponibles
+                                    .sort((a, b) =>
+                                        (a.nombreMedico + ' ' + a.apellidosMedico).localeCompare(
+                                            b.nombreMedico + ' ' + b.apellidosMedico,
+                                            'es',
+                                            { sensitivity: 'base' }
+                                        )
+                                    )
+                                    .map((e) => ({
+                                        value: e.uid,
+                                        label: e.nombreMedico + " " + e.apellidosMedico,
+                                    }))}
                                 value={filtrosLocales.nombre}
                                 onChange={(val) => handleChange("nombre", val)}
                             />
